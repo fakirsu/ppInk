@@ -2748,9 +2748,26 @@ namespace gInk
                 }
                 else if (Root.ToolSelected == Tools.NumberTag)
                 {
-                    Stroke st = AddNumberTagStroke(Root.CursorX, Root.CursorY, Root.CursorX, Root.CursorY, 
-                                            String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering-1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
+                    // calculer l'intersection de grille la plus proche (snap) puis créer la pastille à cet emplacement
+                    Point clientPt = new Point(Root.CursorX, Root.CursorY);
+                    Point screenPt = Root.FormDisplay.PointToScreen(clientPt);
+                    Point snapScreen = GridSnap.SnapNumberTagPoint(this.Root, screenPt.X, screenPt.Y, 19, 19);
+                    Point snapClient = Root.FormDisplay.PointToClient(snapScreen);
+
+                    Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y,
+                                            String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
                     Root.TagNumbering++;
+
+                    // Alterner le remplissage pour le prochain tag: WHITE <-> BLACK
+                    if (Root.FilledSelected == Filling.WhiteFilled)
+                        Root.FilledSelected = Filling.BlackFilled;
+                    else if (Root.FilledSelected == Filling.BlackFilled)
+                        Root.FilledSelected = Filling.WhiteFilled;
+                    else
+                        Root.FilledSelected = Filling.WhiteFilled; // fallback: si état exotique, on repart en WHITE
+
+                    // Demander la mise à jour des boutons (icône btNumb)
+                    Root.UponButtonsUpdate |= 0x2;
                 }
                 else if (Root.ToolSelected == Tools.Edit) // Edit
                 {
@@ -2825,6 +2842,50 @@ namespace gInk
             }
             if (!Root.LassoMode && !Root.FormCollection.ZoomCapturing)
                 SaveUndoStrokes();
+
+            // --- INSERTION A FAIRE DANS IC_Stroke (après création/ajout de la stroke) ---
+            try
+            {
+                // ne traiter que les rectangles tracés avec l'outil Rect
+                if (Root != null && Root.ToolSelected == Tools.Rect)
+                {
+                    // prendre la dernière stroke ajoutée (celle qui vient d'être finalisée)
+                    if (IC.Ink.Strokes.Count > 0)
+                    {
+                        Stroke st = IC.Ink.Strokes[IC.Ink.Strokes.Count - 1];
+                        Rectangle inkRect = st.GetBoundingBox();
+
+                        // convertir l'enveloppe InkSpace -> pixels
+                        // utiliser le renderer et le Graphics de FormDisplay (gOneStrokeCanvus)
+                        Point loc = inkRect.Location;
+                        Point sizePt = new Point(inkRect.Width, inkRect.Height);
+                        try
+                        {
+                            // gOneStrokeCanvus est exposé public dans FormDisplay
+                            this.IC.Renderer.InkSpaceToPixel(this.Root.FormDisplay.gOneStrokeCanvus, ref loc);
+                            this.IC.Renderer.InkSpaceToPixel(this.Root.FormDisplay.gOneStrokeCanvus, ref sizePt);
+                        }
+                        catch
+                        {
+                            // si conversion impossible, on sort
+                            return;
+                        }
+
+                        Rectangle pixelRect = new Rectangle(loc.X, loc.Y, Math.Max(0, sizePt.X), Math.Max(0, sizePt.Y));
+
+                        // Si le clic a été fait en "centered" (dessin centré, comportement Right button),
+                        // le bounding box calculé peut être relatif ; normalisation faite dans SetGridFromRectangle.
+                        SetGridFromRectangle(pixelRect);
+                    }
+                }
+            }
+            catch
+            {
+                // no-op : ne pas casser le flux de dessin
+            }
+            // --- FIN INSERTION ---
+
+
             Root.UponAllDrawingUpdate = true;
             /*Root.FormDisplay.ClearCanvus();
             Root.FormDisplay.DrawStrokes();
