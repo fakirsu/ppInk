@@ -2751,6 +2751,31 @@ namespace gInk
                     Stroke st = AddNumberTagStroke(Root.CursorX, Root.CursorY, Root.CursorX, Root.CursorY, 
                                             String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering-1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
                     Root.TagNumbering++;
+
+
+                    /////
+                    /////
+                    ///
+
+                    // Alterner le remplissage pour le prochain tag: WHITE <-> BLACK
+                    if (Root.FilledSelected == Filling.WhiteFilled)
+                        Root.FilledSelected = Filling.BlackFilled;
+                    else if (Root.FilledSelected == Filling.BlackFilled)
+                        Root.FilledSelected = Filling.WhiteFilled;
+                    else
+                        Root.FilledSelected = Filling.WhiteFilled; // fallback: si état exotique, on repart en WHITE
+
+                    // Demander la mise à jour des boutons (icône btNumb)
+                    Root.UponButtonsUpdate |= 0x2;
+
+
+
+                    /////
+                    ////
+
+
+
+
                 }
                 else if (Root.ToolSelected == Tools.Edit) // Edit
                 {
