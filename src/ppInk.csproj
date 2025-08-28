@@ -121,6 +121,7 @@
     <Compile Include="ArrowSelDlg.Designer.cs">
       <DependentUpon>ArrowSelDlg.cs</DependentUpon>
     </Compile>
+    <Compile Include="Root.GridSnap.cs" />
     <Compile Include="TinyJson.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
