@@ -1728,19 +1728,39 @@ namespace gInk
         }
 
         int NB_ELLIPSE_PTS = 36 * 3;
+
+
+
+
+
+
         private Stroke AddEllipseStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, int FilledSelected)
         {
-            Point[] pts = new Point[NB_ELLIPSE_PTS + 1];
+            // calcul des demi-axes (peuvent être négatifs si CursorX < CursorX0, on garde signe)
             int dX = CursorX - CursorX0;
             int dY = CursorY - CursorY0;
 
-            for (int i = 0; i < NB_ELLIPSE_PTS + 1; i++)
+            // utiliser un nombre de points proportionnel au rayon pour un pourtour plus lisse
+            int maxRadius = Math.Max(Math.Abs(dX), Math.Abs(dY));
+            // estimer circonférence et choisir un nombre de points ~ 1 point / pixel de circonférence
+            int estimated = (int)Math.Round(2.0 * Math.PI * Math.Max(1, maxRadius));
+            int ptsCount = Math.Max(36, Math.Min(estimated, 720)); // bornes : [36,720] pour qualité/perf
+            Point[] pts = new Point[ptsCount + 1];
+
+            double angleStep = 2.0 * Math.PI / ptsCount;
+            double offset = ptsCount / 8.0; // conserve un décalage similaire à l'implémentation précédente
+
+            for (int i = 0; i <= ptsCount; i++)
             {
-                pts[i] = new Point(CursorX0 + (int)(dX * Math.Cos(Math.PI * (i + NB_ELLIPSE_PTS / 8) / (NB_ELLIPSE_PTS / 2))),
-                                   CursorY0 + (int)(dY * Math.Sin(Math.PI * (i + NB_ELLIPSE_PTS / 8) / (NB_ELLIPSE_PTS / 2))));
-                Console.WriteLine("{0} - {1} - {2}", i, pts[i].X, pts[i].Y);
+                double theta = angleStep * (i + offset);
+                double fx = dX * Math.Cos(theta);
+                double fy = dY * Math.Sin(theta);
+                pts[i] = new Point(CursorX0 + (int)Math.Round(fx), CursorY0 + (int)Math.Round(fy));
             }
+
+            // conversion pixel -> inkspace
             IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+
             Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
             st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
             st.DrawingAttributes.AntiAliased = true;
@@ -1751,6 +1771,21 @@ namespace gInk
                 FadingList.Add(st);
             return st;
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         private Stroke AddRectStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, int FilledSelected)
         {
@@ -2069,6 +2104,15 @@ namespace gInk
                 st.ExtendedProperties.Remove(Root.ISSTROKE_GUID);
             }
             catch { /* ignore si absent */ }
+
+            // --- Forcer la couleur du texte à un gris neutre (mi‑chemin entre blanc et noir) ---
+            Color fixedTagGray = Color.FromArgb(128, 128, 128); // gris parfait milieu
+            try
+            {
+                st.DrawingAttributes.Color = fixedTagGray;
+                st.DrawingAttributes.Transparency = 0; // opaque
+            }
+            catch { /* sécurité : ne pas planter si DrawingAttributes manquant */ }
 
             // marquages / propriétés texte ; positionner le texte au centre (InkSpace)
             st.ExtendedProperties.Add(Root.ISTAG_GUID, true);
