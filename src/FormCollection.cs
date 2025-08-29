@@ -2003,27 +2003,118 @@ namespace gInk
             return st;
         }
 
+
+
+
+
+
+
+
+
+
         private Stroke AddNumberTagStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt)
-        // arrow at starting point
         {
-            // for the filling, filled color is not used but this state is used to note that we edit the tag number
-            Stroke st = AddEllipseStroke(CursorX0, CursorY0, (int)(CursorX0 + TagSize * 1.2), (int)(CursorY0 + TagSize * 1.2), Root.FilledSelected == Filling.PenColorFilled ? 0 : Root.FilledSelected);
-            st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
+            // choix du remplissage (comme avant)
+            int filling = (Root.FilledSelected == Filling.PenColorFilled) ? 0 : Root.FilledSelected;
+
+            // calculer la taille de la pastille en pixels :
+            int diameterPx;
+            if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+            {
+                // récupérer rows/cols (fallback à 19)
+                int rows = 19, cols = 19;
+                try
+                {
+                    var t = Root.GetType();
+                    var pr = t.GetProperty("GridRows");
+                    var pc = t.GetProperty("GridCols");
+                    if (pr != null) rows = (int)pr.GetValue(Root);
+                    if (pc != null) cols = (int)pc.GetValue(Root);
+                }
+                catch { /* ignore */ }
+
+                cols = Math.Max(2, cols);
+                rows = Math.Max(2, rows);
+
+                double stepX = (double)this.GridRect.Width / (cols - 1);
+                double stepY = (double)this.GridRect.Height / (rows - 1);
+
+                // prendre la plus petite distance entre deux lignes
+                double cellStep = Math.Min(stepX, stepY);
+
+                // cible : utiliser une large proportion du pas et augmenter légèrement (~+10%)
+                const double fillFactor = 0.85;   // proportion du pas utilisée initialement
+                const int paddingPx = 2;          // marge en pixels pour éviter de chevaucher la ligne
+                int baseDiameter = Math.Max(10, (int)Math.Round(cellStep * fillFactor) - paddingPx);
+                int increased = (int)Math.Round(baseDiameter * 1.10); // +10%
+                                                                      // ne pas dépasser la cellule moins une petite marge
+                int maxAllowed = Math.Max(10, (int)Math.Round(cellStep) - paddingPx);
+                diameterPx = Math.Min(increased, maxAllowed);
+                diameterPx = Math.Max(diameterPx, 10);
+            }
+            else
+            {
+                // comportement par défaut : utiliser TagSize comme auparavant (taille de police de l'utilisateur)
+                diameterPx = (int)Math.Round(TagSize * 1.2);
+                diameterPx = Math.Max(diameterPx, 10);
+            }
+
+            // construire la pastille CENTRÉE sur CursorX0, CursorY0
+            int half = Math.Max(1, diameterPx / 2);
+            Stroke st = AddEllipseStroke(CursorX0, CursorY0, CursorX0 + half, CursorY0 + half, filling);
+
+            // Supprimer explicitement le contour (outline) si présent
+            try
+            {
+                st.ExtendedProperties.Remove(Root.ISSTROKE_GUID);
+            }
+            catch { /* ignore si absent */ }
+
+            // marquages / propriétés texte ; positionner le texte au centre (InkSpace)
+            st.ExtendedProperties.Add(Root.ISTAG_GUID, true);
             Point pt = new Point(CursorX0, CursorY0);
             IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
-            st.ExtendedProperties.Add(Root.ISTAG_GUID, true);
             st.ExtendedProperties.Add(Root.TEXT_GUID, txt);
             st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
             st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
-            //st.ExtendedProperties.Add(Root.TEXTFORMAT_GUID, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak);
             st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
             st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
             st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
-            st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)TagSize);
-            st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, (TagItalic ? FontStyle.Italic : FontStyle.Regular) | (TagBold ? FontStyle.Bold : FontStyle.Regular));
+
+            // estimer une taille de police pour qu'elle tienne dans la pastille (légèrement réduite ~ -10%)
+            double fontSize = Math.Max(6.0, diameterPx * 0.54);
+            st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+
+            // mettre le style maigre (non gras), conserver italique si demandé
+            System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
+            st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
             st.ExtendedProperties.Add(Root.ROTATION_GUID, 0.0);
+
+            // Calculer la taille du bloc texte et ajuster (centre)
+            try
+            {
+                ComputeTextBoxSize(ref st);
+            }
+            catch
+            {
+                // ne pas casser le flux si échec
+            }
+
+            // si fading présent, ajouter à la liste (comportement similaire aux autres Add* )
+            try { if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st); } catch { }
+
             return st;
         }
+
+
+
+
+
+
+
+
+
+
 
         double TextTheta = 0.0;
         private Stroke AddTextStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt, StringAlignment Align, int  fil_in = -1)
