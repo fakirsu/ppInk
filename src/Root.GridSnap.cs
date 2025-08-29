@@ -6,59 +6,84 @@ namespace gInk
 {
     /// <summary>
     /// Helper statique pour calculer le point d'intersection le plus proche
-    /// d'une grille définie dans le quart supérieur gauche de l'écran.
+    /// d'une grille définie.
     /// </summary>
     public static class GridSnap
     {
         /// <summary>
         /// Retourne le point d'intersection de la grille (rows x cols) le plus proche de (x,y).
-        /// Par défaut la grille couvre le quart supérieur gauche de l'écran principal.
+        /// Si root.FormCollection.GridRectDefined == true, la grille couvre cette zone.
+        /// Sinon on tombe sur le comportement par défaut (quart supérieur gauche).
         /// </summary>
-        /// <param name="root">instance Root (non utilisée ici mais pratique pour extensions futures)</param>
-        /// <param name="x">coordonnée X d'origine (clic)</param>
-        /// <param name="y">coordonnée Y d'origine (clic)</param>
-        /// <param name="rows">nombre de lignes d'intersections verticales (default 19)</param>
-        /// <param name="cols">nombre de colonnes d'intersections horizontales (default 19)</param>
-        /// <returns>Point où placer la pastille</returns>
         public static Point SnapNumberTagPoint(Root root, int x, int y, int rows = 19, int cols = 19)
         {
             if (rows < 2 || cols < 2)
                 return new Point(x, y);
 
-            // Région : quart supérieur gauche de l'écran principal
+            // Si une grille personnalisée a été définie, l'utiliser.
+            if (root?.FormCollection != null && root.FormCollection.GridRectDefined)
+            {
+                Rectangle gridRect = root.FormCollection.GridRect;
+                if (gridRect.Width <= 0 || gridRect.Height <= 0)
+                    return new Point(x, y);
+
+                double stepX = (double)gridRect.Width / (cols - 1);
+                double stepY = (double)gridRect.Height / (rows - 1);
+
+                double bestDistSq = double.MaxValue;
+                Point best = new Point(x, y);
+
+                for (int j = 0; j < rows; j++)
+                {
+                    int py = gridRect.Top + (int)Math.Round(j * stepY);
+                    for (int i = 0; i < cols; i++)
+                    {
+                        int px = gridRect.Left + (int)Math.Round(i * stepX);
+                        double dx = px - x;
+                        double dy = py - y;
+                        double d2 = dx * dx + dy * dy;
+                        if (d2 < bestDistSq)
+                        {
+                            bestDistSq = d2;
+                            best = new Point(px, py);
+                        }
+                    }
+                }
+
+                return best;
+            }
+
+            // comportement d'origine : quart supérieur gauche de l'écran principal
             Rectangle screen = Screen.PrimaryScreen.Bounds;
             int gridLeft = screen.Left;
             int gridTop = screen.Top;
             int gridWidth = Math.Max(1, screen.Width / 2);
             int gridHeight = Math.Max(1, screen.Height / 2);
 
-            // Pas entre intersections (on divise par (count - 1) pour inclure les bords)
-            double stepX = (double)gridWidth / (cols - 1);
-            double stepY = (double)gridHeight / (rows - 1);
+            double stepX2 = (double)gridWidth / (cols - 1);
+            double stepY2 = (double)gridHeight / (rows - 1);
 
-            // Si le clic est hors de la zone de la grille, on le laisse quand même "snapper"
-            // vers l'intersection la plus proche (possible extension : clamp à la zone).
-            double bestDistSq = double.MaxValue;
-            Point best = new Point(x, y);
+            double bestDistSq2 = double.MaxValue;
+            Point best2 = new Point(x, y);
 
             for (int j = 0; j < rows; j++)
             {
-                int py = gridTop + (int)Math.Round(j * stepY);
+                int py = gridTop + (int)Math.Round(j * stepY2);
                 for (int i = 0; i < cols; i++)
                 {
-                    int px = gridLeft + (int)Math.Round(i * stepX);
+                    int px = gridLeft + (int)Math.Round(i * stepX2);
                     double dx = px - x;
                     double dy = py - y;
                     double d2 = dx * dx + dy * dy;
-                    if (d2 < bestDistSq)
+                    if (d2 < bestDistSq2)
                     {
-                        bestDistSq = d2;
-                        best = new Point(px, py);
+                        bestDistSq2 = d2;
+                        best2 = new Point(px, py);
                     }
                 }
             }
 
-            return best;
+            return best2;
         }
     }
 }

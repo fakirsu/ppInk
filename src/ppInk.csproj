@@ -121,6 +121,9 @@
     <Compile Include="ArrowSelDlg.Designer.cs">
       <DependentUpon>ArrowSelDlg.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormCollection.GridSnap.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Root.GridSnap.cs" />
     <Compile Include="TinyJson.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

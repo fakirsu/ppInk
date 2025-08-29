@@ -2842,6 +2842,50 @@ namespace gInk
             }
             if (!Root.LassoMode && !Root.FormCollection.ZoomCapturing)
                 SaveUndoStrokes();
+
+            // --- INSERTION A FAIRE DANS IC_Stroke (après création/ajout de la stroke) ---
+            try
+            {
+                // ne traiter que les rectangles tracés avec l'outil Rect
+                if (Root != null && Root.ToolSelected == Tools.Rect)
+                {
+                    // prendre la dernière stroke ajoutée (celle qui vient d'être finalisée)
+                    if (IC.Ink.Strokes.Count > 0)
+                    {
+                        Stroke st = IC.Ink.Strokes[IC.Ink.Strokes.Count - 1];
+                        Rectangle inkRect = st.GetBoundingBox();
+
+                        // convertir l'enveloppe InkSpace -> pixels
+                        // utiliser le renderer et le Graphics de FormDisplay (gOneStrokeCanvus)
+                        Point loc = inkRect.Location;
+                        Point sizePt = new Point(inkRect.Width, inkRect.Height);
+                        try
+                        {
+                            // gOneStrokeCanvus est exposé public dans FormDisplay
+                            this.IC.Renderer.InkSpaceToPixel(this.Root.FormDisplay.gOneStrokeCanvus, ref loc);
+                            this.IC.Renderer.InkSpaceToPixel(this.Root.FormDisplay.gOneStrokeCanvus, ref sizePt);
+                        }
+                        catch
+                        {
+                            // si conversion impossible, on sort
+                            return;
+                        }
+
+                        Rectangle pixelRect = new Rectangle(loc.X, loc.Y, Math.Max(0, sizePt.X), Math.Max(0, sizePt.Y));
+
+                        // Si le clic a été fait en "centered" (dessin centré, comportement Right button),
+                        // le bounding box calculé peut être relatif ; normalisation faite dans SetGridFromRectangle.
+                        SetGridFromRectangle(pixelRect);
+                    }
+                }
+            }
+            catch
+            {
+                // no-op : ne pas casser le flux de dessin
+            }
+            // --- FIN INSERTION ---
+
+
             Root.UponAllDrawingUpdate = true;
             /*Root.FormDisplay.ClearCanvus();
             Root.FormDisplay.DrawStrokes();
