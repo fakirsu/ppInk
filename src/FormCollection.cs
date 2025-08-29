@@ -2748,14 +2748,15 @@ namespace gInk
                 }
                 else if (Root.ToolSelected == Tools.NumberTag)
                 {
-                    Stroke st = AddNumberTagStroke(Root.CursorX, Root.CursorY, Root.CursorX, Root.CursorY, 
-                                            String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering-1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
+                    // calculer l'intersection de grille la plus proche (snap) puis créer la pastille à cet emplacement
+                    Point clientPt = new Point(Root.CursorX, Root.CursorY);
+                    Point screenPt = Root.FormDisplay.PointToScreen(clientPt);
+                    Point snapScreen = GridSnap.SnapNumberTagPoint(this.Root, screenPt.X, screenPt.Y, 19, 19);
+                    Point snapClient = Root.FormDisplay.PointToClient(snapScreen);
+
+                    Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y,
+                                            String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
                     Root.TagNumbering++;
-
-
-                    /////
-                    /////
-                    ///
 
                     // Alterner le remplissage pour le prochain tag: WHITE <-> BLACK
                     if (Root.FilledSelected == Filling.WhiteFilled)
@@ -2767,15 +2768,6 @@ namespace gInk
 
                     // Demander la mise à jour des boutons (icône btNumb)
                     Root.UponButtonsUpdate |= 0x2;
-
-
-
-                    /////
-                    ////
-
-
-
-
                 }
                 else if (Root.ToolSelected == Tools.Edit) // Edit
                 {
