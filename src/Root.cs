@@ -456,10 +456,26 @@ namespace gInk
 
         public Rectangle WindowRect = new Rectangle(Int32.MinValue, Int32.MinValue, -1, -1);
 
-        
-        // Ajoutez ces champs dans la classe Root (par exemple près de WindowRect)
+
+        /// ################ goInk specific options - START ####################
+
+        // stockage et helpers pour la grille définie par l'utilisateur
         public Rectangle GridRect = Rectangle.Empty;
         public bool GridRectDefined = false;
+
+        // Grille : nombre de lignes (vertical = horizontal). Valeurs possibles : 19,13,9
+        public int GridRows = 19;
+        public int GridCols = 19;
+
+        // Pourcentages (100.0 = valeur actuelle du code). Persistés en fichier config.
+        // TagSizePercent : multiplicateur sur la taille du texte du numéro (en %)
+        // TagCirclePercent : multiplicateur sur le diamètre de la pastille (en %)
+        public double TagSizePercent = 100.0;
+        public double TagCirclePercent = 100.0;
+
+        /// ################ goInk specific options - END ####################
+        
+
 
         public bool EraseOnLoosingFocus = false;
         public bool ResizeDrawingWindow = false;
@@ -1644,6 +1660,31 @@ namespace gInk
                             }
                             break;
 
+
+
+                        /// ################ goInk - START ####################
+                        case "GRIDROWS":
+                            if (Int32.TryParse(sPara, out tempi) && (tempi == 19 || tempi == 13 || tempi == 9))
+                            {
+                                GridRows = tempi;
+                                GridCols = tempi;
+                            }
+                            break;
+                        case "TAGSIZE_PERCENT":
+                            {
+                                double dtemp;
+                                if (Double.TryParse(sPara, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out dtemp))
+                                    TagSizePercent = dtemp;
+                            }
+                            break;
+                        case "TAGCIRCLE_PERCENT":
+                            {
+                                double dtemp;
+                                if (Double.TryParse(sPara, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out dtemp))
+                                    TagCirclePercent = dtemp;
+                            }
+                            break;
+
                         case "GRIDRECT":  // persistance de la position et des dimensions de la grille goban
                             {
                                 // format attendu : left,top,width,height,defined(0/1)
@@ -1672,6 +1713,8 @@ namespace gInk
                                 }
                             }
                             break;
+
+                        /// ################ goInk - END ####################
 
 
                         case "GRAY_BOARD1": // if not defined, no window else 2 to 4 integers Top,Left,[Width/Height,[Opacity]]
@@ -2479,12 +2522,23 @@ namespace gInk
 
 
 
+                        /// ################ goInk - START ####################
+                        case "GRIDROWS":
+                            sPara = GridRows.ToString();
+                            break;
+                        case "TAGSIZE_PERCENT":
+                            sPara = TagSizePercent.ToString(CultureInfo.InvariantCulture);
+                            break;
+                        case "TAGCIRCLE_PERCENT":
+                            sPara = TagCirclePercent.ToString(CultureInfo.InvariantCulture);
+                            break;
+                        
                         case "GRIDRECT":   // peristance des dimensions et de la position de la grille 
                             // format sauvegarde : left,top,width,height,defined(0/1)
                             sPara = GridRect.Left.ToString() + "," + GridRect.Top.ToString() + "," + GridRect.Width.ToString() + "," + GridRect.Height.ToString() + "," + (GridRectDefined ? "1" : "0");
                             break;
 
-
+                        /// ################ goInk - END ####################
 
 
 
@@ -2695,6 +2749,7 @@ namespace gInk
 			fini.Close();
 
 
+            // ################ goInk - START ################
             // s'assurer que GRIDRECT est présent dans writelines (ajout si absent)
             bool foundGrid = false;
             for (int i = 0; i < writelines.Count; i++)
@@ -2709,6 +2764,25 @@ namespace gInk
             {
                 writelines.Add("GRIDRECT=" + GridRect.Left.ToString() + "," + GridRect.Top.ToString() + "," + GridRect.Width.ToString() + "," + GridRect.Height.ToString() + "," + (GridRectDefined ? "1" : "0"));
             }
+
+            /// ajouter les clés manquantes pour persistance ################
+            bool hasGridRows = false, hasTagSize = false, hasTagCircle = false;
+            for (int i = 0; i < writelines.Count; i++)
+            {
+                string s = writelines[i].TrimStart();
+                if (s.StartsWith("GRIDROWS=", StringComparison.InvariantCultureIgnoreCase)) hasGridRows = true;
+                if (s.StartsWith("TAGSIZE_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagSize = true;
+                if (s.StartsWith("TAGCIRCLE_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagCircle = true;
+            }
+            if (!hasGridRows)
+                writelines.Add("GRIDROWS=" + GridRows.ToString());
+            if (!hasTagSize)
+                writelines.Add("TAGSIZE_PERCENT=" + TagSizePercent.ToString(CultureInfo.InvariantCulture));
+            if (!hasTagCircle)
+                writelines.Add("TAGCIRCLE_PERCENT=" + TagCirclePercent.ToString(CultureInfo.InvariantCulture));
+            // ################ goInk - END ##############################################################
+
+
 
 
             FileStream frini = new FileStream(file, FileMode.Create);
