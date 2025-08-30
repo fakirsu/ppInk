@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -445,50 +445,203 @@ namespace gInk
                         continue;
                     //else //Should not be drawn as a stroke : for the moment only filled values.
                     if (st.ExtendedProperties.Contains(Root.ISFILLEDOUTSIDE_GUID))
-                    {
-                        SolidBrush bru = new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color));
-                        try
+                        //{
+                        //    SolidBrush bru = new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color));
+                        //    try
+                        //    {
+                        //        GraphicsPath gp = new GraphicsPath();
+                        //        gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
+                        //        Point[] pts = st.DrawingAttributes.FitToCurve ? st.GetFlattenedBezierPoints(0) : st.GetPoints();
+                        //        Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                        //        gp.AddPolygon(pts);
+                        //        g.FillPath(bru, gp);
+                        //    }
+                        //    catch { }
+                        //}
+                        // appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis le facteur d'opacité des pierres
+                        
                         {
-                            GraphicsPath gp = new GraphicsPath();
-                            gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
-                            Point[] pts = st.DrawingAttributes.FitToCurve ? st.GetFlattenedBezierPoints(0) : st.GetPoints();
-                            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                            gp.AddPolygon(pts);
-                            g.FillPath(bru, gp);
-                        }
-                        catch { }
-                    }
-                    else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID) )
-                    {
-                        SolidBrush bru;
-                        if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
-                            bru = new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color));
-                        else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
-                            bru = new SolidBrush(Color.White);
-                        else if (st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
-                            bru = new SolidBrush(Color.Black);
-                        else
-                            continue;
-                            //bru = new SolidBrush(Color.Purple);
-                        if (st.DrawingAttributes.FitToCurve)
-                        {
+                            // appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis appliquer le facteur d'opacité des pierres
+                            int baseAlpha = 255 - st.DrawingAttributes.Transparency;
+                            int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.TagStoneOpacityPercent / 100.0))));
+                            Color baseColor = st.DrawingAttributes.Color;
                             try
                             {
-                                Point[] pts = st.GetFlattenedBezierPoints(0); // 0 to get a good fitting curve
-                                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                                g.FillClosedCurve(bru, pts);
+                                using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
+                                {
+                                    GraphicsPath gp = new GraphicsPath();
+                                    gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
+                                    Point[] pts = st.DrawingAttributes.FitToCurve ? st.GetFlattenedBezierPoints(0) : st.GetPoints();
+                                    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                                    gp.AddPolygon(pts);
+                                    g.FillPath(bru, gp);
+                                }
                             }
                             catch { }
                         }
-                        else
+
+                    /// ################ goInk - START ####################
+                    /// //else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID) )
+                    //{
+                    //    SolidBrush bru;
+                    //    if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
+                    //        bru = new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color));
+                    //    else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
+                    //        bru = new SolidBrush(Color.White);
+                    //    else if (st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
+                    //        bru = new SolidBrush(Color.Black);
+                    //    else
+                    //        continue;
+                    //        //bru = new SolidBrush(Color.Purple);
+                    //    if (st.DrawingAttributes.FitToCurve)
+                    //    {
+                    //        try
+                    //        {
+                    //            Point[] pts = st.GetFlattenedBezierPoints(0); // 0 to get a good fitting curve
+                    //            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                    //            g.FillClosedCurve(bru, pts);
+                    //        }
+                    //        catch { }
+                    //    }
+                    //    else
+                    //    {
+                    //        Point[] pts = st.GetPoints();
+                    //        Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                    //        g.FillPolygon(bru, pts);
+
+                    //    }
+
+                    //}
+
+                    //else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
+                    //    {
+                    //// appliquer la transparence du DrawingAttributes au remplissage
+                    ////int alpha = Math.Max(0, Math.Min(255, 255 - st.DrawingAttributes.Transparency));
+                    ////Color baseColor;
+                    ////if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
+                    ////    baseColor = st.DrawingAttributes.Color;
+                    ////else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
+                    ////    baseColor = Color.White;
+                    ////else // ISFILLEDBLACK
+                    ////    baseColor = Color.Black;
+
+                    ////using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
+
+                    //// appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis appliquer le facteur d'opacité des pierres
+                    //int baseAlpha = 255 - st.DrawingAttributes.Transparency;
+                    //int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.TagStoneOpacityPercent / 100.0))));
+                    //Color baseColor;
+                    //if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
+                    //    baseColor = st.DrawingAttributes.Color;
+                    //else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
+                    //    baseColor = Color.White;
+                    //else // ISFILLEDBLACK
+                    //    baseColor = Color.Black;
+
+                    //using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
+
+
+                    //{
+                    //            if (st.DrawingAttributes.FitToCurve)
+                    //            {
+                    //                try
+                    //                {
+                    //                    Point[] pts = st.GetFlattenedBezierPoints(0);
+                    //                    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                    //                    g.FillClosedCurve(bru, pts);
+                    //                }
+                    //                catch { }
+                    //            }
+                    //            else
+                    //            {
+                    //                Point[] pts = st.GetPoints();
+                    //                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                    //                g.FillPolygon(bru, pts);
+                    //            }
+                    //        }
+                    //    }
+
+                    else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
+                    {
+                        // appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis appliquer le facteur d'opacité des pierres
+                        int baseAlpha = 255 - st.DrawingAttributes.Transparency;
+                        int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.TagStoneOpacityPercent / 100.0))));
+                        Color baseColor;
+                        if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
+                            baseColor = st.DrawingAttributes.Color;
+                        else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
+                            baseColor = Color.White;
+                        else // ISFILLEDBLACK
+                            baseColor = Color.Black;
+
+                        using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
                         {
-                            Point[] pts = st.GetPoints();
-                            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                            g.FillPolygon(bru, pts);
+                            try
+                            {
+                                // Si c'est une pastille numérotée, dessiner un vrai disque (ellipse) pour un arrondi propre
+                                if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                                {
+                                    Rectangle rect = st.GetBoundingBox();
+                                    Point p = rect.Location;
+                                    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref p);
+                                    rect.Location = p;
+                                    p.X = rect.Width;
+                                    p.Y = rect.Height;
+                                    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref p);
+                                    rect.Width = Math.Max(1, p.X);
+                                    rect.Height = Math.Max(1, p.Y);
 
+                                    // Ajustement pour alignement pixel et éviter crénelage
+                                    RectangleF rf = new RectangleF(rect.X + 0.5f, rect.Y + 0.5f, Math.Max(0, rect.Width - 1f), Math.Max(0, rect.Height - 1f));
+                                    Rectangle rfinal = Rectangle.Round(rf);
+
+                                    var oldSmo = g.SmoothingMode;
+                                    var oldPix = g.PixelOffsetMode;
+                                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                                    g.FillEllipse(bru, rfinal);
+                                    g.SmoothingMode = oldSmo;
+                                    g.PixelOffsetMode = oldPix;
+                                }
+                                else
+                                {
+                                    // Cas générique : remplir la forme en conservant FitToCurve, mais avec anti‑aliasing
+                                    var oldSmo = g.SmoothingMode;
+                                    var oldPix = g.PixelOffsetMode;
+                                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                                    if (st.DrawingAttributes.FitToCurve)
+                                    {
+                                        try
+                                        {
+                                            Point[] pts = st.GetFlattenedBezierPoints(0);
+                                            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                                            g.FillClosedCurve(bru, pts);
+                                        }
+                                        catch { }
+                                    }
+                                    else
+                                    {
+                                        Point[] pts = st.GetPoints();
+                                        Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                                        g.FillPolygon(bru, pts);
+                                    }
+
+                                    g.SmoothingMode = oldSmo;
+                                    g.PixelOffsetMode = oldPix;
+                                }
+                            }
+                            catch { }
                         }
-
                     }
+
+
+
+
+                    /// ################ goInk - START ####################
+
+
                     if (st.ExtendedProperties.Contains(Root.ARROWSTART_GUID))
                     {
                         Point pt = new Point((int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data);
@@ -604,10 +757,22 @@ namespace gInk
                             g.RotateTransform((float)Rotation);
                             g.TranslateTransform(-pt.X - W / 2, -pt.Y - H / 2);
                         }
-                        g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
-                                     new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
-                                        (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
-                                     new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color)), pt.X, pt.Y, stf);
+                        //g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+                        //             new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                        //                (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
+                        //             new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color)), pt.X, pt.Y, stf);
+
+                        // appliquer la transparence du DrawingAttributes au texte, puis le facteur d'opacité des numéros
+                        int baseAlphaNum = 255 - st.DrawingAttributes.Transparency;
+                        int alphaNumber = Math.Max(0, Math.Min(255, (int)(baseAlphaNum * (Root.TagNumberOpacityPercent / 100.0))));
+                        using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(alphaNumber, st.DrawingAttributes.Color)))
+                        {
+                            g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+                                         new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                                            (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
+                                         txtBru, pt.X, pt.Y, stf);
+                        }
+
                         g.ResetTransform();
                     }
                 }
@@ -633,51 +798,195 @@ namespace gInk
                         continue;
                     //else //Should not be drawn as a stroke : for the moment only filled values.
                     if (st.ExtendedProperties.Contains(Root.ISFILLEDOUTSIDE_GUID))
+                    //{
+                    //    SolidBrush bru = new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color));
+                    //    try
+                    //    {
+                    //        GraphicsPath gp = new GraphicsPath();
+                    //        gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
+                    //        Point[] pts = st.DrawingAttributes.FitToCurve ? st.GetFlattenedBezierPoints(0) : st.GetPoints();
+                    //        Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                    //        gp.AddPolygon(pts);
+                    //        g.FillPath(bru, gp);
+                    //    }
+                    //    catch { }
+                    //}
                     {
-                        SolidBrush bru = new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color));
+                        // appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis appliquer le facteur d'opacité des pierres
+                        int baseAlpha = 255 - st.DrawingAttributes.Transparency;
+                        int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.TagStoneOpacityPercent / 100.0))));
+                        Color baseColor = st.DrawingAttributes.Color;
                         try
                         {
-                            GraphicsPath gp = new GraphicsPath();
-                            gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
-                            Point[] pts = st.DrawingAttributes.FitToCurve ? st.GetFlattenedBezierPoints(0) : st.GetPoints();
-                            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                            gp.AddPolygon(pts);
-                            g.FillPath(bru, gp);
+                            using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
+                            {
+                                GraphicsPath gp = new GraphicsPath();
+                                gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
+                                Point[] pts = st.DrawingAttributes.FitToCurve ? st.GetFlattenedBezierPoints(0) : st.GetPoints();
+                                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                                gp.AddPolygon(pts);
+                                g.FillPath(bru, gp);
+                            }
                         }
                         catch { }
                     }
+
+                    /// ################ goInk - START ####################
+                    //else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
+                    /// //{
+                    //    SolidBrush bru;
+                    //    if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
+                    //        bru = new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color));
+                    //    else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
+                    //        bru = new SolidBrush(Color.White);
+                    //    else if (st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
+                    //        bru = new SolidBrush(Color.Black);
+                    //    else
+                    //        continue;
+                    //    //bru = new SolidBrush(Color.Purple);
+                    //    if (st.DrawingAttributes.FitToCurve)
+                    //    {
+                    //        try
+                    //        {
+                    //            Point[] pts = st.GetFlattenedBezierPoints(0); // 0 to get a good fitting curve
+                    //            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                    //            g.FillClosedCurve(bru, pts);
+                    //        }
+                    //        catch { }
+                    //    }
+                    //    else
+                    //    {
+                    //        Point[] pts = st.GetPoints();
+                    //        Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                    //        g.FillPolygon(bru, pts);
+
+                    //    }
+
+                    //}
+                    ///*else */
+                    ///
+                    //else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
+                    //{
+                    //    //int alpha = Math.Max(0, Math.Min(255, 255 - st.DrawingAttributes.Transparency));
+                    //    //Color baseColor;
+                    //    //if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
+                    //    //    baseColor = st.DrawingAttributes.Color;
+                    //    //else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
+                    //    //    baseColor = Color.White;
+                    //    //else // ISFILLEDBLACK
+                    //    //    baseColor = Color.Black;
+
+                    //    //using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
+
+                    //    // appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis appliquer le facteur d'opacité des pierres
+                    //    int baseAlpha = 255 - st.DrawingAttributes.Transparency;
+                    //    int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.TagStoneOpacityPercent / 100.0))));
+                    //    Color baseColor;
+                    //    if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
+                    //        baseColor = st.DrawingAttributes.Color;
+                    //    else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
+                    //        baseColor = Color.White;
+                    //    else // ISFILLEDBLACK
+                    //        baseColor = Color.Black;
+
+                    //    using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
+                    //    {
+                    //        if (st.DrawingAttributes.FitToCurve)
+                    //        {
+                    //            try
+                    //            {
+                    //                Point[] pts = st.GetFlattenedBezierPoints(0);
+                    //                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                    //                g.FillClosedCurve(bru, pts);
+                    //            }
+                    //            catch { }
+                    //        }
+                    //        else
+                    //        {
+                    //            Point[] pts = st.GetPoints();
+                    //            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                    //            g.FillPolygon(bru, pts);
+                    //        }
+                    //    }
+                    //}
+
                     else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
                     {
-                        SolidBrush bru;
+                        // appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis appliquer le facteur d'opacité des pierres
+                        int baseAlpha = 255 - st.DrawingAttributes.Transparency;
+                        int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.TagStoneOpacityPercent / 100.0))));
+                        Color baseColor;
                         if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
-                            bru = new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color));
+                            baseColor = st.DrawingAttributes.Color;
                         else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
-                            bru = new SolidBrush(Color.White);
-                        else if (st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
-                            bru = new SolidBrush(Color.Black);
-                        else
-                            continue;
-                        //bru = new SolidBrush(Color.Purple);
-                        if (st.DrawingAttributes.FitToCurve)
+                            baseColor = Color.White;
+                        else // ISFILLEDBLACK
+                            baseColor = Color.Black;
+
+                        using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
                         {
                             try
                             {
-                                Point[] pts = st.GetFlattenedBezierPoints(0); // 0 to get a good fitting curve
-                                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                                g.FillClosedCurve(bru, pts);
+                                // Si c'est une pastille numerotee, dessiner un vrai disque (ellipse) pour un arrondi propre
+                                if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                                {
+                                    Rectangle rect = st.GetBoundingBox();
+                                    Point p = rect.Location;
+                                    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref p);
+                                    rect.Location = p;
+                                    p.X = rect.Width;
+                                    p.Y = rect.Height;
+                                    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref p);
+                                    rect.Width = Math.Max(1, p.X);
+                                    rect.Height = Math.Max(1, p.Y);
+
+                                    RectangleF rf = new RectangleF(rect.X + 0.5f, rect.Y + 0.5f, Math.Max(0, rect.Width - 1f), Math.Max(0, rect.Height - 1f));
+                                    Rectangle rfinal = Rectangle.Round(rf);
+
+                                    var oldSmo = g.SmoothingMode;
+                                    var oldPix = g.PixelOffsetMode;
+                                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                                    g.FillEllipse(bru, rfinal);
+                                    g.SmoothingMode = oldSmo;
+                                    g.PixelOffsetMode = oldPix;
+                                }
+                                else
+                                {
+                                    // Cas genrique : remplir la forme en conservant FitToCurve, mais avec anti aliasing
+                                    var oldSmo = g.SmoothingMode;
+                                    var oldPix = g.PixelOffsetMode;
+                                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                                    if (st.DrawingAttributes.FitToCurve)
+                                    {
+                                        try
+                                        {
+                                            Point[] pts = st.GetFlattenedBezierPoints(0);
+                                            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                                            g.FillClosedCurve(bru, pts);
+                                        }
+                                        catch { }
+                                    }
+                                    else
+                                    {
+                                        Point[] pts = st.GetPoints();
+                                        Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                                        g.FillPolygon(bru, pts);
+                                    }
+
+                                    g.SmoothingMode = oldSmo;
+                                    g.PixelOffsetMode = oldPix;
+                                }
                             }
                             catch { }
                         }
-                        else
-                        {
-                            Point[] pts = st.GetPoints();
-                            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                            g.FillPolygon(bru, pts);
-
-                        }
-
                     }
-                    /*else */
+
+
+                    /// ################ goInk - END ####################
+
                     if (st.ExtendedProperties.Contains(Root.IMAGE_GUID))
                     {
                         //Image img = Root.FormCollection.ClipartsDlg.Images.Images[(int)(st.ExtendedProperties[Root.IMAGE_GUID].Data)];
@@ -764,10 +1073,22 @@ namespace gInk
                             g.RotateTransform((float)Rotation);
                             g.TranslateTransform(-pt.X - W / 2, -pt.Y - H / 2);
                         }
-                        g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
-                                     new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
-                                        (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
-                                     new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color)), pt.X, pt.Y, stf);
+                        //g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+                        //             new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                        //                (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
+                        //             new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color)), pt.X, pt.Y, stf);
+                        
+                        // appliquer la transparence du DrawingAttributes au texte, puis le facteur d'opacité des numéros
+                        int baseAlphaNum = 255 - st.DrawingAttributes.Transparency;
+                        int alphaNumber = Math.Max(0, Math.Min(255, (int)(baseAlphaNum * (Root.TagNumberOpacityPercent / 100.0))));
+                        using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(alphaNumber, st.DrawingAttributes.Color)))
+                        {
+                            g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+                                         new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                                            (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
+                                         txtBru, pt.X, pt.Y, stf);
+                        }
+
                         g.ResetTransform();
                     }
                 }

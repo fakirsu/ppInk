@@ -455,6 +455,31 @@ namespace gInk
         public bool SpotOnAlt = true;
 
         public Rectangle WindowRect = new Rectangle(Int32.MinValue, Int32.MinValue, -1, -1);
+
+
+        /// ################ goInk specific options - START ####################
+
+        // stockage et helpers pour la grille définie par l'utilisateur
+        public Rectangle GridRect = Rectangle.Empty;
+        public bool GridRectDefined = false;
+
+        // Grille : nombre de lignes (vertical = horizontal). Valeurs possibles : 19,13,9
+        public int GridRows = 19;
+        public int GridCols = 19;
+
+        // Pourcentages (100.0 = valeur actuelle du code). Persistés en fichier config.
+        // TagSizePercent : multiplicateur sur la taille du texte du numéro (en %)
+        // TagCirclePercent : multiplicateur sur le diamètre de la pastille (en %)
+        // TagOpacityPercent : opacité des pierres et du texte (100 = opaque, 0 = transparent)
+        public double TagSizePercent = 100.0;
+        public double TagCirclePercent = 100.0;
+        public double TagStoneOpacityPercent = 100.0;
+        public double TagNumberOpacityPercent = 100.0;
+
+        /// ################ goInk specific options - END ####################
+
+
+
         public bool EraseOnLoosingFocus = false;
         public bool ResizeDrawingWindow = false;
 
@@ -1443,6 +1468,9 @@ namespace gInk
                             TagFormattingList = sPara.Split(';');
                             break;
 
+
+                        /// ################ goInk - START ####################
+                        /// 
                         // Ajout: numéro de départ (ne pas redéclarer tempi)
                         case "NUMBER_START":
                             if (Int32.TryParse(sPara, out tempi))
@@ -1467,7 +1495,7 @@ namespace gInk
                             }
                             break;
 
-
+                        /// ################ goInk  - END ####################
 
 
 
@@ -1637,6 +1665,90 @@ namespace gInk
                                 }
                             }
                             break;
+
+
+
+                        /// ################ goInk - START ####################
+                        case "GRIDROWS":
+                            if (Int32.TryParse(sPara, out tempi) && (tempi == 19 || tempi == 13 || tempi == 9))
+                            {
+                                GridRows = tempi;
+                                GridCols = tempi;
+                            }
+                            break;
+                        case "TAGSIZE_PERCENT":
+                            {
+                                double dtemp;
+                                if (Double.TryParse(sPara, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out dtemp))
+                                    TagSizePercent = dtemp;
+                            }
+                            break;
+                        case "TAGCIRCLE_PERCENT":
+                            {
+                                double dtemp;
+                                if (Double.TryParse(sPara, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out dtemp))
+                                    TagCirclePercent = dtemp;
+                            }
+                            break;
+
+                        case "TAGSTONEOPACITY_PERCENT":
+                            {
+                                double dtemp;
+                                if (Double.TryParse(sPara, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out dtemp))
+                                    TagStoneOpacityPercent = Math.Max(0.0, Math.Min(100.0, dtemp));
+                            }
+                            break;
+                        case "TAGNUMBEROPACITY_PERCENT":
+                            {
+                                double dtemp;
+                                if (Double.TryParse(sPara, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out dtemp))
+                                    TagNumberOpacityPercent = Math.Max(0.0, Math.Min(100.0, dtemp));
+                            }
+                            break;
+                        case "TAGOPACITY_PERCENT": // compatibilité ancienne clé -> initialise les deux valeurs
+                            {
+                                double dtemp;
+                                if (Double.TryParse(sPara, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out dtemp))
+                                {
+                                    dtemp = Math.Max(0.0, Math.Min(100.0, dtemp));
+                                    TagStoneOpacityPercent = dtemp;
+                                    TagNumberOpacityPercent = dtemp;
+                                }
+                            }
+                            break;
+
+                        case "GRIDRECT":  // persistance de la position et des dimensions de la grille goban
+                            {
+                                // format attendu : left,top,width,height,defined(0/1)
+                                string[] parts = sPara.Split(',');
+                                if (parts.Length >= 5)
+                                {
+                                    int gl = 0, gt = 0, gw = 0, gh = 0, gd = 0;
+                                    if (int.TryParse(parts[0].Trim(), out gl) &&
+                                        int.TryParse(parts[1].Trim(), out gt) &&
+                                        int.TryParse(parts[2].Trim(), out gw) &&
+                                        int.TryParse(parts[3].Trim(), out gh) &&
+                                        int.TryParse(parts[4].Trim(), out gd))
+                                    {
+                                        // sécurité : largeur/hauteur strictement positifs
+                                        if (gw > 0 && gh > 0)
+                                        {
+                                            GridRect = new Rectangle(gl, gt, gw, gh);
+                                            GridRectDefined = (gd != 0);
+                                        }
+                                        else
+                                        {
+                                            GridRect = Rectangle.Empty;
+                                            GridRectDefined = false;
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+
+                        /// ################ goInk - END ####################
+
+
                         case "GRAY_BOARD1": // if not defined, no window else 2 to 4 integers Top,Left,[Width/Height,[Opacity]]
                             tab = sPara.Split(',');
                             if (tab.Length == 4)
@@ -2439,6 +2551,41 @@ namespace gInk
                             else
                                 sPara = WindowRect.Left.ToString() + "," + WindowRect.Top.ToString() + "," + WindowRect.Width.ToString() + "," + WindowRect.Height.ToString();
                             break;
+
+
+
+                        /// ################ goInk - START ####################
+                        case "GRIDROWS":
+                            sPara = GridRows.ToString();
+                            break;
+                        case "TAGSIZE_PERCENT":
+                            sPara = TagSizePercent.ToString(CultureInfo.InvariantCulture);
+                            break;
+                        case "TAGCIRCLE_PERCENT":
+                            sPara = TagCirclePercent.ToString(CultureInfo.InvariantCulture);
+                            break;
+
+                        case "TAGSTONEOPACITY_PERCENT":
+                            sPara = TagStoneOpacityPercent.ToString(CultureInfo.InvariantCulture);
+                            break;
+                        case "TAGNUMBEROPACITY_PERCENT":
+                            sPara = TagNumberOpacityPercent.ToString(CultureInfo.InvariantCulture);
+                            break;
+
+                         
+
+
+
+                        case "GRIDRECT":   // peristance des dimensions et de la position de la grille 
+                            // format sauvegarde : left,top,width,height,defined(0/1)
+                            sPara = GridRect.Left.ToString() + "," + GridRect.Top.ToString() + "," + GridRect.Width.ToString() + "," + GridRect.Height.ToString() + "," + (GridRectDefined ? "1" : "0");
+                            break;
+
+                        /// ################ goInk - END ####################
+
+
+
+
                         case "GRAYBOARD2":
                             sPara = Gray2[0].ToString() + "," + Gray2[1].ToString() + "," + Gray2[2].ToString() + "," + Gray2[3].ToString();
                             break;
@@ -2644,7 +2791,66 @@ namespace gInk
 			}
 			fini.Close();
 
-			FileStream frini = new FileStream(file, FileMode.Create);
+
+            // ################ goInk - START ################
+            // s'assurer que GRIDRECT est présent dans writelines (ajout si absent)
+            bool foundGrid = false;
+            for (int i = 0; i < writelines.Count; i++)
+            {
+                if (writelines[i].TrimStart().StartsWith("GRIDRECT=", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    foundGrid = true;
+                    break;
+                }
+            }
+            if (!foundGrid)
+            {
+                writelines.Add("GRIDRECT=" + GridRect.Left.ToString() + "," + GridRect.Top.ToString() + "," + GridRect.Width.ToString() + "," + GridRect.Height.ToString() + "," + (GridRectDefined ? "1" : "0"));
+            }
+
+            /// ajouter les clés manquantes pour persistance ################
+            bool hasGridRows = false, hasTagSize = false, hasTagCircle = false;
+            for (int i = 0; i < writelines.Count; i++)
+            {
+                string s = writelines[i].TrimStart();
+                if (s.StartsWith("GRIDROWS=", StringComparison.InvariantCultureIgnoreCase)) hasGridRows = true;
+                if (s.StartsWith("TAGSIZE_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagSize = true;
+                if (s.StartsWith("TAGCIRCLE_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagCircle = true;
+            }
+            if (!hasGridRows)
+                writelines.Add("GRIDROWS=" + GridRows.ToString());
+            if (!hasTagSize)
+                writelines.Add("TAGSIZE_PERCENT=" + TagSizePercent.ToString(CultureInfo.InvariantCulture));
+            if (!hasTagCircle)
+                writelines.Add("TAGCIRCLE_PERCENT=" + TagCirclePercent.ToString(CultureInfo.InvariantCulture));
+
+            // vérifier aussi hasTagOpacity
+            //bool hasTagOpacity = false;
+            //for (int i = 0; i < writelines.Count; i++)
+            //{
+            //    string s = writelines[i].TrimStart();
+            //    if (s.StartsWith("TAGOPACITY_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagOpacity = true;
+            //}
+            //if (!hasTagOpacity)
+            //    writelines.Add("TAGOPACITY_PERCENT=" + TagOpacityPercent.ToString(CultureInfo.InvariantCulture));
+            bool hasTagStoneOpacity = false, hasTagNumberOpacity = false;
+            for (int i = 0; i < writelines.Count; i++)
+            {
+                string s = writelines[i].TrimStart();
+                if (s.StartsWith("TAGSTONEOPACITY_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagStoneOpacity = true;
+                if (s.StartsWith("TAGNUMBEROPACITY_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagNumberOpacity = true;
+            }
+            if (!hasTagStoneOpacity)
+                writelines.Add("TAGSTONEOPACITY_PERCENT=" + TagStoneOpacityPercent.ToString(CultureInfo.InvariantCulture));
+            if (!hasTagNumberOpacity)
+                writelines.Add("TAGNUMBEROPACITY_PERCENT=" + TagNumberOpacityPercent.ToString(CultureInfo.InvariantCulture));
+
+            // ################ goInk - END ##############################################################
+
+
+
+
+            FileStream frini = new FileStream(file, FileMode.Create);
 			StreamWriter swini = new StreamWriter(frini);
 			swini.AutoFlush = true;
 			foreach (string line in writelines)
