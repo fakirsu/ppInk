@@ -42,7 +42,10 @@ namespace gInk
         private NumericUpDown nudTagSizePerc;
         private Label lblGridType;
         private ComboBox cbGridType;
-     
+        // pour l'opacité
+        private Label lblTagOpacityPerc;
+        private NumericUpDown nudTagOpacityPerc;
+
         /// ################ goInk - END ####################
 
 
@@ -90,6 +93,30 @@ namespace gInk
             nudTagSizePerc.Width = 90;
             nudTagSizePerc.Value = (decimal)Root.TagSizePercent;
             nudTagSizePerc.ValueChanged += (s, e) => { Root.TagSizePercent = (double)nudTagSizePerc.Value; };
+
+            //opacité
+            lblTagOpacityPerc = new Label();
+            lblTagOpacityPerc.Text = "Opacité des pierres (%) :";
+            lblTagOpacityPerc.AutoSize = true;
+            lblTagOpacityPerc.Left = 12;
+            // lblTagOpacityPerc.Top = lblGridType.Bottom + 18;
+            // lblGridType n'est pas encore construit à ce stade -> utiliser lblTagSizePerc
+            lblTagOpacityPerc.Top = lblTagSizePerc.Bottom + 18;
+
+            nudTagOpacityPerc = new NumericUpDown();
+            nudTagOpacityPerc.Minimum = 0;
+            nudTagOpacityPerc.Maximum = 100;
+            nudTagOpacityPerc.DecimalPlaces = 0;
+            nudTagOpacityPerc.Increment = 1;
+            nudTagOpacityPerc.Left = 220;
+            nudTagOpacityPerc.Top = lblTagOpacityPerc.Top - 3;
+            nudTagOpacityPerc.Width = 90;
+            nudTagOpacityPerc.Value = (decimal)Root.TagOpacityPercent;
+            nudTagOpacityPerc.ValueChanged += (s, e) => { Root.TagOpacityPercent = (double)nudTagOpacityPerc.Value; };
+
+            tabPageGridTags.Controls.Add(lblTagOpacityPerc);
+            tabPageGridTags.Controls.Add(nudTagOpacityPerc);
+            //
 
             lblGridType = new Label();
             lblGridType.Text = "Type de goban :";
@@ -481,6 +508,8 @@ namespace gInk
                     nudTagSizePerc.Value = (decimal)Math.Min((double)nudTagSizePerc.Maximum, Math.Max((double)nudTagSizePerc.Minimum, Root.TagSizePercent));
                 if (nudTagCirclePerc != null)
                     nudTagCirclePerc.Value = (decimal)Math.Min((double)nudTagCirclePerc.Maximum, Math.Max((double)nudTagCirclePerc.Minimum, Root.TagCirclePercent));
+                if (nudTagOpacityPerc != null)
+                    nudTagOpacityPerc.Value = (decimal)Math.Min((double)nudTagOpacityPerc.Maximum, Math.Max((double)nudTagOpacityPerc.Minimum, Root.TagOpacityPercent));
                 if (cbGridType != null)
                 {
                     if (Root.GridRows == 13) cbGridType.SelectedIndex = 1;

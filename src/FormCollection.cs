@@ -2122,8 +2122,17 @@ namespace gInk
             Color fixedTagGray = Color.FromArgb(128, 128, 128);
             try
             {
-                st.DrawingAttributes.Color = fixedTagGray;
-                st.DrawingAttributes.Transparency = 0;
+                // calculer la valeur de Transparency (0 = opaque, 255 = transparent)
+                double op = (Root.TagOpacityPercent <= 0.0) ? 0.0 : Math.Max(0.0, Math.Min(100.0, Root.TagOpacityPercent));
+                byte transparencyByte = (byte)Math.Round(255.0 * (1.0 - op / 100.0));
+
+                // appliquer la couleur et l'opacité
+                try
+                {
+                    st.DrawingAttributes.Color = fixedTagGray;
+                    st.DrawingAttributes.Transparency = transparencyByte;
+                }
+                catch { }
             }
             catch { }
 

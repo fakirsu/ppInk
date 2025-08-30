@@ -470,11 +470,13 @@ namespace gInk
         // Pourcentages (100.0 = valeur actuelle du code). Persistés en fichier config.
         // TagSizePercent : multiplicateur sur la taille du texte du numéro (en %)
         // TagCirclePercent : multiplicateur sur le diamètre de la pastille (en %)
+        // TagOpacityPercent : opacité des pierres et du texte (100 = opaque, 0 = transparent)
         public double TagSizePercent = 100.0;
         public double TagCirclePercent = 100.0;
+        public double TagOpacityPercent = 100.0;
 
         /// ################ goInk specific options - END ####################
-        
+
 
 
         public bool EraseOnLoosingFocus = false;
@@ -1465,6 +1467,9 @@ namespace gInk
                             TagFormattingList = sPara.Split(';');
                             break;
 
+
+                        /// ################ goInk - START ####################
+                        /// 
                         // Ajout: numéro de départ (ne pas redéclarer tempi)
                         case "NUMBER_START":
                             if (Int32.TryParse(sPara, out tempi))
@@ -1489,7 +1494,7 @@ namespace gInk
                             }
                             break;
 
-
+                        /// ################ goInk  - END ####################
 
 
 
@@ -1682,6 +1687,14 @@ namespace gInk
                                 double dtemp;
                                 if (Double.TryParse(sPara, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out dtemp))
                                     TagCirclePercent = dtemp;
+                            }
+                            break;
+
+                        case "TAGOPACITY_PERCENT":
+                            {
+                                double dtemp;
+                                if (Double.TryParse(sPara, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out dtemp))
+                                    TagOpacityPercent = Math.Max(0.0, Math.Min(100.0, dtemp));
                             }
                             break;
 
@@ -2532,7 +2545,9 @@ namespace gInk
                         case "TAGCIRCLE_PERCENT":
                             sPara = TagCirclePercent.ToString(CultureInfo.InvariantCulture);
                             break;
-                        
+                        case "TAGOPACITY_PERCENT":
+                            sPara = TagOpacityPercent.ToString(CultureInfo.InvariantCulture);
+                            break;
                         case "GRIDRECT":   // peristance des dimensions et de la position de la grille 
                             // format sauvegarde : left,top,width,height,defined(0/1)
                             sPara = GridRect.Left.ToString() + "," + GridRect.Top.ToString() + "," + GridRect.Width.ToString() + "," + GridRect.Height.ToString() + "," + (GridRectDefined ? "1" : "0");
@@ -2780,6 +2795,18 @@ namespace gInk
                 writelines.Add("TAGSIZE_PERCENT=" + TagSizePercent.ToString(CultureInfo.InvariantCulture));
             if (!hasTagCircle)
                 writelines.Add("TAGCIRCLE_PERCENT=" + TagCirclePercent.ToString(CultureInfo.InvariantCulture));
+
+            // vérifier aussi hasTagOpacity
+            bool hasTagOpacity = false;
+            for (int i = 0; i < writelines.Count; i++)
+            {
+                string s = writelines[i].TrimStart();
+                if (s.StartsWith("TAGOPACITY_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagOpacity = true;
+            }
+            if (!hasTagOpacity)
+                writelines.Add("TAGOPACITY_PERCENT=" + TagOpacityPercent.ToString(CultureInfo.InvariantCulture));
+
+
             // ################ goInk - END ##############################################################
 
 
