@@ -4185,7 +4185,9 @@ namespace gInk
                 btArrow.BackgroundImage.Dispose();
                 btArrow.BackgroundImage = BuildArrowBtn(Root.ArrowHead[Root.CurrentArrow], Root.ArrowTail[Root.CurrentArrow], Color.Black);
             }
-            btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb", ImageExts);
+            //btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb", ImageExts);
+            // Affiche par défaut l'icône pastille BLANCHE avant tout clic
+            btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
             btText.BackgroundImage = getImgFromDiskOrRes("tool_txtL", ImageExts);
             btEdit.BackgroundImage = getImgFromDiskOrRes("tool_edit", ImageExts);
             btClipArt.BackgroundImage = getImgFromDiskOrRes("tool_clipart", ImageExts);
