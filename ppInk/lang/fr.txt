@@ -23,6 +23,10 @@ ButtonNamePen19 = "Stylo 19"
 OptionHotkeysExtraPens = "Jeu de stylo étendu ; si activé, les racourcis des stylos ne doivent pas inclure les touches contrôle et  shift"
 ExtraPensHint = "Cliquer pour accéder au panneau de stylos supplémentaires"
 
+ButtonNameNumbWhite = "Pierres numérotées (première pierre blanche)"
+ButtonNameNumbBlack = "Pierres numérotées (première pierre noire)"
+
+
 ButtonNamePenwidth = "Largeur du trait"
 ButtonNameToogle = "Commuter Fondu"
 ButtonNameErasor = "Gomme"
