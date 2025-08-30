@@ -3068,7 +3068,6 @@ namespace gInk
                         Rectangle inkRect = st.GetBoundingBox();
 
                         // convertir l'enveloppe InkSpace -> pixels
-                        // utiliser le renderer et le Graphics de FormDisplay (gOneStrokeCanvus)
                         Point loc = inkRect.Location;
                         Point sizePt = new Point(inkRect.Width, inkRect.Height);
                         try
@@ -3088,6 +3087,40 @@ namespace gInk
                         // Si le clic a été fait en "centered" (dessin centré, comportement Right button),
                         // le bounding box calculé peut être relatif ; normalisation faite dans SetGridFromRectangle.
                         SetGridFromRectangle(pixelRect);
+
+                        // --- suppression automatique du rectangle de repère après un délai ---
+                        // on capture la stroke et on planifie sa suppression sur le thread UI après 2000ms.
+                        Stroke strokeToRemove = st;
+                        Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await Task.Delay(2000); // délai : 2000ms (2s). Remplacer par 0 pour effacement immédiat.
+                                try
+                                {
+                                    // marshal vers le thread UI
+                                    if (!this.IsDisposed && this.IsHandleCreated)
+                                    {
+                                        this.BeginInvoke((Action)(() =>
+                                        {
+                                            try
+                                            {
+                                                if (strokeToRemove != null && !strokeToRemove.Deleted)
+                                                {
+                                                    IC.Ink.DeleteStroke(strokeToRemove);
+                                                    // demander redraw
+                                                    Root.UponAllDrawingUpdate = true;
+                                                    Root.FormDisplay?.UpdateFormDisplay(true);
+                                                }
+                                            }
+                                            catch { /* silent */ }
+                                        }));
+                                    }
+                                }
+                                catch { /* silent */ }
+                            }
+                            catch { /* silent */ }
+                        });
                     }
                 }
             }
