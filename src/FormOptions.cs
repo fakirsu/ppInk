@@ -45,6 +45,8 @@ namespace gInk
         // pour l'opacité
         private Label lblTagOpacityPerc;
         private NumericUpDown nudTagOpacityPerc;
+        private Label lblTagNumberOpacityPerc;
+        private NumericUpDown nudTagNumberOpacityPerc;
 
         /// ################ goInk - END ####################
 
@@ -111,18 +113,46 @@ namespace gInk
             nudTagOpacityPerc.Left = 220;
             nudTagOpacityPerc.Top = lblTagOpacityPerc.Top - 3;
             nudTagOpacityPerc.Width = 90;
-            nudTagOpacityPerc.Value = (decimal)Root.TagOpacityPercent;
-            nudTagOpacityPerc.ValueChanged += (s, e) => { Root.TagOpacityPercent = (double)nudTagOpacityPerc.Value; };
+            //nudTagOpacityPerc.Value = (decimal)Root.TagOpacityPercent;
+            nudTagOpacityPerc.Value = (decimal)Root.TagStoneOpacityPercent;
+            nudTagOpacityPerc.ValueChanged += (s, e) => { Root.TagStoneOpacityPercent = (double)nudTagOpacityPerc.Value; };
 
             tabPageGridTags.Controls.Add(lblTagOpacityPerc);
             tabPageGridTags.Controls.Add(nudTagOpacityPerc);
+            //
+
+            // opacité des numéros :
+
+            lblTagNumberOpacityPerc = new Label();
+            lblTagNumberOpacityPerc.Text = "Opacité des numéros (%) :";
+            lblTagNumberOpacityPerc.AutoSize = true;
+            lblTagNumberOpacityPerc.Left = 12;
+            lblTagNumberOpacityPerc.Top = lblTagOpacityPerc.Bottom + 18;
+
+            nudTagNumberOpacityPerc = new NumericUpDown();
+            nudTagNumberOpacityPerc.Minimum = 0;
+            nudTagNumberOpacityPerc.Maximum = 100;
+            nudTagNumberOpacityPerc.DecimalPlaces = 0;
+            nudTagNumberOpacityPerc.Increment = 1;
+            nudTagNumberOpacityPerc.Left = 220;
+            nudTagNumberOpacityPerc.Top = lblTagNumberOpacityPerc.Top - 3;
+            nudTagNumberOpacityPerc.Width = 90;
+            nudTagNumberOpacityPerc.Value = (decimal)Root.TagNumberOpacityPercent;
+            nudTagNumberOpacityPerc.ValueChanged += (s, e) => { Root.TagNumberOpacityPercent = (double)nudTagNumberOpacityPerc.Value; };
+
+            tabPageGridTags.Controls.Add(lblTagNumberOpacityPerc);
+            tabPageGridTags.Controls.Add(nudTagNumberOpacityPerc);
             //
 
             lblGridType = new Label();
             lblGridType.Text = "Type de goban :";
             lblGridType.AutoSize = true;
             lblGridType.Left = 12;
-            lblGridType.Top = lblTagSizePerc.Bottom + 20;
+            // positionner le label après l'opacité des numéros si présent
+            if (nudTagNumberOpacityPerc != null)
+                lblGridType.Top = nudTagNumberOpacityPerc.Bottom + 20;
+            else
+                lblGridType.Top = nudTagOpacityPerc.Bottom + 20;
 
             cbGridType = new ComboBox();
             cbGridType.Left = 220;
@@ -508,8 +538,12 @@ namespace gInk
                     nudTagSizePerc.Value = (decimal)Math.Min((double)nudTagSizePerc.Maximum, Math.Max((double)nudTagSizePerc.Minimum, Root.TagSizePercent));
                 if (nudTagCirclePerc != null)
                     nudTagCirclePerc.Value = (decimal)Math.Min((double)nudTagCirclePerc.Maximum, Math.Max((double)nudTagCirclePerc.Minimum, Root.TagCirclePercent));
+                //if (nudTagOpacityPerc != null)
+                    // nudTagOpacityPerc.Value = (decimal)Math.Min((double)nudTagOpacityPerc.Maximum, Math.Max((double)nudTagOpacityPerc.Minimum, Root.TagOpacityPercent));
                 if (nudTagOpacityPerc != null)
-                    nudTagOpacityPerc.Value = (decimal)Math.Min((double)nudTagOpacityPerc.Maximum, Math.Max((double)nudTagOpacityPerc.Minimum, Root.TagOpacityPercent));
+                    nudTagOpacityPerc.Value = (decimal)Math.Min((double)nudTagOpacityPerc.Maximum, Math.Max((double)nudTagOpacityPerc.Minimum, Root.TagStoneOpacityPercent));
+                if (nudTagNumberOpacityPerc != null)
+                    nudTagNumberOpacityPerc.Value = (decimal)Math.Min((double)nudTagNumberOpacityPerc.Maximum, Math.Max((double)nudTagNumberOpacityPerc.Minimum, Root.TagNumberOpacityPercent));
                 if (cbGridType != null)
                 {
                     if (Root.GridRows == 13) cbGridType.SelectedIndex = 1;

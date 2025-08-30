@@ -2123,7 +2123,7 @@ namespace gInk
             try
             {
                 // calculer la valeur de Transparency (0 = opaque, 255 = transparent)
-                double op = (Root.TagOpacityPercent <= 0.0) ? 0.0 : Math.Max(0.0, Math.Min(100.0, Root.TagOpacityPercent));
+                double op = (Root.TagStoneOpacityPercent <= 0.0) ? 0.0 : Math.Max(0.0, Math.Min(100.0, Root.TagStoneOpacityPercent));
                 byte transparencyByte = (byte)Math.Round(255.0 * (1.0 - op / 100.0));
 
                 // appliquer la couleur et l'opacité

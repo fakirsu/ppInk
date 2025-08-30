@@ -473,7 +473,8 @@ namespace gInk
         // TagOpacityPercent : opacité des pierres et du texte (100 = opaque, 0 = transparent)
         public double TagSizePercent = 100.0;
         public double TagCirclePercent = 100.0;
-        public double TagOpacityPercent = 100.0;
+        public double TagStoneOpacityPercent = 100.0;
+        public double TagNumberOpacityPercent = 100.0;
 
         /// ################ goInk specific options - END ####################
 
@@ -1690,11 +1691,29 @@ namespace gInk
                             }
                             break;
 
-                        case "TAGOPACITY_PERCENT":
+                        case "TAGSTONEOPACITY_PERCENT":
                             {
                                 double dtemp;
                                 if (Double.TryParse(sPara, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out dtemp))
-                                    TagOpacityPercent = Math.Max(0.0, Math.Min(100.0, dtemp));
+                                    TagStoneOpacityPercent = Math.Max(0.0, Math.Min(100.0, dtemp));
+                            }
+                            break;
+                        case "TAGNUMBEROPACITY_PERCENT":
+                            {
+                                double dtemp;
+                                if (Double.TryParse(sPara, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out dtemp))
+                                    TagNumberOpacityPercent = Math.Max(0.0, Math.Min(100.0, dtemp));
+                            }
+                            break;
+                        case "TAGOPACITY_PERCENT": // compatibilité ancienne clé -> initialise les deux valeurs
+                            {
+                                double dtemp;
+                                if (Double.TryParse(sPara, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out dtemp))
+                                {
+                                    dtemp = Math.Max(0.0, Math.Min(100.0, dtemp));
+                                    TagStoneOpacityPercent = dtemp;
+                                    TagNumberOpacityPercent = dtemp;
+                                }
                             }
                             break;
 
@@ -2545,9 +2564,18 @@ namespace gInk
                         case "TAGCIRCLE_PERCENT":
                             sPara = TagCirclePercent.ToString(CultureInfo.InvariantCulture);
                             break;
-                        case "TAGOPACITY_PERCENT":
-                            sPara = TagOpacityPercent.ToString(CultureInfo.InvariantCulture);
+
+                        case "TAGSTONEOPACITY_PERCENT":
+                            sPara = TagStoneOpacityPercent.ToString(CultureInfo.InvariantCulture);
                             break;
+                        case "TAGNUMBEROPACITY_PERCENT":
+                            sPara = TagNumberOpacityPercent.ToString(CultureInfo.InvariantCulture);
+                            break;
+
+                         
+
+
+
                         case "GRIDRECT":   // peristance des dimensions et de la position de la grille 
                             // format sauvegarde : left,top,width,height,defined(0/1)
                             sPara = GridRect.Left.ToString() + "," + GridRect.Top.ToString() + "," + GridRect.Width.ToString() + "," + GridRect.Height.ToString() + "," + (GridRectDefined ? "1" : "0");
@@ -2797,15 +2825,25 @@ namespace gInk
                 writelines.Add("TAGCIRCLE_PERCENT=" + TagCirclePercent.ToString(CultureInfo.InvariantCulture));
 
             // vérifier aussi hasTagOpacity
-            bool hasTagOpacity = false;
+            //bool hasTagOpacity = false;
+            //for (int i = 0; i < writelines.Count; i++)
+            //{
+            //    string s = writelines[i].TrimStart();
+            //    if (s.StartsWith("TAGOPACITY_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagOpacity = true;
+            //}
+            //if (!hasTagOpacity)
+            //    writelines.Add("TAGOPACITY_PERCENT=" + TagOpacityPercent.ToString(CultureInfo.InvariantCulture));
+            bool hasTagStoneOpacity = false, hasTagNumberOpacity = false;
             for (int i = 0; i < writelines.Count; i++)
             {
                 string s = writelines[i].TrimStart();
-                if (s.StartsWith("TAGOPACITY_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagOpacity = true;
+                if (s.StartsWith("TAGSTONEOPACITY_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagStoneOpacity = true;
+                if (s.StartsWith("TAGNUMBEROPACITY_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagNumberOpacity = true;
             }
-            if (!hasTagOpacity)
-                writelines.Add("TAGOPACITY_PERCENT=" + TagOpacityPercent.ToString(CultureInfo.InvariantCulture));
-
+            if (!hasTagStoneOpacity)
+                writelines.Add("TAGSTONEOPACITY_PERCENT=" + TagStoneOpacityPercent.ToString(CultureInfo.InvariantCulture));
+            if (!hasTagNumberOpacity)
+                writelines.Add("TAGNUMBEROPACITY_PERCENT=" + TagNumberOpacityPercent.ToString(CultureInfo.InvariantCulture));
 
             // ################ goInk - END ##############################################################
 
