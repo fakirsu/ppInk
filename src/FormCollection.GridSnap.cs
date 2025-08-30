@@ -38,6 +38,30 @@ namespace gInk
             GridRect = r;
             GridRectDefined = true;
 
+
+            // Propager dans Root pour persistance
+            try
+            {
+                if (this.Root != null)
+                {
+                    this.Root.GridRect = GridRect;
+                    this.Root.GridRectDefined = true;
+                    // Sauvegarde silencieuse : écrire dans le config principal (config.ini)
+                    // utilise le même fichier que ReadOptions a lu
+                    try
+                    {
+                        this.Root.SaveOptions(Program.RunningFolder + "config.ini");
+                    }
+                    catch
+                    {
+                        // Ne pas bloquer l'UI si l'écriture échoue
+                    }
+                }
+            }
+            catch { }
+
+
+
             // forcer redraw si l'affichage est visible
             if (this.Root?.FormDisplay != null)
             {

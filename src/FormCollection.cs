@@ -1427,6 +1427,30 @@ namespace gInk
             PageIndex = 0;
             PageMax = 0;
 
+
+
+
+
+
+
+            // Insérez ce bloc (par ex. juste avant Console.WriteLine("C=" + ...); qui se trouve vers la fin de Initialize)
+            try
+            {
+                if (Root != null && Root.GridRectDefined && Root.GridRect.Width > 0 && Root.GridRect.Height > 0)
+                {
+                    // réutiliser la méthode existante pour normaliser + définir
+                    SetGridFromRectangle(Root.GridRect);
+                }
+            }
+            catch
+            {
+                // silent
+            }
+
+
+
+
+
             Console.WriteLine("C=" + (DateTime.Now.Ticks / 1e7).ToString());
         }
 
@@ -2881,29 +2905,82 @@ namespace gInk
                     else
                         AddArrowStroke(Root.CursorX0, Root.CursorY0, Root.CursorX, Root.CursorY);
                 }
+
+
+
                 else if (Root.ToolSelected == Tools.NumberTag)
                 {
-                    // calculer l'intersection de grille la plus proche (snap) puis créer la pastille à cet emplacement
+                    // point en client et en écran
                     Point clientPt = new Point(Root.CursorX, Root.CursorY);
                     Point screenPt = Root.FormDisplay.PointToScreen(clientPt);
+
+                    // point ajusté (snap) renvoyé par la fonction existante (coordonnées écran)
                     Point snapScreen = GridSnap.SnapNumberTagPoint(this.Root, screenPt.X, screenPt.Y, 19, 19);
-                    Point snapClient = Root.FormDisplay.PointToClient(snapScreen);
 
-                    Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y,
-                                            String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
-                    Root.TagNumbering++;
+                    // vérifier la distance par rapport au snap ; si trop éloigné -> ignorer le clic
+                    bool ignoreClick = false;
+                    if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+                    {
+                        int rows = 19, cols = 19;
+                        try
+                        {
+                            var t = Root.GetType();
+                            var pr = t.GetProperty("GridRows");
+                            var pc = t.GetProperty("GridCols");
+                            if (pr != null) rows = (int)pr.GetValue(Root);
+                            if (pc != null) cols = (int)pc.GetValue(Root);
+                        }
+                        catch { /* ignore */ }
 
-                    // Alterner le remplissage pour le prochain tag: WHITE <-> BLACK
-                    if (Root.FilledSelected == Filling.WhiteFilled)
-                        Root.FilledSelected = Filling.BlackFilled;
-                    else if (Root.FilledSelected == Filling.BlackFilled)
-                        Root.FilledSelected = Filling.WhiteFilled;
+                        cols = Math.Max(2, cols);
+                        rows = Math.Max(2, rows);
+
+                        double stepX = (double)this.GridRect.Width / (cols - 1);
+                        double stepY = (double)this.GridRect.Height / (rows - 1);
+
+                        double cellStep = Math.Min(stepX, stepY);
+                        double allowedDist = 0.75 * cellStep; // seuil demandé : 75% du pas
+
+                        double dx = screenPt.X - snapScreen.X;
+                        double dy = screenPt.Y - snapScreen.Y;
+                        double dist = Math.Sqrt(dx * dx + dy * dy);
+
+                        if (dist > allowedDist)
+                            ignoreClick = true;
+                    }
+
+                    if (!ignoreClick)
+                    {
+                        Point snapClient = Root.FormDisplay.PointToClient(snapScreen);
+
+                        Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y,
+                                                String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
+                        Root.TagNumbering++;
+
+                        // Alterner le remplissage pour le prochain tag: WHITE <-> BLACK
+                        if (Root.FilledSelected == Filling.WhiteFilled)
+                            Root.FilledSelected = Filling.BlackFilled;
+                        else if (Root.FilledSelected == Filling.BlackFilled)
+                            Root.FilledSelected = Filling.WhiteFilled;
+                        else
+                            Root.FilledSelected = Filling.WhiteFilled; // fallback
+
+                        // Demander la mise à jour des boutons (icône btNumb)
+                        Root.UponButtonsUpdate |= 0x2;
+                    }
                     else
-                        Root.FilledSelected = Filling.WhiteFilled; // fallback: si état exotique, on repart en WHITE
-
-                    // Demander la mise à jour des boutons (icône btNumb)
-                    Root.UponButtonsUpdate |= 0x2;
+                    {
+                        // clic ignoré : ne rien faire (ni création ni incrémentation)
+                    }
                 }
+
+
+
+
+
+
+
+
                 else if (Root.ToolSelected == Tools.Edit) // Edit
                 {
                     float pos;

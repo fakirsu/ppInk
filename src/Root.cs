@@ -455,6 +455,12 @@ namespace gInk
         public bool SpotOnAlt = true;
 
         public Rectangle WindowRect = new Rectangle(Int32.MinValue, Int32.MinValue, -1, -1);
+
+        
+        // Ajoutez ces champs dans la classe Root (par exemple près de WindowRect)
+        public Rectangle GridRect = Rectangle.Empty;
+        public bool GridRectDefined = false;
+
         public bool EraseOnLoosingFocus = false;
         public bool ResizeDrawingWindow = false;
 
@@ -1637,6 +1643,37 @@ namespace gInk
                                 }
                             }
                             break;
+
+                        case "GRIDRECT":  // persistance de la position et des dimensions de la grille goban
+                            {
+                                // format attendu : left,top,width,height,defined(0/1)
+                                string[] parts = sPara.Split(',');
+                                if (parts.Length >= 5)
+                                {
+                                    int gl = 0, gt = 0, gw = 0, gh = 0, gd = 0;
+                                    if (int.TryParse(parts[0].Trim(), out gl) &&
+                                        int.TryParse(parts[1].Trim(), out gt) &&
+                                        int.TryParse(parts[2].Trim(), out gw) &&
+                                        int.TryParse(parts[3].Trim(), out gh) &&
+                                        int.TryParse(parts[4].Trim(), out gd))
+                                    {
+                                        // sécurité : largeur/hauteur strictement positifs
+                                        if (gw > 0 && gh > 0)
+                                        {
+                                            GridRect = new Rectangle(gl, gt, gw, gh);
+                                            GridRectDefined = (gd != 0);
+                                        }
+                                        else
+                                        {
+                                            GridRect = Rectangle.Empty;
+                                            GridRectDefined = false;
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+
+
                         case "GRAY_BOARD1": // if not defined, no window else 2 to 4 integers Top,Left,[Width/Height,[Opacity]]
                             tab = sPara.Split(',');
                             if (tab.Length == 4)
@@ -2439,6 +2476,19 @@ namespace gInk
                             else
                                 sPara = WindowRect.Left.ToString() + "," + WindowRect.Top.ToString() + "," + WindowRect.Width.ToString() + "," + WindowRect.Height.ToString();
                             break;
+
+
+
+                        case "GRIDRECT":   // peristance des dimensions et de la position de la grille 
+                            // format sauvegarde : left,top,width,height,defined(0/1)
+                            sPara = GridRect.Left.ToString() + "," + GridRect.Top.ToString() + "," + GridRect.Width.ToString() + "," + GridRect.Height.ToString() + "," + (GridRectDefined ? "1" : "0");
+                            break;
+
+
+
+
+
+
                         case "GRAYBOARD2":
                             sPara = Gray2[0].ToString() + "," + Gray2[1].ToString() + "," + Gray2[2].ToString() + "," + Gray2[3].ToString();
                             break;
@@ -2644,7 +2694,24 @@ namespace gInk
 			}
 			fini.Close();
 
-			FileStream frini = new FileStream(file, FileMode.Create);
+
+            // s'assurer que GRIDRECT est présent dans writelines (ajout si absent)
+            bool foundGrid = false;
+            for (int i = 0; i < writelines.Count; i++)
+            {
+                if (writelines[i].TrimStart().StartsWith("GRIDRECT=", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    foundGrid = true;
+                    break;
+                }
+            }
+            if (!foundGrid)
+            {
+                writelines.Add("GRIDRECT=" + GridRect.Left.ToString() + "," + GridRect.Top.ToString() + "," + GridRect.Width.ToString() + "," + GridRect.Height.ToString() + "," + (GridRectDefined ? "1" : "0"));
+            }
+
+
+            FileStream frini = new FileStream(file, FileMode.Create);
 			StreamWriter swini = new StreamWriter(frini);
 			swini.AutoFlush = true;
 			foreach (string line in writelines)
