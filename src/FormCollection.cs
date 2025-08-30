@@ -2134,7 +2134,7 @@ namespace gInk
             // Appliquer uniquement le pourcentage de la pastille (TagCirclePercent)
             double circlePct = (Root.TagCirclePercent <= 0.0) ? 100.0 : Root.TagCirclePercent;
             int diameterPx = Math.Max(6, (int)Math.Round(baseDiameter * (circlePct / 100.0)));
-            
+
             // Construire la pastille CENTRÉE sur CursorX0, CursorY0 
             int half = Math.Max(1, diameterPx / 2);
             int left = CursorX0;
@@ -2176,39 +2176,38 @@ namespace gInk
             st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
 
             // Taille du texte : calculée à partir de TagSize et du pourcentage TagSizePercent (séparé du diamètre)
-            // Taille du texte : calculée à partir de TagSize/TagSizePercent OU du diamètre si grille définie
             double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
             double fontSize;
 
             if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
             {
-                // Le texte suit le diamètre (donc le pas de la grille). TagSizePercent ajuste la proportion.
-                // 0.54 est un facteur empirique pour un bon rendu visuel (tu peux l'ajuster).
                 fontSize = Math.Max(6.0, diameterPx * 0.54 * (sizePct / 100.0));
             }
             else
             {
-                // Comportement historique : taille définie par TagSize * pourcentage
                 fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0));
             }
 
-            // Limite : ne pas dépasser une proportion du diamètre
-            double maxFromCircle = Math.Max(6.0, diameterPx * 0.75); // ~75% du diamètre
+            double maxFromCircle = Math.Max(6.0, diameterPx * 0.75);
             if (fontSize > maxFromCircle)
                 fontSize = maxFromCircle;
 
             st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
 
-            // style texte : conserver italique si demandé
             System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
             st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
             st.ExtendedProperties.Add(Root.ROTATION_GUID, 0.0);
 
-            // Calculer la taille du bloc texte et ajuster (centre)
             try { ComputeTextBoxSize(ref st); } catch { }
 
-            // si fading présent, ajouter à la liste
             try { if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st); } catch { }
+
+            // Incrémente ici le compteur au moment de la création effective de la pastille
+            try
+            {
+                Root.TagNumbering++;
+            }
+            catch { /* defensif : ne pas casser le dessin si Root est invalide */ }
 
             return st;
         }
@@ -2995,9 +2994,12 @@ namespace gInk
                     {
                         Point snapClient = Root.FormDisplay.PointToClient(snapScreen);
 
+                        //Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y,
+                        //                        String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
+                        //Root.TagNumbering++;
                         Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y,
-                                                String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
-                        Root.TagNumbering++;
+                        String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
+
 
                         // Alterner le remplissage pour le prochain tag: WHITE <-> BLACK
                         if (Root.FilledSelected == Filling.WhiteFilled)
@@ -4212,32 +4214,69 @@ namespace gInk
                 }
             }
 
-            if (filled >= Filling.Empty)
+            //if (filled >= Filling.Empty)
+            //    Root.FilledSelected = filled;
+            //else if ((Array.IndexOf(applicableTool, tool) >= 0) && (tool == Root.ToolSelected))
+            //////
+            /////Root.FilledSelected = (Root.FilledSelected + 1) % Filling.Modulo;
+            /////
+
+            //if (tool == Tools.NumberTag)
+            //{
+            //    // Cycle limité à 2 états: Blanc <-> Noir
+            //    if (Root.FilledSelected != Filling.WhiteFilled && Root.FilledSelected != Filling.BlackFilled)
+            //        Root.FilledSelected = Filling.WhiteFilled;
+            //    else
+            //        Root.FilledSelected = (Root.FilledSelected == Filling.WhiteFilled)
+            //                                ? Filling.BlackFilled
+            //                                : Filling.WhiteFilled;
+            //}
+            //else
+            //{
+            //    Root.FilledSelected = (Root.FilledSelected + 1) % Filling.Modulo;
+            //}
+
+
+
+            //else
+            //    Root.FilledSelected = Filling.Empty;
+
+            bool explicitFilled = (filled >= Filling.Empty);
+
+            if (explicitFilled)
+            {
+                // un filled explicite a été fourni -> on le respecte
                 Root.FilledSelected = filled;
+            }
             else if ((Array.IndexOf(applicableTool, tool) >= 0) && (tool == Root.ToolSelected))
-            ////
-            ///Root.FilledSelected = (Root.FilledSelected + 1) % Filling.Modulo;
-            ///
-
-            if (tool == Tools.NumberTag)
             {
-                // Cycle limité à 2 états: Blanc <-> Noir
-                if (Root.FilledSelected != Filling.WhiteFilled && Root.FilledSelected != Filling.BlackFilled)
-                    Root.FilledSelected = Filling.WhiteFilled;
+                // Re-clic sur le même outil applicable : comportement historique
+                if (tool == Tools.NumberTag)
+                {
+                    // basculer White <-> Black
+                    if (Root.FilledSelected != Filling.WhiteFilled && Root.FilledSelected != Filling.BlackFilled)
+                        Root.FilledSelected = Filling.WhiteFilled;
+                    else
+                        Root.FilledSelected = (Root.FilledSelected == Filling.WhiteFilled)
+                                                ? Filling.BlackFilled
+                                                : Filling.WhiteFilled;
+                }
                 else
-                    Root.FilledSelected = (Root.FilledSelected == Filling.WhiteFilled)
-                                            ? Filling.BlackFilled
-                                            : Filling.WhiteFilled;
+                {
+                    // pour les autres outils applicables, on incrémente / cycle
+                    Root.FilledSelected = (Root.FilledSelected + 1) % Filling.Modulo;
+                }
             }
             else
             {
-                Root.FilledSelected = (Root.FilledSelected + 1) % Filling.Modulo;
-            }
-
-
-
-            else
+                // cas par défaut : pas de remplissage
                 Root.FilledSelected = Filling.Empty;
+            }
+            // #################### goInk END #########################
+
+
+
+
             Root.UponButtonsUpdate |= 0x2;
             EnterEraserMode(false);
 
@@ -4354,15 +4393,37 @@ namespace gInk
                 if (gpSubTools.Visible && subTools_title.Contains("Arrow"))
                     changeActiveTool(0, false, 1);
             }
+
+            // ############# goInk START
+            //else if (tool == Tools.NumberTag)
+            //{
+            //    if (Root.FilledSelected == Filling.Outside)
+            //        Root.FilledSelected = Filling.WhiteFilled;
+
+            //    if (Root.FilledSelected == Filling.WhiteFilled)
+            //        btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
+            //    else // BlackFilled
+            //        btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillB", ImageExts);
+
+            //    try
+            //    {
+            //        IC.Cursor = cursorred;
+            //    }
+            //    catch
+            //    {
+            //        IC.Cursor = getCursFromDiskOrRes(Root.cursorarrowFileName, System.Windows.Forms.Cursors.NoMove2D);
+            //    }
+            //}
             else if (tool == Tools.NumberTag)
             {
+                // Si la valeur Outside a été utilisée, conserver le comportement initial (fallback -> White)
                 if (Root.FilledSelected == Filling.Outside)
                     Root.FilledSelected = Filling.WhiteFilled;
 
-                if (Root.FilledSelected == Filling.WhiteFilled)
-                    btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
-                else // BlackFilled
-                    btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillB", ImageExts);
+                // Forcer l'icône de la pastille dans la barre d'outils à la version BLANCHE, quoi qu'il arrive.
+                // Le comportement d'alternance de Root.FilledSelected (qui influence la création sur la grille)
+                // reste actif, mais l'icône restera visuellement une pastille blanche.
+                btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
 
                 try
                 {
@@ -4373,6 +4434,10 @@ namespace gInk
                     IC.Cursor = getCursFromDiskOrRes(Root.cursorarrowFileName, System.Windows.Forms.Cursors.NoMove2D);
                 }
             }
+
+            // ############# goInk END ##############
+
+
             else if (tool == Tools.Edit)
             {
                 btEdit.BackgroundImage = getImgFromDiskOrRes("tool_edit_act");
@@ -7299,10 +7364,26 @@ namespace gInk
                 }
                 i = Root.DefaultArrow_start ? Tools.EndArrow : Tools.StartArrow;
             }
+            // ######################## goInk START #########################
+            //else if (((Button)sender).Name.Contains("Numb"))
+            //{
+            //    CustomizeAndOpenSubTools(-1, "SubToolsNumb", new string[] { "tool_numb_fillW", "tool_numb_fillB" }, Root.Local.OvalSubToolsHints,
+            //         new Func<int, bool>[] { 
+            //                                                 ii => { SelectTool(Tools.NumberTag,Filling.WhiteFilled); return true; },
+            //                                                 ii => { SelectTool(Tools.NumberTag,Filling.BlackFilled ); return true; } });
+
+            //    if (sender != null && tsp.TotalSeconds > Root.LongClickTime)
+            //    {
+            //        TagFontBtn_Modify();
+            //        return;
+            //    }
+            //    else
+            //        i = Tools.NumberTag;
+            //}
             else if (((Button)sender).Name.Contains("Numb"))
             {
                 CustomizeAndOpenSubTools(-1, "SubToolsNumb", new string[] { "tool_numb_fillW", "tool_numb_fillB" }, Root.Local.OvalSubToolsHints,
-                     new Func<int, bool>[] { 
+                     new Func<int, bool>[] {
                                                              ii => { SelectTool(Tools.NumberTag,Filling.WhiteFilled); return true; },
                                                              ii => { SelectTool(Tools.NumberTag,Filling.BlackFilled ); return true; } });
 
@@ -7312,8 +7393,24 @@ namespace gInk
                     return;
                 }
                 else
+                {
+                    // A) Effacer l'écran comme le bouton ERASE
+                    // appel direct à la routine de clear (comportement non long-click)
+                    btClear_Click(null, null);
+
+                    // B) Remise à l'initial du compteur de numéro
+                    Root.TagNumbering = 1;
+
+                    // C) Repositionner le remplissage sur blanc pour que la 1ère pastille soit blanche
+                    Root.FilledSelected = Filling.WhiteFilled;
+
                     i = Tools.NumberTag;
+                }
             }
+
+            // ######################## goInk START #########################
+
+
             else if (((Button)sender).Name.Contains("Text"))
             {
                 CustomizeAndOpenSubTools(-1, "SubToolsText", new string[] { "tool_txtL_act", "tool_txtR_act" }, Root.Local.TextSubToolsHints,
@@ -7412,17 +7509,17 @@ namespace gInk
             ////////
             ///
             // Forcer le remplissage par défaut au premier clic sur NumberTag (éviter l'état Empty)
-            // Forcer le remplissage UNIQUEMENT lors de la première activation de NumberTag
-            if (i == Tools.NumberTag && f < Filling.Empty && Root.ToolSelected != Tools.NumberTag)
+            // et s'assurer que SelectTool reçoit toujours un 'filled' explicite pour éviter
+            // le basculement automatique White <-> Black quand on reclique sur l'outil.
+            if (i == Tools.NumberTag && f < Filling.Empty)
             {
                 int df = (Root.FilledSelected == Filling.WhiteFilled || Root.FilledSelected == Filling.BlackFilled)
-                ? Root.FilledSelected
-                : Filling.WhiteFilled; // ou Filling.BlackFilled si tu préfères démarrer en noir
+                    ? Root.FilledSelected
+                    : Filling.WhiteFilled;
                 f = df;
             }
-            //////
+            ////////
             ///
-
 
 
 
