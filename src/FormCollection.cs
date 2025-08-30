@@ -1810,7 +1810,34 @@ namespace gInk
 
 
 
+        // ################### goInk START #######################
+        //private Stroke AddRectStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, int FilledSelected)
+        //{
+        //    Point[] pts = new Point[9];
+        //    int i = 0;
+        //    pts[i++] = new Point(CursorX0, CursorY0);
+        //    pts[i++] = new Point(CursorX0, (CursorY0 + CursorY) / 2);
+        //    pts[i++] = new Point(CursorX0, CursorY);
+        //    pts[i++] = new Point((CursorX0 + CursorX) / 2, CursorY);
+        //    pts[i++] = new Point(CursorX, CursorY);
+        //    pts[i++] = new Point(CursorX, (CursorY0 + CursorY) / 2);
+        //    pts[i++] = new Point(CursorX, CursorY0);
+        //    pts[i++] = new Point((CursorX0 + CursorX) / 2, CursorY0);
+        //    pts[i++] = new Point(CursorX0, CursorY0);
 
+        //    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+        //    Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
+        //    st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+        //    if (FilledSelected == Filling.NoFrame)
+        //        st.DrawingAttributes.Transparency = 255;
+        //    st.DrawingAttributes.AntiAliased = true;
+        //    st.DrawingAttributes.FitToCurve = false;
+        //    setStrokeProperties(ref st, FilledSelected);
+        //    Root.FormCollection.IC.Ink.Strokes.Add(st);
+        //    if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+        //        FadingList.Add(st);
+        //    return st;
+        //}
         private Stroke AddRectStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, int FilledSelected)
         {
             Point[] pts = new Point[9];
@@ -1838,6 +1865,7 @@ namespace gInk
                 FadingList.Add(st);
             return st;
         }
+        // ################### goInk START #######################
 
         private Stroke AddImageStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string fn, int Filling = -10)
         {
@@ -2106,8 +2134,8 @@ namespace gInk
             // Appliquer uniquement le pourcentage de la pastille (TagCirclePercent)
             double circlePct = (Root.TagCirclePercent <= 0.0) ? 100.0 : Root.TagCirclePercent;
             int diameterPx = Math.Max(6, (int)Math.Round(baseDiameter * (circlePct / 100.0)));
-
-            // Construire la pastille CENTRÉE sur CursorX0, CursorY0
+            
+            // Construire la pastille CENTRÉE sur CursorX0, CursorY0 
             int half = Math.Max(1, diameterPx / 2);
             int left = CursorX0;
             int top = CursorY0;
