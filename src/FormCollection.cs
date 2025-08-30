@@ -1427,6 +1427,30 @@ namespace gInk
             PageIndex = 0;
             PageMax = 0;
 
+
+
+
+
+
+
+            // Insérez ce bloc (par ex. juste avant Console.WriteLine("C=" + ...); qui se trouve vers la fin de Initialize)
+            try
+            {
+                if (Root != null && Root.GridRectDefined && Root.GridRect.Width > 0 && Root.GridRect.Height > 0)
+                {
+                    // réutiliser la méthode existante pour normaliser + définir
+                    SetGridFromRectangle(Root.GridRect);
+                }
+            }
+            catch
+            {
+                // silent
+            }
+
+
+
+
+
             Console.WriteLine("C=" + (DateTime.Now.Ticks / 1e7).ToString());
         }
 
@@ -1786,7 +1810,34 @@ namespace gInk
 
 
 
+        // ################### goInk START #######################
+        //private Stroke AddRectStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, int FilledSelected)
+        //{
+        //    Point[] pts = new Point[9];
+        //    int i = 0;
+        //    pts[i++] = new Point(CursorX0, CursorY0);
+        //    pts[i++] = new Point(CursorX0, (CursorY0 + CursorY) / 2);
+        //    pts[i++] = new Point(CursorX0, CursorY);
+        //    pts[i++] = new Point((CursorX0 + CursorX) / 2, CursorY);
+        //    pts[i++] = new Point(CursorX, CursorY);
+        //    pts[i++] = new Point(CursorX, (CursorY0 + CursorY) / 2);
+        //    pts[i++] = new Point(CursorX, CursorY0);
+        //    pts[i++] = new Point((CursorX0 + CursorX) / 2, CursorY0);
+        //    pts[i++] = new Point(CursorX0, CursorY0);
 
+        //    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+        //    Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
+        //    st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+        //    if (FilledSelected == Filling.NoFrame)
+        //        st.DrawingAttributes.Transparency = 255;
+        //    st.DrawingAttributes.AntiAliased = true;
+        //    st.DrawingAttributes.FitToCurve = false;
+        //    setStrokeProperties(ref st, FilledSelected);
+        //    Root.FormCollection.IC.Ink.Strokes.Add(st);
+        //    if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+        //        FadingList.Add(st);
+        //    return st;
+        //}
         private Stroke AddRectStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, int FilledSelected)
         {
             Point[] pts = new Point[9];
@@ -1814,6 +1865,7 @@ namespace gInk
                 FadingList.Add(st);
             return st;
         }
+        // ################### goInk START #######################
 
         private Stroke AddImageStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string fn, int Filling = -10)
         {
@@ -2043,81 +2095,79 @@ namespace gInk
 
 
 
-
-
-
-
+        /// ################ goInk - START ####################
         private Stroke AddNumberTagStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt)
         {
             // choix du remplissage (comme avant)
             int filling = (Root.FilledSelected == Filling.PenColorFilled) ? 0 : Root.FilledSelected;
 
-            // calculer la taille de la pastille en pixels :
-            int diameterPx;
+            // calculer la taille de la pastille en pixels (base)
+            int baseDiameter;
             if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
             {
-                // récupérer rows/cols (fallback à 19)
-                int rows = 19, cols = 19;
-                try
-                {
-                    var t = Root.GetType();
-                    var pr = t.GetProperty("GridRows");
-                    var pc = t.GetProperty("GridCols");
-                    if (pr != null) rows = (int)pr.GetValue(Root);
-                    if (pc != null) cols = (int)pc.GetValue(Root);
-                }
-                catch { /* ignore */ }
+                // Utiliser directement les valeurs configurées dans Root (pas de réflexion, pas de constantes)
+                int rows = (Root.GridRows >= 2) ? Root.GridRows : 19;
+                int cols = (Root.GridCols >= 2) ? Root.GridCols : 19;
 
                 cols = Math.Max(2, cols);
                 rows = Math.Max(2, rows);
 
                 double stepX = (double)this.GridRect.Width / (cols - 1);
                 double stepY = (double)this.GridRect.Height / (rows - 1);
-
-                // prendre la plus petite distance entre deux lignes
                 double cellStep = Math.Min(stepX, stepY);
 
-                // cible : utiliser une large proportion du pas et augmenter légèrement (~+10%)
-                const double fillFactor = 0.85;   // proportion du pas utilisée initialement
-                const int paddingPx = 2;          // marge en pixels pour éviter de chevaucher la ligne
-                int baseDiameter = Math.Max(10, (int)Math.Round(cellStep * fillFactor) - paddingPx);
-                int increased = (int)Math.Round(baseDiameter * 1.10); // +10%
-                                                                      // ne pas dépasser la cellule moins une petite marge
+                const double fillFactor = 0.85;
+                const int paddingPx = 2;
+                int cand = Math.Max(10, (int)Math.Round(cellStep * fillFactor) - paddingPx);
+                int increased = (int)Math.Round(cand * 1.10);
                 int maxAllowed = Math.Max(10, (int)Math.Round(cellStep) - paddingPx);
-                diameterPx = Math.Min(increased, maxAllowed);
-                diameterPx = Math.Max(diameterPx, 10);
+                baseDiameter = Math.Min(increased, maxAllowed);
+                baseDiameter = Math.Max(baseDiameter, 10);
             }
             else
             {
-                // comportement par défaut : utiliser TagSize comme auparavant (taille de police de l'utilisateur)
-                diameterPx = (int)Math.Round(TagSize * 1.2);
-                diameterPx = Math.Max(diameterPx, 10);
+                // fallback : s'appuyer sur la taille du tag (comportement d'origine)
+                baseDiameter = (int)Math.Round(TagSize * 1.2);
+                baseDiameter = Math.Max(baseDiameter, 10);
             }
 
-            // construire la pastille CENTRÉE sur CursorX0, CursorY0
+            // Appliquer uniquement le pourcentage de la pastille (TagCirclePercent)
+            double circlePct = (Root.TagCirclePercent <= 0.0) ? 100.0 : Root.TagCirclePercent;
+            int diameterPx = Math.Max(6, (int)Math.Round(baseDiameter * (circlePct / 100.0)));
+
+            // Construire la pastille CENTRÉE sur CursorX0, CursorY0 
             int half = Math.Max(1, diameterPx / 2);
-            Stroke st = AddEllipseStroke(CursorX0, CursorY0, CursorX0 + half, CursorY0 + half, filling);
+            int left = CursorX0;
+            int top = CursorY0;
+            int right = CursorX0 + half;
+            int bottom = CursorY0 + half;
+            Stroke st = AddEllipseStroke(left, top, right, bottom, filling);
 
             // Supprimer explicitement le contour (outline) si présent
-            try
-            {
-                st.ExtendedProperties.Remove(Root.ISSTROKE_GUID);
-            }
-            catch { /* ignore si absent */ }
+            try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
 
-            // --- Forcer la couleur du texte à un gris neutre (mi‑chemin entre blanc et noir) ---
-            Color fixedTagGray = Color.FromArgb(128, 128, 128); // gris parfait milieu
+            // Forcer la couleur du texte à un gris neutre (optionnel)
+            Color fixedTagGray = Color.FromArgb(128, 128, 128);
             try
             {
-                st.DrawingAttributes.Color = fixedTagGray;
-                st.DrawingAttributes.Transparency = 0; // opaque
+                // calculer la valeur de Transparency (0 = opaque, 255 = transparent)
+                double op = (Root.TagStoneOpacityPercent <= 0.0) ? 0.0 : Math.Max(0.0, Math.Min(100.0, Root.TagStoneOpacityPercent));
+                byte transparencyByte = (byte)Math.Round(255.0 * (1.0 - op / 100.0));
+
+                // appliquer la couleur et l'opacité
+                try
+                {
+                    st.DrawingAttributes.Color = fixedTagGray;
+                    st.DrawingAttributes.Transparency = transparencyByte;
+                }
+                catch { }
             }
-            catch { /* sécurité : ne pas planter si DrawingAttributes manquant */ }
+            catch { }
 
             // marquages / propriétés texte ; positionner le texte au centre (InkSpace)
             st.ExtendedProperties.Add(Root.ISTAG_GUID, true);
             Point pt = new Point(CursorX0, CursorY0);
-            IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+            try { IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt); } catch { }
             st.ExtendedProperties.Add(Root.TEXT_GUID, txt);
             st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
             st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
@@ -2125,34 +2175,43 @@ namespace gInk
             st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
             st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
 
-            // estimer une taille de police pour qu'elle tienne dans la pastille (légèrement réduite ~ -10%)
-            double fontSize = Math.Max(6.0, diameterPx * 0.54);
+            // Taille du texte : calculée à partir de TagSize et du pourcentage TagSizePercent (séparé du diamètre)
+            double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+            double fontSize;
+
+            if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+            {
+                fontSize = Math.Max(6.0, diameterPx * 0.54 * (sizePct / 100.0));
+            }
+            else
+            {
+                fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0));
+            }
+
+            double maxFromCircle = Math.Max(6.0, diameterPx * 0.75);
+            if (fontSize > maxFromCircle)
+                fontSize = maxFromCircle;
+
             st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
 
-            // mettre le style maigre (non gras), conserver italique si demandé
             System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
             st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
             st.ExtendedProperties.Add(Root.ROTATION_GUID, 0.0);
 
-            // Calculer la taille du bloc texte et ajuster (centre)
+            try { ComputeTextBoxSize(ref st); } catch { }
+
+            try { if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st); } catch { }
+
+            // Incrémente ici le compteur au moment de la création effective de la pastille
             try
             {
-                ComputeTextBoxSize(ref st);
+                Root.TagNumbering++;
             }
-            catch
-            {
-                // ne pas casser le flux si échec
-            }
-
-            // si fading présent, ajouter à la liste (comportement similaire aux autres Add* )
-            try { if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st); } catch { }
+            catch { /* defensif : ne pas casser le dessin si Root est invalide */ }
 
             return st;
         }
-
-
-
-
+        /// ################ goInk - END ####################
 
 
 
@@ -2881,29 +2940,92 @@ namespace gInk
                     else
                         AddArrowStroke(Root.CursorX0, Root.CursorY0, Root.CursorX, Root.CursorY);
                 }
+
+
+
                 else if (Root.ToolSelected == Tools.NumberTag)
                 {
-                    // calculer l'intersection de grille la plus proche (snap) puis créer la pastille à cet emplacement
+
+                    /// ################ goInk - START ####################
+                    // point en client et en écran
                     Point clientPt = new Point(Root.CursorX, Root.CursorY);
                     Point screenPt = Root.FormDisplay.PointToScreen(clientPt);
-                    Point snapScreen = GridSnap.SnapNumberTagPoint(this.Root, screenPt.X, screenPt.Y, 19, 19);
-                    Point snapClient = Root.FormDisplay.PointToClient(snapScreen);
 
-                    Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y,
-                                            String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
-                    Root.TagNumbering++;
+                    // point ajusté (snap) renvoyé par la fonction existante (coordonnées écran)
+                    // Point snapScreen = GridSnap.SnapNumberTagPoint(this.Root, screenPt.X, screenPt.Y, 19, 19);
+                   // utiliser les valeurs actuelles de la configuration (Root.GridRows / GridCols)
+                    Point snapScreen = GridSnap.SnapNumberTagPoint(this.Root, screenPt.X, screenPt.Y, this.Root.GridRows, this.Root.GridCols);
 
-                    // Alterner le remplissage pour le prochain tag: WHITE <-> BLACK
-                    if (Root.FilledSelected == Filling.WhiteFilled)
-                        Root.FilledSelected = Filling.BlackFilled;
-                    else if (Root.FilledSelected == Filling.BlackFilled)
-                        Root.FilledSelected = Filling.WhiteFilled;
+
+
+                    // vérifier la distance par rapport au snap ; si trop éloigné -> ignorer le clic
+                    bool ignoreClick = false;
+                    if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+                    {
+                        int rows = 19, cols = 19;
+                        try
+                        {
+                            var t = Root.GetType();
+                            var pr = t.GetProperty("GridRows");
+                            var pc = t.GetProperty("GridCols");
+                            if (pr != null) rows = (int)pr.GetValue(Root);
+                            if (pc != null) cols = (int)pc.GetValue(Root);
+                        }
+                        catch { /* ignore */ }
+
+                        cols = Math.Max(2, cols);
+                        rows = Math.Max(2, rows);
+
+                        double stepX = (double)this.GridRect.Width / (cols - 1);
+                        double stepY = (double)this.GridRect.Height / (rows - 1);
+
+                        double cellStep = Math.Min(stepX, stepY);
+                        double allowedDist = 0.75 * cellStep; // seuil demandé : 75% du pas
+
+                        double dx = screenPt.X - snapScreen.X;
+                        double dy = screenPt.Y - snapScreen.Y;
+                        double dist = Math.Sqrt(dx * dx + dy * dy);
+
+                        if (dist > allowedDist)
+                            ignoreClick = true;
+                    }
+
+                    if (!ignoreClick)
+                    {
+                        Point snapClient = Root.FormDisplay.PointToClient(snapScreen);
+
+                        //Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y,
+                        //                        String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
+                        //Root.TagNumbering++;
+                        Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y,
+                        String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
+
+
+                        // Alterner le remplissage pour le prochain tag: WHITE <-> BLACK
+                        if (Root.FilledSelected == Filling.WhiteFilled)
+                            Root.FilledSelected = Filling.BlackFilled;
+                        else if (Root.FilledSelected == Filling.BlackFilled)
+                            Root.FilledSelected = Filling.WhiteFilled;
+                        else
+                            Root.FilledSelected = Filling.WhiteFilled; // fallback
+
+                        // Demander la mise à jour des boutons (icône btNumb)
+                        Root.UponButtonsUpdate |= 0x2;
+                    }
                     else
-                        Root.FilledSelected = Filling.WhiteFilled; // fallback: si état exotique, on repart en WHITE
-
-                    // Demander la mise à jour des boutons (icône btNumb)
-                    Root.UponButtonsUpdate |= 0x2;
+                    {
+                        // clic ignoré : ne rien faire (ni création ni incrémentation)
+                    }
                 }
+                /// ################ goInk - END ####################
+
+
+
+
+
+
+
+
                 else if (Root.ToolSelected == Tools.Edit) // Edit
                 {
                     float pos;
@@ -2991,7 +3113,6 @@ namespace gInk
                         Rectangle inkRect = st.GetBoundingBox();
 
                         // convertir l'enveloppe InkSpace -> pixels
-                        // utiliser le renderer et le Graphics de FormDisplay (gOneStrokeCanvus)
                         Point loc = inkRect.Location;
                         Point sizePt = new Point(inkRect.Width, inkRect.Height);
                         try
@@ -3011,6 +3132,40 @@ namespace gInk
                         // Si le clic a été fait en "centered" (dessin centré, comportement Right button),
                         // le bounding box calculé peut être relatif ; normalisation faite dans SetGridFromRectangle.
                         SetGridFromRectangle(pixelRect);
+
+                        // --- suppression automatique du rectangle de repère après un délai ---
+                        // on capture la stroke et on planifie sa suppression sur le thread UI après 2000ms.
+                        Stroke strokeToRemove = st;
+                        Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await Task.Delay(2000); // délai : 2000ms (2s). Remplacer par 0 pour effacement immédiat.
+                                try
+                                {
+                                    // marshal vers le thread UI
+                                    if (!this.IsDisposed && this.IsHandleCreated)
+                                    {
+                                        this.BeginInvoke((Action)(() =>
+                                        {
+                                            try
+                                            {
+                                                if (strokeToRemove != null && !strokeToRemove.Deleted)
+                                                {
+                                                    IC.Ink.DeleteStroke(strokeToRemove);
+                                                    // demander redraw
+                                                    Root.UponAllDrawingUpdate = true;
+                                                    Root.FormDisplay?.UpdateFormDisplay(true);
+                                                }
+                                            }
+                                            catch { /* silent */ }
+                                        }));
+                                    }
+                                }
+                                catch { /* silent */ }
+                            }
+                            catch { /* silent */ }
+                        });
                     }
                 }
             }
@@ -4030,7 +4185,9 @@ namespace gInk
                 btArrow.BackgroundImage.Dispose();
                 btArrow.BackgroundImage = BuildArrowBtn(Root.ArrowHead[Root.CurrentArrow], Root.ArrowTail[Root.CurrentArrow], Color.Black);
             }
-            btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb", ImageExts);
+            //btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb", ImageExts);
+            // Affiche par défaut l'icône pastille BLANCHE avant tout clic
+            btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
             btText.BackgroundImage = getImgFromDiskOrRes("tool_txtL", ImageExts);
             btEdit.BackgroundImage = getImgFromDiskOrRes("tool_edit", ImageExts);
             btClipArt.BackgroundImage = getImgFromDiskOrRes("tool_clipart", ImageExts);
@@ -4059,32 +4216,69 @@ namespace gInk
                 }
             }
 
-            if (filled >= Filling.Empty)
+            //if (filled >= Filling.Empty)
+            //    Root.FilledSelected = filled;
+            //else if ((Array.IndexOf(applicableTool, tool) >= 0) && (tool == Root.ToolSelected))
+            //////
+            /////Root.FilledSelected = (Root.FilledSelected + 1) % Filling.Modulo;
+            /////
+
+            //if (tool == Tools.NumberTag)
+            //{
+            //    // Cycle limité à 2 états: Blanc <-> Noir
+            //    if (Root.FilledSelected != Filling.WhiteFilled && Root.FilledSelected != Filling.BlackFilled)
+            //        Root.FilledSelected = Filling.WhiteFilled;
+            //    else
+            //        Root.FilledSelected = (Root.FilledSelected == Filling.WhiteFilled)
+            //                                ? Filling.BlackFilled
+            //                                : Filling.WhiteFilled;
+            //}
+            //else
+            //{
+            //    Root.FilledSelected = (Root.FilledSelected + 1) % Filling.Modulo;
+            //}
+
+
+
+            //else
+            //    Root.FilledSelected = Filling.Empty;
+
+            bool explicitFilled = (filled >= Filling.Empty);
+
+            if (explicitFilled)
+            {
+                // un filled explicite a été fourni -> on le respecte
                 Root.FilledSelected = filled;
+            }
             else if ((Array.IndexOf(applicableTool, tool) >= 0) && (tool == Root.ToolSelected))
-            ////
-            ///Root.FilledSelected = (Root.FilledSelected + 1) % Filling.Modulo;
-            ///
-
-            if (tool == Tools.NumberTag)
             {
-                // Cycle limité à 2 états: Blanc <-> Noir
-                if (Root.FilledSelected != Filling.WhiteFilled && Root.FilledSelected != Filling.BlackFilled)
-                    Root.FilledSelected = Filling.WhiteFilled;
+                // Re-clic sur le même outil applicable : comportement historique
+                if (tool == Tools.NumberTag)
+                {
+                    // basculer White <-> Black
+                    if (Root.FilledSelected != Filling.WhiteFilled && Root.FilledSelected != Filling.BlackFilled)
+                        Root.FilledSelected = Filling.WhiteFilled;
+                    else
+                        Root.FilledSelected = (Root.FilledSelected == Filling.WhiteFilled)
+                                                ? Filling.BlackFilled
+                                                : Filling.WhiteFilled;
+                }
                 else
-                    Root.FilledSelected = (Root.FilledSelected == Filling.WhiteFilled)
-                                            ? Filling.BlackFilled
-                                            : Filling.WhiteFilled;
+                {
+                    // pour les autres outils applicables, on incrémente / cycle
+                    Root.FilledSelected = (Root.FilledSelected + 1) % Filling.Modulo;
+                }
             }
             else
             {
-                Root.FilledSelected = (Root.FilledSelected + 1) % Filling.Modulo;
-            }
-
-
-
-            else
+                // cas par défaut : pas de remplissage
                 Root.FilledSelected = Filling.Empty;
+            }
+            // #################### goInk END #########################
+
+
+
+
             Root.UponButtonsUpdate |= 0x2;
             EnterEraserMode(false);
 
@@ -4201,15 +4395,37 @@ namespace gInk
                 if (gpSubTools.Visible && subTools_title.Contains("Arrow"))
                     changeActiveTool(0, false, 1);
             }
+
+            // ############# goInk START
+            //else if (tool == Tools.NumberTag)
+            //{
+            //    if (Root.FilledSelected == Filling.Outside)
+            //        Root.FilledSelected = Filling.WhiteFilled;
+
+            //    if (Root.FilledSelected == Filling.WhiteFilled)
+            //        btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
+            //    else // BlackFilled
+            //        btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillB", ImageExts);
+
+            //    try
+            //    {
+            //        IC.Cursor = cursorred;
+            //    }
+            //    catch
+            //    {
+            //        IC.Cursor = getCursFromDiskOrRes(Root.cursorarrowFileName, System.Windows.Forms.Cursors.NoMove2D);
+            //    }
+            //}
             else if (tool == Tools.NumberTag)
             {
+                // Si la valeur Outside a été utilisée, conserver le comportement initial (fallback -> White)
                 if (Root.FilledSelected == Filling.Outside)
                     Root.FilledSelected = Filling.WhiteFilled;
 
-                if (Root.FilledSelected == Filling.WhiteFilled)
-                    btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
-                else // BlackFilled
-                    btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillB", ImageExts);
+                // Forcer l'icône de la pastille dans la barre d'outils à la version BLANCHE, quoi qu'il arrive.
+                // Le comportement d'alternance de Root.FilledSelected (qui influence la création sur la grille)
+                // reste actif, mais l'icône restera visuellement une pastille blanche.
+                btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
 
                 try
                 {
@@ -4220,6 +4436,10 @@ namespace gInk
                     IC.Cursor = getCursFromDiskOrRes(Root.cursorarrowFileName, System.Windows.Forms.Cursors.NoMove2D);
                 }
             }
+
+            // ############# goInk END ##############
+
+
             else if (tool == Tools.Edit)
             {
                 btEdit.BackgroundImage = getImgFromDiskOrRes("tool_edit_act");
@@ -7146,10 +7366,26 @@ namespace gInk
                 }
                 i = Root.DefaultArrow_start ? Tools.EndArrow : Tools.StartArrow;
             }
+            // ######################## goInk START #########################
+            //else if (((Button)sender).Name.Contains("Numb"))
+            //{
+            //    CustomizeAndOpenSubTools(-1, "SubToolsNumb", new string[] { "tool_numb_fillW", "tool_numb_fillB" }, Root.Local.OvalSubToolsHints,
+            //         new Func<int, bool>[] { 
+            //                                                 ii => { SelectTool(Tools.NumberTag,Filling.WhiteFilled); return true; },
+            //                                                 ii => { SelectTool(Tools.NumberTag,Filling.BlackFilled ); return true; } });
+
+            //    if (sender != null && tsp.TotalSeconds > Root.LongClickTime)
+            //    {
+            //        TagFontBtn_Modify();
+            //        return;
+            //    }
+            //    else
+            //        i = Tools.NumberTag;
+            //}
             else if (((Button)sender).Name.Contains("Numb"))
             {
                 CustomizeAndOpenSubTools(-1, "SubToolsNumb", new string[] { "tool_numb_fillW", "tool_numb_fillB" }, Root.Local.OvalSubToolsHints,
-                     new Func<int, bool>[] { 
+                     new Func<int, bool>[] {
                                                              ii => { SelectTool(Tools.NumberTag,Filling.WhiteFilled); return true; },
                                                              ii => { SelectTool(Tools.NumberTag,Filling.BlackFilled ); return true; } });
 
@@ -7159,8 +7395,24 @@ namespace gInk
                     return;
                 }
                 else
+                {
+                    // A) Effacer l'écran comme le bouton ERASE
+                    // appel direct à la routine de clear (comportement non long-click)
+                    btClear_Click(null, null);
+
+                    // B) Remise à l'initial du compteur de numéro
+                    Root.TagNumbering = 1;
+
+                    // C) Repositionner le remplissage sur blanc pour que la 1ère pastille soit blanche
+                    Root.FilledSelected = Filling.WhiteFilled;
+
                     i = Tools.NumberTag;
+                }
             }
+
+            // ######################## goInk START #########################
+
+
             else if (((Button)sender).Name.Contains("Text"))
             {
                 CustomizeAndOpenSubTools(-1, "SubToolsText", new string[] { "tool_txtL_act", "tool_txtR_act" }, Root.Local.TextSubToolsHints,
@@ -7259,17 +7511,17 @@ namespace gInk
             ////////
             ///
             // Forcer le remplissage par défaut au premier clic sur NumberTag (éviter l'état Empty)
-            // Forcer le remplissage UNIQUEMENT lors de la première activation de NumberTag
-            if (i == Tools.NumberTag && f < Filling.Empty && Root.ToolSelected != Tools.NumberTag)
+            // et s'assurer que SelectTool reçoit toujours un 'filled' explicite pour éviter
+            // le basculement automatique White <-> Black quand on reclique sur l'outil.
+            if (i == Tools.NumberTag && f < Filling.Empty)
             {
                 int df = (Root.FilledSelected == Filling.WhiteFilled || Root.FilledSelected == Filling.BlackFilled)
-                ? Root.FilledSelected
-                : Filling.WhiteFilled; // ou Filling.BlackFilled si tu préfères démarrer en noir
+                    ? Root.FilledSelected
+                    : Filling.WhiteFilled;
                 f = df;
             }
-            //////
+            ////////
             ///
-
 
 
 

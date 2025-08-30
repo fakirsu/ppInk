@@ -32,10 +32,161 @@ namespace gInk
         Bitmap[] ToolBarOrientationIcons = { gInk.Properties.Resources.toolbar2Left, gInk.Properties.Resources.toolbar2Right,
                                              gInk.Properties.Resources.toolbar2Up, gInk.Properties.Resources.toolbar2Down };
 
+
+        /// ################ goInk - START ####################
+        // Controls pour l'onglet "Jeu de go"
+        private TabPage tabPageGridTags;
+        private Label lblTagCirclePerc;
+        private NumericUpDown nudTagCirclePerc;
+        private Label lblTagSizePerc;
+        private NumericUpDown nudTagSizePerc;
+        private Label lblGridType;
+        private ComboBox cbGridType;
+        // pour l'opacité
+        private Label lblTagOpacityPerc;
+        private NumericUpDown nudTagOpacityPerc;
+        private Label lblTagNumberOpacityPerc;
+        private NumericUpDown nudTagNumberOpacityPerc;
+
+        /// ################ goInk - END ####################
+
+
+
         public FormOptions(Root root)
 		{
 			Root = root;
 			InitializeComponent();
+
+            /// ################ goInk - START ####################
+            // création dynamique de l'onglet "Jeu de go"
+            tabPageGridTags = new TabPage();
+            tabPageGridTags.Text = "Jeu de go";
+
+            lblTagCirclePerc = new Label();
+            lblTagCirclePerc.Text = "Diamètre des pierres (%) :";
+            lblTagCirclePerc.AutoSize = true;
+            lblTagCirclePerc.Left = 12;
+            lblTagCirclePerc.Top = 16;
+
+            nudTagCirclePerc = new NumericUpDown();
+            nudTagCirclePerc.Minimum = 10;
+            nudTagCirclePerc.Maximum = 300;
+            nudTagCirclePerc.DecimalPlaces = 1;
+            nudTagCirclePerc.Increment = 1;
+            nudTagCirclePerc.Left = 220;
+            nudTagCirclePerc.Top = lblTagCirclePerc.Top - 3;
+            nudTagCirclePerc.Width = 90;
+            nudTagCirclePerc.Value = (decimal)Root.TagCirclePercent;
+            nudTagCirclePerc.ValueChanged += (s, e) => { Root.TagCirclePercent = (double)nudTagCirclePerc.Value; };
+
+            lblTagSizePerc = new Label();
+            lblTagSizePerc.Text = "Taille des numéros (%) :";
+            lblTagSizePerc.AutoSize = true;
+            lblTagSizePerc.Left = 12;
+            lblTagSizePerc.Top = lblTagCirclePerc.Bottom + 18;
+
+            nudTagSizePerc = new NumericUpDown();
+            nudTagSizePerc.Minimum = 10;
+            nudTagSizePerc.Maximum = 500;
+            nudTagSizePerc.DecimalPlaces = 1;
+            nudTagSizePerc.Increment = 1;
+            nudTagSizePerc.Left = 220;
+            nudTagSizePerc.Top = lblTagSizePerc.Top - 3;
+            nudTagSizePerc.Width = 90;
+            nudTagSizePerc.Value = (decimal)Root.TagSizePercent;
+            nudTagSizePerc.ValueChanged += (s, e) => { Root.TagSizePercent = (double)nudTagSizePerc.Value; };
+
+            //opacité
+            lblTagOpacityPerc = new Label();
+            lblTagOpacityPerc.Text = "Opacité des pierres (%) :";
+            lblTagOpacityPerc.AutoSize = true;
+            lblTagOpacityPerc.Left = 12;
+            // lblTagOpacityPerc.Top = lblGridType.Bottom + 18;
+            // lblGridType n'est pas encore construit à ce stade -> utiliser lblTagSizePerc
+            lblTagOpacityPerc.Top = lblTagSizePerc.Bottom + 18;
+
+            nudTagOpacityPerc = new NumericUpDown();
+            nudTagOpacityPerc.Minimum = 0;
+            nudTagOpacityPerc.Maximum = 100;
+            nudTagOpacityPerc.DecimalPlaces = 0;
+            nudTagOpacityPerc.Increment = 1;
+            nudTagOpacityPerc.Left = 220;
+            nudTagOpacityPerc.Top = lblTagOpacityPerc.Top - 3;
+            nudTagOpacityPerc.Width = 90;
+            //nudTagOpacityPerc.Value = (decimal)Root.TagOpacityPercent;
+            nudTagOpacityPerc.Value = (decimal)Root.TagStoneOpacityPercent;
+            nudTagOpacityPerc.ValueChanged += (s, e) => { Root.TagStoneOpacityPercent = (double)nudTagOpacityPerc.Value; };
+
+            tabPageGridTags.Controls.Add(lblTagOpacityPerc);
+            tabPageGridTags.Controls.Add(nudTagOpacityPerc);
+            //
+
+            // opacité des numéros :
+
+            lblTagNumberOpacityPerc = new Label();
+            lblTagNumberOpacityPerc.Text = "Opacité des numéros (%) :";
+            lblTagNumberOpacityPerc.AutoSize = true;
+            lblTagNumberOpacityPerc.Left = 12;
+            lblTagNumberOpacityPerc.Top = lblTagOpacityPerc.Bottom + 18;
+
+            nudTagNumberOpacityPerc = new NumericUpDown();
+            nudTagNumberOpacityPerc.Minimum = 0;
+            nudTagNumberOpacityPerc.Maximum = 100;
+            nudTagNumberOpacityPerc.DecimalPlaces = 0;
+            nudTagNumberOpacityPerc.Increment = 1;
+            nudTagNumberOpacityPerc.Left = 220;
+            nudTagNumberOpacityPerc.Top = lblTagNumberOpacityPerc.Top - 3;
+            nudTagNumberOpacityPerc.Width = 90;
+            nudTagNumberOpacityPerc.Value = (decimal)Root.TagNumberOpacityPercent;
+            nudTagNumberOpacityPerc.ValueChanged += (s, e) => { Root.TagNumberOpacityPercent = (double)nudTagNumberOpacityPerc.Value; };
+
+            tabPageGridTags.Controls.Add(lblTagNumberOpacityPerc);
+            tabPageGridTags.Controls.Add(nudTagNumberOpacityPerc);
+            //
+
+            lblGridType = new Label();
+            lblGridType.Text = "Type de goban :";
+            lblGridType.AutoSize = true;
+            lblGridType.Left = 12;
+            // positionner le label après l'opacité des numéros si présent
+            if (nudTagNumberOpacityPerc != null)
+                lblGridType.Top = nudTagNumberOpacityPerc.Bottom + 20;
+            else
+                lblGridType.Top = nudTagOpacityPerc.Bottom + 20;
+
+            cbGridType = new ComboBox();
+            cbGridType.Left = 220;
+            cbGridType.Top = lblGridType.Top - 3;
+            cbGridType.Width = 120;
+            cbGridType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbGridType.Items.AddRange(new object[] { "19 x 19", "13 x 13", "9 x 9" });
+            if (Root.GridRows == 13) cbGridType.SelectedIndex = 1;
+            else if (Root.GridRows == 9) cbGridType.SelectedIndex = 2;
+            else cbGridType.SelectedIndex = 0;
+
+            cbGridType.SelectedIndexChanged += (s, e) =>
+            {
+                int v = (cbGridType.SelectedIndex == 0) ? 19 : (cbGridType.SelectedIndex == 1 ? 13 : 9);
+                Root.GridRows = v;
+                Root.GridCols = v;
+            };
+
+            tabPageGridTags.Controls.Add(lblTagCirclePerc);
+            tabPageGridTags.Controls.Add(nudTagCirclePerc);
+            tabPageGridTags.Controls.Add(lblTagSizePerc);
+            tabPageGridTags.Controls.Add(nudTagSizePerc);
+            tabPageGridTags.Controls.Add(lblGridType);
+            tabPageGridTags.Controls.Add(cbGridType);
+
+            try
+            {
+                if (!VideoTabCtrl.TabPages.Contains(tabPageGridTags))
+                    VideoTabCtrl.TabPages.Add(tabPageGridTags);
+            }
+            catch { }
+            /// ################ goInk - END ####################
+
+
             int i = PenPanel.Left;
             PenPanel.Left = 0;
             PenPanel.Width += i;
@@ -377,7 +528,33 @@ namespace gInk
             }
 
             FormOptions_LocalReload();
-		}
+
+
+            /// ################ goInk - START ####################
+            // Synchronisation des contrôles avec les valeurs Root (au chargement)
+            try
+            {
+                if (nudTagSizePerc != null)
+                    nudTagSizePerc.Value = (decimal)Math.Min((double)nudTagSizePerc.Maximum, Math.Max((double)nudTagSizePerc.Minimum, Root.TagSizePercent));
+                if (nudTagCirclePerc != null)
+                    nudTagCirclePerc.Value = (decimal)Math.Min((double)nudTagCirclePerc.Maximum, Math.Max((double)nudTagCirclePerc.Minimum, Root.TagCirclePercent));
+                //if (nudTagOpacityPerc != null)
+                    // nudTagOpacityPerc.Value = (decimal)Math.Min((double)nudTagOpacityPerc.Maximum, Math.Max((double)nudTagOpacityPerc.Minimum, Root.TagOpacityPercent));
+                if (nudTagOpacityPerc != null)
+                    nudTagOpacityPerc.Value = (decimal)Math.Min((double)nudTagOpacityPerc.Maximum, Math.Max((double)nudTagOpacityPerc.Minimum, Root.TagStoneOpacityPercent));
+                if (nudTagNumberOpacityPerc != null)
+                    nudTagNumberOpacityPerc.Value = (decimal)Math.Min((double)nudTagNumberOpacityPerc.Maximum, Math.Max((double)nudTagNumberOpacityPerc.Minimum, Root.TagNumberOpacityPercent));
+                if (cbGridType != null)
+                {
+                    if (Root.GridRows == 13) cbGridType.SelectedIndex = 1;
+                    else if (Root.GridRows == 9) cbGridType.SelectedIndex = 2;
+                    else cbGridType.SelectedIndex = 0;
+                }
+            }
+            catch { }
+            /// ################ goInk - END ####################
+
+        }
 
         private void FormOptions_Shown(object sender, EventArgs e)
         {
