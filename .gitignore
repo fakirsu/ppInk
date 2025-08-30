@@ -16,3 +16,4 @@ ppinks
 .vs/
 media/
 src/obj/x64/
+/src/BuildTimestamp.cs
