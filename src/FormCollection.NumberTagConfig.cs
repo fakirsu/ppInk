@@ -156,6 +156,8 @@ namespace gInk
             InvalidateNumberTagButtons(); // s’assure que l’anneau apparaît immédiatement
             AdjustToolbarSize();
 
+            PositionNumberTagButtonsFallback(dim1s, dim2s, spacing, anchor);
+
             return (Root.ToolbarOrientation <= Orientation.Horizontal) ? btNTag_Show_Black : btNTag_Hide_White;
         }
 
@@ -360,6 +362,132 @@ namespace gInk
             {
                 pen.Alignment = System.Drawing.Drawing2D.PenAlignment.Inset;
                 e.Graphics.DrawEllipse(pen, r);
+            }
+        }
+
+
+        //private void PositionNumberTagButtonsFallback(int dim1s, int dim2s, int spacing, Button anchor)
+        //{
+        //    if (Root == null || Root.ToolbarOrientation != Orientation.toDown)
+        //        return;
+        //    if (anchor == null) return;
+
+        //    // Vérifier si au moins un bouton est hors zone visible
+        //    bool need =
+        //        btNTag_Show_White == null || btNTag_Show_Black == null ||
+        //        btNTag_Hide_White == null || btNTag_Hide_Black == null ||
+        //        btNTag_Show_White.Top < -2 ||
+        //        btNTag_Show_Black.Top < -2 ||
+        //        btNTag_Hide_White.Top < -2 ||
+        //        btNTag_Hide_Black.Top < -2 ||
+        //        btNTag_Show_White.Top > gpButtons.Height ||
+        //        btNTag_Show_Black.Top > gpButtons.Height;
+
+        //    if (!need) return;
+
+        //    // Placement explicite : colonne descendante (2 lignes) puis seconde colonne à droite
+        //    // ancre supposée déjà positionnée
+        //    int x0 = anchor.Right + spacing;
+        //    int y0 = anchor.Top; // aligné sur l’ancre
+
+        //    // Première colonne : ShowWhite (ligne 0), HideWhite (ligne 1)
+        //    if (btNTag_Show_White != null)
+        //    {
+        //        btNTag_Show_White.Left = x0;
+        //        btNTag_Show_White.Top = y0;
+        //    }
+        //    if (btNTag_Hide_White != null)
+        //    {
+        //        btNTag_Hide_White.Left = x0;
+        //        btNTag_Hide_White.Top = y0 + dim1s + dim2s; // même vertical step que SetSmallButtonNext
+        //    }
+
+        //    // Deuxième colonne : ShowBlack et HideBlack à droite
+        //    int x1 = x0 + dim1s + spacing;
+        //    if (btNTag_Show_Black != null)
+        //    {
+        //        btNTag_Show_Black.Left = x1;
+        //        btNTag_Show_Black.Top = y0;
+        //    }
+        //    if (btNTag_Hide_Black != null)
+        //    {
+        //        btNTag_Hide_Black.Left = x1;
+        //        btNTag_Hide_Black.Top = y0 + dim1s + dim2s;
+        //    }
+
+        //    // S’assurer qu’ils sont visibles
+        //    btNTag_Show_White?.BringToFront();
+        //    btNTag_Show_Black?.BringToFront();
+        //    btNTag_Hide_White?.BringToFront();
+        //    btNTag_Hide_Black?.BringToFront();
+
+        //    InvalidateNumberTagButtons();
+        //}
+
+
+        private void PositionNumberTagButtonsFallback(int dim1s, int dim2s, int spacing, Button anchor)
+        {
+            if (Root == null || Root.ToolbarOrientation != Orientation.toDown)
+                return;
+            if (anchor == null)
+                return;
+            if (btNTag_Show_White == null || btNTag_Show_Black == null || btNTag_Hide_White == null || btNTag_Hide_Black == null)
+                return;
+
+            // Détection : un seul hors zone suffit
+            bool outOfBounds = IsOut(btNTag_Show_White) || IsOut(btNTag_Show_Black) ||
+                               IsOut(btNTag_Hide_White) || IsOut(btNTag_Hide_Black);
+
+            if (!outOfBounds)
+                return;
+
+            // Empilement vertical sous l'ancre : ordre (ShowWhite, ShowBlack, HideWhite, HideBlack)
+            int x = anchor.Left;
+            int step = dim1s + dim2s; // même logique que SetSmallButtonNext
+            int y0 = anchor.Bottom + spacing;
+
+            // Si pas assez de place en bas, on remonte au-dessus de l'ancre
+            int neededHeight = y0 + step * 3 + dim1s; // bas du 4e bouton
+            if (neededHeight > gpButtons.Height)
+            {
+                y0 = Math.Max(0, anchor.Top - (step * 4 + spacing));
+            }
+
+            Place(btNTag_Show_White, x, y0);
+            Place(btNTag_Show_Black, x, y0 + step);
+            Place(btNTag_Hide_White, x, y0 + step * 2);
+            Place(btNTag_Hide_Black, x, y0 + step * 3);
+
+            // Ajuste la hauteur du panel si nécessaire
+            int bottom = btNTag_Hide_Black.Bottom + spacing;
+            if (bottom > gpButtons.Height)
+                gpButtons.Height = bottom;
+
+            Bring(btNTag_Show_White);
+            Bring(btNTag_Show_Black);
+            Bring(btNTag_Hide_White);
+            Bring(btNTag_Hide_Black);
+
+            InvalidateNumberTagButtons();
+
+            bool IsOut(Control c)
+            {
+                if (c == null) return true;
+                return c.Left < 0 ||
+                       c.Right > gpButtons.Width ||
+                       c.Top < 0 ||
+                       c.Bottom > gpButtons.Height;
+            }
+            void Place(Button b, int lx, int ty)
+            {
+                if (b == null) return;
+                b.Left = lx;
+                b.Top = ty;
+                b.Visible = true;
+            }
+            void Bring(Button b)
+            {
+                try { b?.BringToFront(); } catch { }
             }
         }
 
