@@ -149,3 +149,115 @@ Stack Trace:
    à System.Windows.Forms.NotifyIcon.WndProc(Message& msg)
    à System.Windows.Forms.NativeWindow.Callback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
 
+08 / 31 / 2025 12:18UnhandledException
+
+version 1.9.0.0 built on 31/08/2025 12:18
+Oops, ppInk crashed! Please include the following information if you plan to contact the developers:
+
+Les contrôles ButtonBase ne prennent pas en charge l'affectation de Transparent à BorderColor.
+
+Stack Trace:
+   à System.Windows.Forms.FlatButtonAppearance.set_BorderColor(Color value)
+   à gInk.FormCollection.CreateNumberTagButtons(Int32 dim1s, Int32 dim2s, Button anchor) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormCollection.NumberTagConfig.cs:ligne 247
+   à gInk.FormCollection.Initialize() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormCollection.cs:ligne 1048
+   à gInk.FormCollection..ctor(Root root) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormCollection.cs:ligne 591
+   à gInk.Root..ctor() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Root.cs:ligne 569
+   à gInk.Program.Main(String[] args) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Program.cs:ligne 92
+
+08 / 31 / 2025 12:18UnhandledException
+
+version 1.9.0.0 built on 31/08/2025 12:18
+Oops, ppInk crashed! Please include the following information if you plan to contact the developers:
+
+Les contrôles ButtonBase ne prennent pas en charge l'affectation de Transparent à BorderColor.
+
+Stack Trace:
+   à System.Windows.Forms.FlatButtonAppearance.set_BorderColor(Color value)
+   à gInk.FormCollection.CreateNumberTagButtons(Int32 dim1s, Int32 dim2s, Button anchor) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormCollection.NumberTagConfig.cs:ligne 247
+   à gInk.FormCollection.Initialize() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormCollection.cs:ligne 1048
+   à gInk.FormCollection..ctor(Root root) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormCollection.cs:ligne 591
+   à gInk.Root..ctor() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Root.cs:ligne 569
+   à gInk.Program.Main(String[] args) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Program.cs:ligne 92
+
+08 / 31 / 2025 12:25UIThreadException
+
+version 1.9.0.0 built on 31/08/2025 12:25
+Oops, ppInk crashed! Please include the following information if you plan to contact the developers (a copy of the following information is stored in crash.txt in the application folder):
+
+Le paramètre n'est pas valide.
+
+Stack Trace:
+   à System.Drawing.Image.get_Flags()
+   à System.Windows.Forms.ControlPaint.IsImageTransparent(Image backgroundImage)
+   à System.Windows.Forms.Control.PaintBackground(PaintEventArgs e, Rectangle rectangle, Color backColor, Point scrollOffset)
+   à System.Windows.Forms.ButtonInternal.ButtonFlatAdapter.PaintBackground(PaintEventArgs e, Rectangle r, Color backColor)
+   à System.Windows.Forms.ButtonInternal.ButtonFlatAdapter.PaintUp(PaintEventArgs e, CheckState state)
+   à System.Windows.Forms.ButtonBase.OnPaint(PaintEventArgs pevent)
+   à System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   à System.Windows.Forms.Control.OnPrint(PaintEventArgs e)
+   à System.Windows.Forms.Control.WmPrintClient(Message& m)
+   à System.Windows.Forms.Control.WndProc(Message& m)
+   à System.Windows.Forms.ButtonBase.WndProc(Message& m)
+   à System.Windows.Forms.Button.WndProc(Message& m)
+   à System.Windows.Forms.NativeWindow.Callback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+08 / 31 / 2025 12:26UIThreadException
+
+version 1.9.0.0 built on 31/08/2025 12:25
+Oops, ppInk crashed! Please include the following information if you plan to contact the developers (a copy of the following information is stored in crash.txt in the application folder):
+
+Le paramètre n'est pas valide.
+
+Stack Trace:
+   à System.Drawing.Graphics.FromImage(Image image)
+   à System.Windows.Forms.Control.DrawToBitmap(Bitmap bitmap, Rectangle targetBounds)
+   à gInk.FormDisplay.DrawButtons(Graphics g, Boolean redrawbuttons, Boolean exiting) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormDisplay.cs:ligne 303
+   à gInk.FormDisplay.DrawButtons(Boolean redrawbuttons, Boolean exiting) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormDisplay.cs:ligne 279
+   à gInk.Root.StartInk() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Root.cs:ligne 689
+   à gInk.Root.callshortcut() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Root.cs:ligne 599
+   à gInk.CallForm.CallForm_MouseUp(Object sender, MouseEventArgs e) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\CallForm.cs:ligne 60
+   à System.Windows.Forms.Control.OnMouseUp(MouseEventArgs e)
+   à System.Windows.Forms.Control.WmMouseUp(Message& m, MouseButtons button, Int32 clicks)
+   à System.Windows.Forms.Control.WndProc(Message& m)
+   à System.Windows.Forms.Form.WndProc(Message& m)
+   à System.Windows.Forms.NativeWindow.Callback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+08 / 31 / 2025 12:26UIThreadException
+
+version 1.9.0.0 built on 31/08/2025 12:26
+Oops, ppInk crashed! Please include the following information if you plan to contact the developers (a copy of the following information is stored in crash.txt in the application folder):
+
+Le paramètre n'est pas valide.
+
+Stack Trace:
+   à System.Drawing.Image.get_Flags()
+   à System.Windows.Forms.ControlPaint.IsImageTransparent(Image backgroundImage)
+   à System.Windows.Forms.Control.PaintBackground(PaintEventArgs e, Rectangle rectangle, Color backColor, Point scrollOffset)
+   à System.Windows.Forms.ButtonInternal.ButtonFlatAdapter.PaintBackground(PaintEventArgs e, Rectangle r, Color backColor)
+   à System.Windows.Forms.ButtonInternal.ButtonFlatAdapter.PaintUp(PaintEventArgs e, CheckState state)
+   à System.Windows.Forms.ButtonBase.OnPaint(PaintEventArgs pevent)
+   à System.Windows.Forms.Control.PaintWithErrorHandling(PaintEventArgs e, Int16 layer)
+   à System.Windows.Forms.Control.OnPrint(PaintEventArgs e)
+   à System.Windows.Forms.Control.WmPrintClient(Message& m)
+   à System.Windows.Forms.Control.WndProc(Message& m)
+   à System.Windows.Forms.ButtonBase.WndProc(Message& m)
+   à System.Windows.Forms.Button.WndProc(Message& m)
+   à System.Windows.Forms.NativeWindow.Callback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
+08 / 31 / 2025 14:57UIThreadException
+
+version 1.9.0.0 built on 31/08/2025 14:56
+Oops, ppInk crashed! Please include the following information if you plan to contact the developers (a copy of the following information is stored in crash.txt in the application folder):
+
+InvalidArgument=La valeur '6' n'est pas valide pour 'index'.
+Nom du paramètre : index
+
+Stack Trace:
+   à System.Windows.Forms.ComboBox.ObjectCollection.SetItemInternal(Int32 index, Object value)
+   à gInk.FormOptions.FormOptions_LocalReload() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormOptions.cs:ligne 681
+   à gInk.FormOptions.comboLanguage_SelectedIndexChanged(Object sender, EventArgs e) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormOptions.cs:ligne 1503
+   à System.Windows.Forms.ComboBox.OnSelectedIndexChanged(EventArgs e)
+   à System.Windows.Forms.ComboBox.WmReflectCommand(Message& m)
+   à System.Windows.Forms.ComboBox.WndProc(Message& m)
+   à System.Windows.Forms.NativeWindow.Callback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+

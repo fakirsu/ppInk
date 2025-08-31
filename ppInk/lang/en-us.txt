@@ -1,5 +1,19 @@
 LanguageName = "English"
 
+# -> Entries for Go game
+ButtonNameNumbWhite = "Numbered stones (first stone white)"
+ButtonNameNumbBlack = "Numbered stones (first stone black)"
+OptionsTabGoHotkeys = "Go - Hotkeys"
+OptionsGoHotkeys_ShowWhite = "With numbers (1 white)"
+OptionsGoHotkeys_ShowBlack = "With numbers (1 black)"
+OptionsGoHotkeys_HideWhite = "Without numbers (1 white)"
+OptionsGoHotkeys_HideBlack = "Without numbers (1 black)"
+Hotkey_NTag_ShowWhite = "Hotkey: Numbered stones (first white)"
+Hotkey_NTag_ShowBlack = "Hotkey: Numbered stones (first black)"
+Hotkey_NTag_HideWhite = "Hotkey: Unnumbered stones (first white)"
+Hotkey_NTag_HideBlack = "Hotkey: Unnumbered stones (first black)"
+# -> End of entries for Go game
+
 ButtonNamePen0 = "Pen 0"
 ButtonNamePen1 = "Pen 1"
 ButtonNamePen2 = "Pen 2"
@@ -22,9 +36,6 @@ ButtonNamePen18 = "Pen 18"
 ButtonNamePen19 = "Pen 19"
 OptionHotkeysExtraPens = "Add Extra Pen; if activated, no pen  hotkeys shall contain ctrl or shift"
 ExtraPensHint = "Click to access Extra Pens Panel"
-
-ButtonNameNumbWhite = "Number tag (first stone white)"
-ButtonNameNumbBlack = "Number tag (first stone black)"
 
 ButtonNamePenwidth = "Pen Width"
 ButtonNameToogle = "Toggle Fading"

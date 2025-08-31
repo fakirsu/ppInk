@@ -1,164 +1,240 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace gInk
 {
     partial class FormCollection
     {
-        // Variables d'état (non persistées)
-        // true = afficher le numéro à l'intérieur de la pastille
         public bool NumberTag_ShowNumber = true;
-        // true = première pastille blanche, false = première pastille noire
         public bool NumberTag_FirstIsWhite = false;
-
-        // compteur courant (commence à 1)
         private int NumberTag_Counter = 1;
 
-        // Buttons supplémentaires (4 combinaisons)
         public Button btNTag_Show_White;
         public Button btNTag_Show_Black;
         public Button btNTag_Hide_White;
         public Button btNTag_Hide_Black;
+        //private Button NumberTag_CurrentHighlighted;
 
-        // Réinitialiser (à appeler lors d'un reclique sur l'outil)
-        public void NumberTag_Reset()
+        // --- API publique simple ---
+        public void NumberTag_Reset() => NumberTag_Counter = 1;
+        public void NumberTag_ToggleShowNumber() => NumberTag_ShowNumber = !NumberTag_ShowNumber;
+        public void NumberTag_SetFirstIsWhite(bool firstWhite) => NumberTag_FirstIsWhite = firstWhite;
+        public string NumberTag_GetAndIncrementText() { var s = NumberTag_Counter.ToString(); NumberTag_Counter++; return s; }
+
+        // Chargement + rognage + MARGIN pour laisser de la place à la bordure de sélection
+        private Bitmap LoadNumberTagIconTrimmed(string name, int dim)
         {
-            NumberTag_Counter = 1;
+            Bitmap src = null;
+            try { src = getImgFromDiskOrRes(name, ImageExts); }
+            catch { return BuildFallback(dim); }
+            if (src == null) return BuildFallback(dim);
+
+            // Détection zone non transparente
+            int minX = src.Width, minY = src.Height, maxX = -1, maxY = -1;
+            for (int y = 0; y < src.Height; y++)
+            {
+                for (int x = 0; x < src.Width; x++)
+                {
+                    Color c = src.GetPixel(x, y);
+                    if (c.A > 8)
+                    {
+                        if (x < minX) minX = x;
+                        if (y < minY) minY = y;
+                        if (x > maxX) maxX = x;
+                        if (y > maxY) maxY = y;
+                    }
+                }
+            }
+
+            if (maxX < 0)
+            {
+                // Image totalement transparente -> fallback
+                src.Dispose();
+                return BuildFallback(dim);
+            }
+
+            int w = maxX - minX + 1;
+            int h = maxY - minY + 1;
+            Rectangle crop = new Rectangle(minX, minY, w, h);
+
+            Bitmap cropped = new Bitmap(w, h);
+            using (Graphics g = Graphics.FromImage(cropped))
+            {
+                g.DrawImage(src, new Rectangle(0, 0, w, h), crop, GraphicsUnit.Pixel);
+            }
+            src.Dispose();
+
+            // Margin pour que la bordure du bouton soit visible (surtout sur disque blanc)
+            int margin = Math.Max(2, dim / 10); // ajustable
+            float scale = Math.Min((float)(dim - 2 * margin) / w, (float)(dim - 2 * margin) / h);
+            int dw = Math.Max(1, (int)Math.Round(w * scale));
+            int dh = Math.Max(1, (int)Math.Round(h * scale));
+            int ox = (dim - dw) / 2;
+            int oy = (dim - dh) / 2;
+
+            Bitmap dst = new Bitmap(dim, dim);
+            using (Graphics g = Graphics.FromImage(dst))
+            {
+                g.Clear(Color.Transparent);
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                g.DrawImage(cropped, new Rectangle(ox, oy, dw, dh),
+                    new Rectangle(0, 0, w, h), GraphicsUnit.Pixel);
+            }
+            cropped.Dispose();
+
+            // Sanity check (éviter bitmap vide)
+            if (!HasVisiblePixel(dst))
+            {
+                dst.Dispose();
+                return BuildFallback(dim);
+            }
+            return dst;
         }
 
-        // Basculer l'affichage du numéro (ex: hotkey ou menu)
-        public void NumberTag_ToggleShowNumber()
+        private bool HasVisiblePixel(Bitmap bmp)
         {
-            NumberTag_ShowNumber = !NumberTag_ShowNumber;
+            for (int y = 0; y < bmp.Height; y++)
+                for (int x = 0; x < bmp.Width; x++)
+                    if (bmp.GetPixel(x, y).A > 16) return true;
+            return false;
         }
 
-        // Setter rapide pour la couleur de départ
-        public void NumberTag_SetFirstIsWhite(bool firstWhite)
+        private Bitmap BuildFallback(int dim)
         {
-            NumberTag_FirstIsWhite = firstWhite;
+            var b = new Bitmap(dim, dim);
+            using (var g = Graphics.FromImage(b))
+            {
+                g.Clear(Color.Transparent);
+                using (var pen = new Pen(Color.Red, Math.Max(1, dim / 8)))
+                    g.DrawEllipse(pen, Math.Max(1, dim / 8), Math.Max(1, dim / 8),
+                        dim - 2 * Math.Max(1, dim / 8) - 1, dim - 2 * Math.Max(1, dim / 8) - 1);
+            }
+            return b;
         }
 
-        // Récupère et incrémente le texte numérique courant
-        public string NumberTag_GetAndIncrementText()
-        {
-            var s = NumberTag_Counter.ToString();
-            NumberTag_Counter++;
-            return s;
-        }
-
-        // Crée et positionne les 4 boutons number-tag.
-        // dim1s : taille des petites icônes ; dim2s : espacement utilisé (sera passé depuis Initialize)
-        // anchor : bouton après lequel positionner la première pastille (généralement btArrow)
-        // Renvoie le dernier bouton créé (à utiliser comme 'prev' pour le placement du bouton suivant).
         public Button CreateNumberTagButtons(int dim1s, int dim2s, Button anchor)
         {
-            // masquer le bouton legacy (designer) et libérer son image si présent
+            // Nettoyage précédent (ne pas disposer des images utilisées par d'autres encore en peinture)
+            RemoveOldNumberTagButtons();
+
+            var cfg = new (bool show, bool firstWhite, string icon)[]
+            {
+                (true,  true,  "tool_numb_fillW"),
+                (true,  false, "tool_numb_fillB"),
+                (false, true,  "tool_numb_fillWfalse"),
+                (false, false, "tool_numb_fillBfalse")
+            };
+
+            if (anchor == null)
+                anchor = btArrow;
+
+            int spacing = 0;
             try
             {
-                if (btNumb != null)
+                if (btRect != null && btHand != null && btRect.Visible && btHand.Visible)
+                    spacing = btRect.Left - (btHand.Left + btHand.Width);
+                if (spacing <= 0) spacing = Math.Max(2, dim1s / 6);
+            }
+            catch { spacing = Math.Max(2, dim1s / 6); }
+
+            btNTag_Show_White = BuildNTagButton("btNTag_0", cfg[0], dim1s);
+            btNTag_Show_Black = BuildNTagButton("btNTag_1", cfg[1], dim1s);
+            btNTag_Hide_White = BuildNTagButton("btNTag_2", cfg[2], dim1s);
+            btNTag_Hide_Black = BuildNTagButton("btNTag_3", cfg[3], dim1s);
+
+            // Position rangée haute
+            SetButtonPosition(anchor, btNTag_Show_White, spacing);
+            SetButtonPosition(btNTag_Show_White, btNTag_Show_Black, spacing);
+            // Rangée basse (utilise helper vertical relatif)
+            SetSmallButtonNext(btNTag_Show_White, btNTag_Hide_White, dim2s);
+            SetSmallButtonNext(btNTag_Show_Black, btNTag_Hide_Black, dim2s);
+
+            UpdateNumberTagButtonBorders();
+            //UpdateNumberTagButtonBorders();
+            InvalidateNumberTagButtons(); // s’assure que l’anneau apparaît immédiatement
+            AdjustToolbarSize();
+
+            PositionNumberTagButtonsFallback(dim1s, dim2s, spacing, anchor);
+
+            return (Root.ToolbarOrientation <= Orientation.Horizontal) ? btNTag_Show_Black : btNTag_Hide_White;
+        }
+
+        private Button BuildNTagButton(string name, (bool show, bool firstWhite, string icon) cfg, int dim)
+        {
+            var b = new Button
+            {
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.Transparent,
+                Width = dim,
+                Height = dim,
+                Visible = true,
+                Name = name,
+                BackgroundImageLayout = ImageLayout.Stretch,
+                TabStop = false,
+                Tag = Tuple.Create(cfg.show, cfg.firstWhite)
+            };
+            b.FlatAppearance.BorderSize = 0;
+            b.FlatAppearance.BorderColor = Color.Orange; // Couleur de sélection
+            try { b.BackgroundImage = LoadNumberTagIconTrimmed(cfg.icon, dim); } catch { }
+            try { toolTip.SetToolTip(b, Root?.Local?.ButtonNameNumb ?? "Number tag"); } catch { }
+            b.Click += NumberTagBtn_Click;
+            b.MouseDown += btAllButtons_MouseDown;
+            b.MouseUp += btAllButtons_MouseUp;
+            b.MouseMove += gpButtons_MouseMove;
+            b.ContextMenu = new ContextMenu();
+            b.ContextMenu.Popup += btAllButtons_RightClick;
+            b.Paint += NumberTagButton_Paint;
+            gpButtons.Controls.Add(b);
+            b.BringToFront();
+            return b;
+        }
+
+        private void RemoveOldNumberTagButtons()
+        {
+            try
+            {
+                foreach (Control c in gpButtons.Controls)
                 {
-                    btNumb.Visible = false;
-                    try { btNumb.BackgroundImage?.Dispose(); } catch { }
-                    btNumb.BackgroundImage = null;
+                    if (c is Button btn && btn.Name.StartsWith("btNTag_"))
+                    {
+                        try
+                        {
+                            var img = btn.BackgroundImage;
+                            btn.BackgroundImage = null;
+                            img?.Dispose();
+                        }
+                        catch { }
+                        try { btn.Paint -= NumberTagButton_Paint; } catch { }
+                        btn.Dispose();
+                    }
                 }
             }
             catch { }
-
-            // configuration pour les 4 boutons : (showNumber, firstIsWhite, iconName, tooltip)
-            // Utilise les images "*false" pour les variantes sans numéro (show==false)
-            var cfg = new (bool show, bool firstWhite, string icon, string tip)[]
-            {
-                // show = true  -> icônes avec numéro (existantes)
-                (true,  true,  "tool_numb_fillW", Root?.Local?.ButtonNameNumb ?? "Numbered chip (Show / White)"),
-                (true,  false, "tool_numb_fillB", Root?.Local?.ButtonNameNumb ?? "Numbered chip (Show / Black)"),
-                // show = false -> icônes sans numéro (fichiers ajoutés : tool_numb_fillWfalse.png / tool_numb_fillBfalse.png)
-                (false, true,  "tool_numb_fillWfalse", Root?.Local?.ButtonNameNumb ?? "Numbered chip (Hide / White)"),
-                (false, false, "tool_numb_fillBfalse", Root?.Local?.ButtonNameNumb ?? "Numbered chip (Hide / Black)")
-            };
-
-            Button prevBtn = anchor;
-            Button last = null;
-            for (int i = 0; i < cfg.Length; i++)
-            {
-                Button b = new Button
-                {
-                    FlatStyle = FlatStyle.Flat,
-                    BackColor = System.Drawing.Color.Transparent,
-                    Width = dim1s,
-                    Height = dim1s,
-                    Visible = true,
-                    Name = "btNTag_" + i.ToString(),
-                    BackgroundImageLayout = ImageLayout.Stretch,
-                    TabStop = false
-                };
-                b.FlatAppearance.BorderSize = 0;
-                b.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
-
-                // safe load of image (fallback)
-                try
-                {
-                    b.BackgroundImage = getImgFromDiskOrRes(cfg[i].icon, ImageExts);
-                }
-                catch
-                {
-                    // fallback : si la variante "false" n'existe pas, utiliser la version normale correspondante
-                    try
-                    {
-                        if (cfg[i].icon.EndsWith("false"))
-                        {
-                            string fallback = cfg[i].icon.Substring(0, cfg[i].icon.Length - "false".Length);
-                            b.BackgroundImage = getImgFromDiskOrRes(fallback, ImageExts);
-                        }
-                        else
-                        {
-                            b.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
-                        }
-                    }
-                    catch
-                    {
-                        try { b.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts); } catch { }
-                    }
-                }
-
-                b.Tag = Tuple.Create(cfg[i].show, cfg[i].firstWhite);
-                try
-                {
-                    toolTip.SetToolTip(b, cfg[i].tip + " (" + (i + 1).ToString() + ")");
-                }
-                catch { }
-
-                // handlers identiques aux autres boutons
-                b.Click += NumberTagBtn_Click;
-                b.MouseDown += new MouseEventHandler(this.btAllButtons_MouseDown);
-                b.MouseUp += new MouseEventHandler(this.btAllButtons_MouseUp);
-                b.MouseMove += new MouseEventHandler(this.gpButtons_MouseMove);
-                b.ContextMenu = new ContextMenu();
-                b.ContextMenu.Popup += new EventHandler(this.btAllButtons_RightClick);
-
-                // add to panel and position horizontally after anchor (garde la ligne principale)
-                gpButtons.Controls.Add(b);
-                SetButtonPosition(prevBtn, b, dim2s);
-                b.BringToFront();
-                prevBtn = b;
-                last = b;
-
-                // keep references
-                switch (i)
-                {
-                    case 0: btNTag_Show_White = b; break;
-                    case 1: btNTag_Show_Black = b; break;
-                    case 2: btNTag_Hide_White = b; break;
-                    case 3: btNTag_Hide_Black = b; break;
-                }
-            }
-
-            // Visuel : marquer le bouton actif
-            UpdateNumberTagButtonBorders();
-
-            return last;
         }
 
-        // Click handler commun
+        //private void NumberTagBtn_Click(object sender, EventArgs e)
+        //{
+        //    var b = sender as Button;
+        //    if (b == null) return;
+        //    var tup = b.Tag as Tuple<bool, bool>;
+        //    if (tup == null) return;
+
+        //    // Nettoyage encre (comportement précédent conservé)
+        //    try { btClear_Click(null, null); } catch { }
+
+        //    NumberTag_ShowNumber = tup.Item1;
+        //    NumberTag_FirstIsWhite = tup.Item2;
+        //    NumberTag_Reset();
+        //    Root.FilledSelected = NumberTag_FirstIsWhite ? Filling.WhiteFilled : Filling.BlackFilled;
+
+        //    SelectTool(Tools.NumberTag, Root.FilledSelected);
+        //    UpdateNumberTagButtonBorders();
+        //    InvalidateNumberTagButtons();
+        //    Root.UponButtonsUpdate |= 0x2;
+        //}
+
         private void NumberTagBtn_Click(object sender, EventArgs e)
         {
             var b = sender as Button;
@@ -166,55 +242,295 @@ namespace gInk
             var tup = b.Tag as Tuple<bool, bool>;
             if (tup == null) return;
 
-            // Effacement automatique à la sélection d'une variante number-tag
-            try
-            {
-                btClear_Click(null, null);
-            }
-            catch
-            {
-                // silent fallback si pb
-            }
+            // Délègue l'action à un helper centralisé (utilisable par UI et hotkeys)
+            ApplyNumberTagVariant(tup.Item1, tup.Item2);
+        }
 
-            NumberTag_ShowNumber = tup.Item1;
-            NumberTag_FirstIsWhite = tup.Item2;
+        // helper utilisé à la fois par les boutons et par les hotkeys
+        public void ApplyNumberTagVariant(bool showNumbers, bool firstIsWhite)
+        {
+            // Nettoyage encre (comportement précédent conservé)
+            try { btClear_Click(null, null); } catch { }
 
-            // reset compteur sur sélection explicite
+            NumberTag_ShowNumber = showNumbers;
+            NumberTag_FirstIsWhite = firstIsWhite;
             NumberTag_Reset();
-
-            // set current filling selon la préférence
             Root.FilledSelected = NumberTag_FirstIsWhite ? Filling.WhiteFilled : Filling.BlackFilled;
 
-            // feedback visuel
-            UpdateNumberTagButtonBorders();
-
-            // sélectionner l'outil NumberTag explicitement
             SelectTool(Tools.NumberTag, Root.FilledSelected);
-
+            UpdateNumberTagButtonBorders();
+            InvalidateNumberTagButtons();
             Root.UponButtonsUpdate |= 0x2;
         }
 
-        // Met à jour l'apparence (bordure) des 4 boutons pour montrer la sélection active
+
+        private void ClearNumberTagButtonBorders()
+        {
+            void clr(Button b)
+            {
+                if (b == null) return;
+                b.FlatAppearance.BorderSize = 0;
+            }
+            clr(btNTag_Show_White);
+            clr(btNTag_Show_Black);
+            clr(btNTag_Hide_White);
+            clr(btNTag_Hide_Black);
+        }
+
+        //private void InvalidateNumberTagButtons()
+        //{
+        //    btNTag_Show_White?.Invalidate();
+        //    btNTag_Show_Black?.Invalidate();
+        //    btNTag_Hide_White?.Invalidate();
+        //    btNTag_Hide_Black?.Invalidate();
+        //}
+
+        //private void UpdateNumberTagButtonBorders()
+        //{
+        //    // On désactive toute bordure "Flat" (on passe par Paint uniquement)
+        //    try { btNTag_Show_White?.FlatAppearance?.SetBorderSizeSafely(0); } catch { }
+        //    try { btNTag_Show_Black?.FlatAppearance?.SetBorderSizeSafely(0); } catch { }
+        //    try { btNTag_Hide_White?.FlatAppearance?.SetBorderSizeSafely(0); } catch { }
+        //    try { btNTag_Hide_Black?.FlatAppearance?.SetBorderSizeSafely(0); } catch { }
+
+        //    Button previous = NumberTag_CurrentHighlighted;
+        //    NumberTag_CurrentHighlighted = null;
+
+        //    if (Root == null || Root.ToolSelected != Tools.NumberTag)
+        //    {
+        //        // Plus de surbrillance : on redessine juste pour effacer l’anneau éventuel
+        //        if (previous != null) InvalidateNumberTagButtons();
+        //        return;
+        //    }
+
+        //    Button target =
+        //        (NumberTag_ShowNumber && NumberTag_FirstIsWhite) ? btNTag_Show_White :
+        //        (NumberTag_ShowNumber && !NumberTag_FirstIsWhite) ? btNTag_Show_Black :
+        //        (!NumberTag_ShowNumber && NumberTag_FirstIsWhite) ? btNTag_Hide_White :
+        //        btNTag_Hide_Black;
+
+        //    NumberTag_CurrentHighlighted = target;
+
+        //    if (previous != target)
+        //    {
+        //        // On redessine les 4 (faible coût, simplifie)
+        //        InvalidateNumberTagButtons();
+        //    }
+        //}
+
+        //private void NumberTagButton_Paint(object sender, PaintEventArgs e)
+        //{
+        //    var btn = sender as Button;
+        //    if (btn == null) return;
+
+        //    // Ne dessine que si c'est le bouton actuellement surligné
+        //    if (btn != NumberTag_CurrentHighlighted) return;
+        //    if (Root == null || Root.ToolSelected != Tools.NumberTag) return;
+
+        //    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+        //    bool isWhiteVariant = (btn == btNTag_Show_White) || (btn == btNTag_Hide_White);
+        //    Color ring = isWhiteVariant ? Color.DarkOrange : Color.Orange;
+        //    int thick = Math.Max(2, btn.Width / 10);
+
+        //    var r = new Rectangle(thick / 2, thick / 2, btn.Width - thick - 1, btn.Height - thick - 1);
+        //    using (var pen = new Pen(ring, thick))
+        //    {
+        //        pen.Alignment = System.Drawing.Drawing2D.PenAlignment.Inset;
+        //        e.Graphics.DrawEllipse(pen, r); // ellipse = anneau circulaire (plus harmonieux pour pastilles)
+        //    }
+        //}
+
+
+        private void InvalidateNumberTagButtons()
+        {
+            btNTag_Show_White?.Invalidate();
+            btNTag_Show_Black?.Invalidate();
+            btNTag_Hide_White?.Invalidate();
+            btNTag_Hide_Black?.Invalidate();
+        }
+
         private void UpdateNumberTagButtonBorders()
         {
-            foreach (Control c in gpButtons.Controls)
+            // Plus de bordures Flat ; tout se fait dans Paint.
+            if (Root == null) return;
+
+            if (Root.ToolSelected == Tools.NumberTag)
+                InvalidateNumberTagButtons();
+            else
             {
-                if (!(c is Button)) continue;
-                if (!c.Name.StartsWith("btNTag_")) continue;
-                (c as Button).FlatAppearance.BorderSize = 0;
+                // Effacer éventuels restes : simple inval global
+                InvalidateNumberTagButtons();
+            }
+        }
+
+        private void NumberTagButton_Paint(object sender, PaintEventArgs e)
+        {
+            var btn = sender as Button;
+            if (btn == null) return;
+            if (Root == null) return;
+            if (Root.ToolSelected != Tools.NumberTag) return;
+
+            var tup = btn.Tag as Tuple<bool, bool>;
+            if (tup == null) return;
+
+            // Ce bouton est-il la variante sélectionnée ?
+            if (tup.Item1 != NumberTag_ShowNumber || tup.Item2 != NumberTag_FirstIsWhite)
+                return;
+
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            bool isWhiteVariant = tup.Item2; // firstWhite==true => variante blanche
+            Color ring = isWhiteVariant ? Color.DarkOrange : Color.Orange;
+            int thick = Math.Max(3, btn.Width / 9); // anneau un peu plus épais
+
+            var r = new Rectangle(thick / 2, thick / 2,
+                                  btn.Width - thick - 1,
+                                  btn.Height - thick - 1);
+            using (var pen = new Pen(ring, thick))
+            {
+                pen.Alignment = System.Drawing.Drawing2D.PenAlignment.Inset;
+                e.Graphics.DrawEllipse(pen, r);
+            }
+        }
+
+
+        //private void PositionNumberTagButtonsFallback(int dim1s, int dim2s, int spacing, Button anchor)
+        //{
+        //    if (Root == null || Root.ToolbarOrientation != Orientation.toDown)
+        //        return;
+        //    if (anchor == null) return;
+
+        //    // Vérifier si au moins un bouton est hors zone visible
+        //    bool need =
+        //        btNTag_Show_White == null || btNTag_Show_Black == null ||
+        //        btNTag_Hide_White == null || btNTag_Hide_Black == null ||
+        //        btNTag_Show_White.Top < -2 ||
+        //        btNTag_Show_Black.Top < -2 ||
+        //        btNTag_Hide_White.Top < -2 ||
+        //        btNTag_Hide_Black.Top < -2 ||
+        //        btNTag_Show_White.Top > gpButtons.Height ||
+        //        btNTag_Show_Black.Top > gpButtons.Height;
+
+        //    if (!need) return;
+
+        //    // Placement explicite : colonne descendante (2 lignes) puis seconde colonne à droite
+        //    // ancre supposée déjà positionnée
+        //    int x0 = anchor.Right + spacing;
+        //    int y0 = anchor.Top; // aligné sur l’ancre
+
+        //    // Première colonne : ShowWhite (ligne 0), HideWhite (ligne 1)
+        //    if (btNTag_Show_White != null)
+        //    {
+        //        btNTag_Show_White.Left = x0;
+        //        btNTag_Show_White.Top = y0;
+        //    }
+        //    if (btNTag_Hide_White != null)
+        //    {
+        //        btNTag_Hide_White.Left = x0;
+        //        btNTag_Hide_White.Top = y0 + dim1s + dim2s; // même vertical step que SetSmallButtonNext
+        //    }
+
+        //    // Deuxième colonne : ShowBlack et HideBlack à droite
+        //    int x1 = x0 + dim1s + spacing;
+        //    if (btNTag_Show_Black != null)
+        //    {
+        //        btNTag_Show_Black.Left = x1;
+        //        btNTag_Show_Black.Top = y0;
+        //    }
+        //    if (btNTag_Hide_Black != null)
+        //    {
+        //        btNTag_Hide_Black.Left = x1;
+        //        btNTag_Hide_Black.Top = y0 + dim1s + dim2s;
+        //    }
+
+        //    // S’assurer qu’ils sont visibles
+        //    btNTag_Show_White?.BringToFront();
+        //    btNTag_Show_Black?.BringToFront();
+        //    btNTag_Hide_White?.BringToFront();
+        //    btNTag_Hide_Black?.BringToFront();
+
+        //    InvalidateNumberTagButtons();
+        //}
+
+
+        private void PositionNumberTagButtonsFallback(int dim1s, int dim2s, int spacing, Button anchor)
+        {
+            if (Root == null || Root.ToolbarOrientation != Orientation.toDown)
+                return;
+            if (anchor == null)
+                return;
+            if (btNTag_Show_White == null || btNTag_Show_Black == null || btNTag_Hide_White == null || btNTag_Hide_Black == null)
+                return;
+
+            // Détection : un seul hors zone suffit
+            bool outOfBounds = IsOut(btNTag_Show_White) || IsOut(btNTag_Show_Black) ||
+                               IsOut(btNTag_Hide_White) || IsOut(btNTag_Hide_Black);
+
+            if (!outOfBounds)
+                return;
+
+            // Empilement vertical sous l'ancre : ordre (ShowWhite, ShowBlack, HideWhite, HideBlack)
+            int x = anchor.Left;
+            int step = dim1s + dim2s; // même logique que SetSmallButtonNext
+            int y0 = anchor.Bottom + spacing;
+
+            // Si pas assez de place en bas, on remonte au-dessus de l'ancre
+            int neededHeight = y0 + step * 3 + dim1s; // bas du 4e bouton
+            if (neededHeight > gpButtons.Height)
+            {
+                y0 = Math.Max(0, anchor.Top - (step * 4 + spacing));
             }
 
-            string matchName;
-            if (NumberTag_ShowNumber && NumberTag_FirstIsWhite) matchName = "btNTag_0";
-            else if (NumberTag_ShowNumber && !NumberTag_FirstIsWhite) matchName = "btNTag_1";
-            else if (!NumberTag_ShowNumber && NumberTag_FirstIsWhite) matchName = "btNTag_2";
-            else matchName = "btNTag_3";
+            Place(btNTag_Show_White, x, y0);
+            Place(btNTag_Show_Black, x, y0 + step);
+            Place(btNTag_Hide_White, x, y0 + step * 2);
+            Place(btNTag_Hide_Black, x, y0 + step * 3);
 
+            // Ajuste la hauteur du panel si nécessaire
+            int bottom = btNTag_Hide_Black.Bottom + spacing;
+            if (bottom > gpButtons.Height)
+                gpButtons.Height = bottom;
+
+            Bring(btNTag_Show_White);
+            Bring(btNTag_Show_Black);
+            Bring(btNTag_Hide_White);
+            Bring(btNTag_Hide_Black);
+
+            InvalidateNumberTagButtons();
+
+            bool IsOut(Control c)
+            {
+                if (c == null) return true;
+                return c.Left < 0 ||
+                       c.Right > gpButtons.Width ||
+                       c.Top < 0 ||
+                       c.Bottom > gpButtons.Height;
+            }
+            void Place(Button b, int lx, int ty)
+            {
+                if (b == null) return;
+                b.Left = lx;
+                b.Top = ty;
+                b.Visible = true;
+            }
+            void Bring(Button b)
+            {
+                try { b?.BringToFront(); } catch { }
+            }
+        }
+
+    }
+
+    // Classe d'extension de niveau namespace pour FlatButtonAppearance (doit être en dehors de la classe partielle)
+    static class ButtonAppearanceExtensions
+    {
+        public static void SetBorderSizeSafely(this FlatButtonAppearance appearance, int size)
+        {
             try
             {
-                Control c = gpButtons.Controls[matchName];
-                if (c is Button)
-                    (c as Button).FlatAppearance.BorderSize = 3;
+                if (appearance != null)
+                    appearance.BorderSize = size;
             }
             catch { }
         }

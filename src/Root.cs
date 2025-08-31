@@ -289,6 +289,13 @@ namespace gInk
         public Hotkey Hotkey_Oval = new Hotkey();
         public Hotkey Hotkey_Arrow = new Hotkey();
         public Hotkey Hotkey_Numb = new Hotkey();
+        // --- NEW : hotkeys pour variantes NumberTag (pastilles) ---
+        public Hotkey Hotkey_NTag_ShowWhite = new Hotkey();
+        public Hotkey Hotkey_NTag_ShowBlack = new Hotkey();
+        public Hotkey Hotkey_NTag_HideWhite = new Hotkey();
+        public Hotkey Hotkey_NTag_HideBlack = new Hotkey();
+
+
         public Hotkey Hotkey_Text = new Hotkey();
         public Hotkey Hotkey_Edit = new Hotkey();
         public Hotkey Hotkey_Move = new Hotkey();
@@ -1249,6 +1256,21 @@ namespace gInk
                         case "HOTKEY_NUMBCHIP":
                             Hotkey_Numb.Parse(sPara);
                             break;
+
+                        case "HOTKEY_NTAG_SHOWWHITE":
+                            Hotkey_NTag_ShowWhite.Parse(sPara);
+                            break;
+                        case "HOTKEY_NTAG_SHOWBLACK":
+                            Hotkey_NTag_ShowBlack.Parse(sPara);
+                            break;
+                        case "HOTKEY_NTAG_HIDEWHITE":
+                            Hotkey_NTag_HideWhite.Parse(sPara);
+                            break;
+                        case "HOTKEY_NTAG_HIDEBLACK":
+                            Hotkey_NTag_HideBlack.Parse(sPara);
+                            break;
+
+
                         case "HOTKEY_EDIT":
                             Hotkey_Edit.Parse(sPara);
                             break;
@@ -2279,6 +2301,19 @@ namespace gInk
                         case "HOTKEY_NUMBCHIP":
                             sPara = Hotkey_Numb.ToStringInvariant();
                             break;
+                        case "HOTKEY_NTAG_SHOWWHITE":
+                            sPara = Hotkey_NTag_ShowWhite.ToStringInvariant();
+                            break;
+                        case "HOTKEY_NTAG_SHOWBLACK":
+                            sPara = Hotkey_NTag_ShowBlack.ToStringInvariant();
+                            break;
+                        case "HOTKEY_NTAG_HIDEWHITE":
+                            sPara = Hotkey_NTag_HideWhite.ToStringInvariant();
+                            break;
+                        case "HOTKEY_NTAG_HIDEBLACK":
+                            sPara = Hotkey_NTag_HideBlack.ToStringInvariant();
+                            break;
+
                         case "HOTKEY_EDIT":
                             sPara = Hotkey_Edit.ToStringInvariant();
                             break;
@@ -2848,7 +2883,27 @@ namespace gInk
             // ################ goInk - END ##############################################################
 
 
+            // Ensure NumberTag hotkey keys are present so SaveOptions writes them (adds missing keys)
+            {
+                bool hasShowWhite = false, hasShowBlack = false, hasHideWhite = false, hasHideBlack = false;
+                for (int i = 0; i < writelines.Count; i++)
+                {
+                    string s = writelines[i].TrimStart();
+                    if (s.StartsWith("HOTKEY_NTAG_SHOWWHITE=", StringComparison.InvariantCultureIgnoreCase)) hasShowWhite = true;
+                    if (s.StartsWith("HOTKEY_NTAG_SHOWBLACK=", StringComparison.InvariantCultureIgnoreCase)) hasShowBlack = true;
+                    if (s.StartsWith("HOTKEY_NTAG_HIDEWHITE=", StringComparison.InvariantCultureIgnoreCase)) hasHideWhite = true;
+                    if (s.StartsWith("HOTKEY_NTAG_HIDEBLACK=", StringComparison.InvariantCultureIgnoreCase)) hasHideBlack = true;
+                }
 
+                if (!hasShowWhite)
+                    writelines.Add("HOTKEY_NTAG_SHOWWHITE= " + Hotkey_NTag_ShowWhite.ToStringInvariant());
+                if (!hasShowBlack)
+                    writelines.Add("HOTKEY_NTAG_SHOWBLACK= " + Hotkey_NTag_ShowBlack.ToStringInvariant());
+                if (!hasHideWhite)
+                    writelines.Add("HOTKEY_NTAG_HIDEWHITE= " + Hotkey_NTag_HideWhite.ToStringInvariant());
+                if (!hasHideBlack)
+                    writelines.Add("HOTKEY_NTAG_HIDEBLACK= " + Hotkey_NTag_HideBlack.ToStringInvariant());
+            }
 
             FileStream frini = new FileStream(file, FileMode.Create);
 			StreamWriter swini = new StreamWriter(frini);
