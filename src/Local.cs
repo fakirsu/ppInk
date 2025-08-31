@@ -55,6 +55,12 @@ namespace gInk
         public string QuestionClipArtUpdate;
         public string ButtonActivateDebug;
 
+        public string ButtonNameHandWhite;
+        public string ButtonNameHandBlack;
+        public string OptionsGoHotkeys_HandWhite;
+        public string OptionsGoHotkeys_HandBlack;
+        public string GoOptionsHandWhiteAlpha; // libellé transparence
+
         public string SubToolsBarCbText;
         public string OptionPensOnTwoLinesCb;
         public string OptionsSwapSnapshotBehavior;
@@ -268,6 +274,11 @@ namespace gInk
             ButtonNamePen[17] = "Pen 17";
             ButtonNamePen[18] = "Pen 18";
             ButtonNamePen[19] = "Pen 19";
+            ButtonNameHandWhite = "White Filled Freehand";
+            ButtonNameHandBlack = "Black Filled Freehand";
+            OptionsGoHotkeys_HandWhite = "White filled freehand";
+            OptionsGoHotkeys_HandBlack = "Black filled freehand";
+            GoOptionsHandWhiteAlpha = "White filled opacity (%)";
 
             LoadKeyNames();
 
