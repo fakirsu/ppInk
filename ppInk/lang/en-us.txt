@@ -23,6 +23,9 @@ ButtonNamePen19 = "Pen 19"
 OptionHotkeysExtraPens = "Add Extra Pen; if activated, no pen  hotkeys shall contain ctrl or shift"
 ExtraPensHint = "Click to access Extra Pens Panel"
 
+ButtonNameNumbWhite = "Number tag (first stone white)"
+ButtonNameNumbBlack = "Number tag (first stone black)"
+
 ButtonNamePenwidth = "Pen Width"
 ButtonNameToogle = "Toggle Fading"
 ButtonNameErasor = "Eraser"
