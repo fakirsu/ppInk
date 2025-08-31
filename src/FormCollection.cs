@@ -2105,7 +2105,6 @@ namespace gInk
             int baseDiameter;
             if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
             {
-                // Utiliser directement les valeurs configurées dans Root (pas de réflexion, pas de constantes)
                 int rows = (Root.GridRows >= 2) ? Root.GridRows : 19;
                 int cols = (Root.GridCols >= 2) ? Root.GridCols : 19;
 
@@ -2126,16 +2125,13 @@ namespace gInk
             }
             else
             {
-                // fallback : s'appuyer sur la taille du tag (comportement d'origine)
                 baseDiameter = (int)Math.Round(TagSize * 1.2);
                 baseDiameter = Math.Max(baseDiameter, 10);
             }
 
-            // Appliquer uniquement le pourcentage de la pastille (TagCirclePercent)
             double circlePct = (Root.TagCirclePercent <= 0.0) ? 100.0 : Root.TagCirclePercent;
             int diameterPx = Math.Max(6, (int)Math.Round(baseDiameter * (circlePct / 100.0)));
 
-            // Construire la pastille CENTRÉE sur CursorX0, CursorY0 
             int half = Math.Max(1, diameterPx / 2);
             int left = CursorX0;
             int top = CursorY0;
@@ -2143,72 +2139,54 @@ namespace gInk
             int bottom = CursorY0 + half;
             Stroke st = AddEllipseStroke(left, top, right, bottom, filling);
 
-            // Supprimer explicitement le contour (outline) si présent
             try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
 
-            // Forcer la couleur du texte à un gris neutre (optionnel)
-            Color fixedTagGray = Color.FromArgb(128, 128, 128);
+            // appliquer couleur/opacité stone si nécessaire
             try
             {
-                // calculer la valeur de Transparency (0 = opaque, 255 = transparent)
                 double op = (Root.TagStoneOpacityPercent <= 0.0) ? 0.0 : Math.Max(0.0, Math.Min(100.0, Root.TagStoneOpacityPercent));
                 byte transparencyByte = (byte)Math.Round(255.0 * (1.0 - op / 100.0));
-
-                // appliquer la couleur et l'opacité
-                try
-                {
-                    st.DrawingAttributes.Color = fixedTagGray;
-                    st.DrawingAttributes.Transparency = transparencyByte;
-                }
-                catch { }
+                st.DrawingAttributes.Color = Color.FromArgb(128, 128, 128);
+                st.DrawingAttributes.Transparency = transparencyByte;
             }
             catch { }
 
-            // marquages / propriétés texte ; positionner le texte au centre (InkSpace)
             st.ExtendedProperties.Add(Root.ISTAG_GUID, true);
             Point pt = new Point(CursorX0, CursorY0);
             try { IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt); } catch { }
-            st.ExtendedProperties.Add(Root.TEXT_GUID, txt);
-            st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
-            st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
-            st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
-            st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
-            st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
 
-            // Taille du texte : calculée à partir de TagSize et du pourcentage TagSizePercent (séparé du diamètre)
-            double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
-            double fontSize;
-
-            if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+            // n'ajoute le texte que si l'option est active
+            if (NumberTag_ShowNumber && !string.IsNullOrEmpty(txt))
             {
-                fontSize = Math.Max(6.0, diameterPx * 0.54 * (sizePct / 100.0));
+                st.ExtendedProperties.Add(Root.TEXT_GUID, txt);
+                st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
+                st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
+                st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
+                st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
+                st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
+
+                double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+                double fontSize;
+                if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+                    fontSize = Math.Max(6.0, diameterPx * 0.54 * (sizePct / 100.0));
+                else
+                    fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0));
+
+                double maxFromCircle = Math.Max(6.0, diameterPx * 0.75);
+                if (fontSize > maxFromCircle)
+                    fontSize = maxFromCircle;
+
+                st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+                System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
+                st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
             }
-            else
-            {
-                fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0));
-            }
 
-            double maxFromCircle = Math.Max(6.0, diameterPx * 0.75);
-            if (fontSize > maxFromCircle)
-                fontSize = maxFromCircle;
-
-            st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
-
-            System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
-            st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
             st.ExtendedProperties.Add(Root.ROTATION_GUID, 0.0);
 
             try { ComputeTextBoxSize(ref st); } catch { }
-
             try { if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st); } catch { }
 
-            // Incrémente ici le compteur au moment de la création effective de la pastille
-            try
-            {
-                Root.TagNumbering++;
-            }
-            catch { /* defensif : ne pas casser le dessin si Root est invalide */ }
-
+            // NOTE: on n'incrémente PLUS Root.TagNumbering ici — l'incrément se fait désormais au point de décision d'IC_Stroke (NumberTag_GetAndIncrementText)
             return st;
         }
         /// ################ goInk - END ####################
@@ -2997,8 +2975,19 @@ namespace gInk
                         //Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y,
                         //                        String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
                         //Root.TagNumbering++;
-                        Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y,
-                        String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
+
+
+                        //Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y,
+                        //String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(65 + (Root.TagNumbering - 1) % 26), (Char)(97 + (Root.TagNumbering - 1) % 26)));
+
+                        string raw = NumberTag_GetAndIncrementText(); // renvoie la valeur numérique et incrémente le compteur
+                        int val = 1;
+                        if (!int.TryParse(raw, out val))
+                            val = 1;
+                        string formattedTxt = NumberTag_ShowNumber
+                            ? String.Format(Root.TagFormatting, val, (Char)(65 + (val - 1) % 26), (Char)(97 + (val - 1) % 26))
+                            : "";
+                        Stroke st = AddNumberTagStroke(snapClient.X, snapClient.Y, snapClient.X, snapClient.Y, formattedTxt);
 
 
                         // Alterner le remplissage pour le prochain tag: WHITE <-> BLACK
@@ -4418,8 +4407,12 @@ namespace gInk
             //}
             else if (tool == Tools.NumberTag)
             {
-                // Si la valeur Outside a été utilisée, conserver le comportement initial (fallback -> White)
-                if (Root.FilledSelected == Filling.Outside)
+                
+                NumberTag_Reset(); // reclique sur l'outil => recommence à 1
+            
+
+            // Si la valeur Outside a été utilisée, conserver le comportement initial (fallback -> White)
+            if (Root.FilledSelected == Filling.Outside)
                     Root.FilledSelected = Filling.WhiteFilled;
 
                 // Forcer l'icône de la pastille dans la barre d'outils à la version BLANCHE, quoi qu'il arrive.
@@ -7401,10 +7394,12 @@ namespace gInk
                     btClear_Click(null, null);
 
                     // B) Remise à l'initial du compteur de numéro
-                    Root.TagNumbering = 1;
+                    //Root.TagNumbering = 1;
+                    NumberTag_Reset();
 
                     // C) Repositionner le remplissage sur blanc pour que la 1ère pastille soit blanche
-                    Root.FilledSelected = Filling.WhiteFilled;
+                    //Root.FilledSelected = Filling.WhiteFilled;
+                    Root.FilledSelected = NumberTag_FirstIsWhite ? Filling.WhiteFilled : Filling.BlackFilled;
 
                     i = Tools.NumberTag;
                 }

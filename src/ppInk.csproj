@@ -124,6 +124,9 @@
     <Compile Include="FormCollection.GridSnap.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FormCollection.NumberTagConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Root.GridSnap.cs" />
     <Compile Include="TinyJson.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
