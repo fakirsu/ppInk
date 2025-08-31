@@ -1,5 +1,21 @@
 LanguageName = "Français"
 
+# -> Entrées pour jeu de go 
+ButtonNameNumbWhite = "Pierres numérotées (première pierre blanche)"
+ButtonNameNumbBlack = "Pierres numérotées (première pierre noire)"
+OptionsTabGoHotkeys = "Jeu de go - Raccourcis"
+OptionsGoHotkeys_ShowWhite = "Avec numéros (1 blanche)"
+OptionsGoHotkeys_ShowBlack = "Avec numéros (1 noire)"
+OptionsGoHotkeys_HideWhite = "Sans numéros (1 blanche)"
+OptionsGoHotkeys_HideBlack = "Sans numéros (1 noire)"
+Hotkey_NTag_ShowWhite = "Raccourci : Pierres numérotées (1ère blanche)"
+Hotkey_NTag_ShowBlack = "Raccourci : Pierres numérotées (1ère noire)"
+Hotkey_NTag_HideWhite = "Raccourci : Pierres non numérotées (1ère blanche)"
+Hotkey_NTag_HideBlack = "Raccourci : Pierres non numérotées (1ère noire)"
+# -> Fin des entrées pour jeu de go 
+
+
+
 ButtonNamePen0 = "Stylo 0"
 ButtonNamePen1 = "Stylo 1"
 ButtonNamePen2 = "Stylo 2"
@@ -20,11 +36,9 @@ ButtonNamePen16 = "Stylo 16"
 ButtonNamePen17 = "Stylo 17"
 ButtonNamePen18 = "Stylo 18"
 ButtonNamePen19 = "Stylo 19"
-OptionHotkeysExtraPens = "Jeu de stylo étendu ; si activé, les racourcis des stylos ne doivent pas inclure les touches contrôle et  shift"
+OptionHotkeysExtraPens = "Ajouter des stylos ; si activé, les racourcis des stylos ne doivent pas inclure les touches contrôle et  shift"
 ExtraPensHint = "Cliquer pour accéder au panneau de stylos supplémentaires"
 
-ButtonNameNumbWhite = "Pierres numérotées (première pierre blanche)"
-ButtonNameNumbBlack = "Pierres numérotées (première pierre noire)"
 
 
 ButtonNamePenwidth = "Largeur du trait"

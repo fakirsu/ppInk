@@ -2883,7 +2883,27 @@ namespace gInk
             // ################ goInk - END ##############################################################
 
 
+            // Ensure NumberTag hotkey keys are present so SaveOptions writes them (adds missing keys)
+            {
+                bool hasShowWhite = false, hasShowBlack = false, hasHideWhite = false, hasHideBlack = false;
+                for (int i = 0; i < writelines.Count; i++)
+                {
+                    string s = writelines[i].TrimStart();
+                    if (s.StartsWith("HOTKEY_NTAG_SHOWWHITE=", StringComparison.InvariantCultureIgnoreCase)) hasShowWhite = true;
+                    if (s.StartsWith("HOTKEY_NTAG_SHOWBLACK=", StringComparison.InvariantCultureIgnoreCase)) hasShowBlack = true;
+                    if (s.StartsWith("HOTKEY_NTAG_HIDEWHITE=", StringComparison.InvariantCultureIgnoreCase)) hasHideWhite = true;
+                    if (s.StartsWith("HOTKEY_NTAG_HIDEBLACK=", StringComparison.InvariantCultureIgnoreCase)) hasHideBlack = true;
+                }
 
+                if (!hasShowWhite)
+                    writelines.Add("HOTKEY_NTAG_SHOWWHITE= " + Hotkey_NTag_ShowWhite.ToStringInvariant());
+                if (!hasShowBlack)
+                    writelines.Add("HOTKEY_NTAG_SHOWBLACK= " + Hotkey_NTag_ShowBlack.ToStringInvariant());
+                if (!hasHideWhite)
+                    writelines.Add("HOTKEY_NTAG_HIDEWHITE= " + Hotkey_NTag_HideWhite.ToStringInvariant());
+                if (!hasHideBlack)
+                    writelines.Add("HOTKEY_NTAG_HIDEBLACK= " + Hotkey_NTag_HideBlack.ToStringInvariant());
+            }
 
             FileStream frini = new FileStream(file, FileMode.Create);
 			StreamWriter swini = new StreamWriter(frini);

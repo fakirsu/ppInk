@@ -244,3 +244,20 @@ Stack Trace:
    à System.Windows.Forms.Button.WndProc(Message& m)
    à System.Windows.Forms.NativeWindow.Callback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
 
+08 / 31 / 2025 14:57UIThreadException
+
+version 1.9.0.0 built on 31/08/2025 14:56
+Oops, ppInk crashed! Please include the following information if you plan to contact the developers (a copy of the following information is stored in crash.txt in the application folder):
+
+InvalidArgument=La valeur '6' n'est pas valide pour 'index'.
+Nom du paramètre : index
+
+Stack Trace:
+   à System.Windows.Forms.ComboBox.ObjectCollection.SetItemInternal(Int32 index, Object value)
+   à gInk.FormOptions.FormOptions_LocalReload() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormOptions.cs:ligne 681
+   à gInk.FormOptions.comboLanguage_SelectedIndexChanged(Object sender, EventArgs e) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormOptions.cs:ligne 1503
+   à System.Windows.Forms.ComboBox.OnSelectedIndexChanged(EventArgs e)
+   à System.Windows.Forms.ComboBox.WmReflectCommand(Message& m)
+   à System.Windows.Forms.ComboBox.WndProc(Message& m)
+   à System.Windows.Forms.NativeWindow.Callback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
+
