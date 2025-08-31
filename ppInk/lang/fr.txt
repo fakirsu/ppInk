@@ -12,7 +12,7 @@ Hotkey_NTag_ShowWhite = "Raccourci : Pierres numérotées (1ère blanche)"
 Hotkey_NTag_ShowBlack = "Raccourci : Pierres numérotées (1ère noire)"
 Hotkey_NTag_HideWhite = "Raccourci : Pierres non numérotées (1ère blanche)"
 Hotkey_NTag_HideBlack = "Raccourci : Pierres non numérotées (1ère noire)"
-# -> Fin des entrées pour jeu de go 
+# -> Fin des entrées pour jeu de go ###
 
 ButtonNamePen0 = "Stylo 0"
 ButtonNamePen1 = "Stylo 1"
