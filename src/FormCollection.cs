@@ -6888,6 +6888,48 @@ namespace gInk
                 }
                 LastNumbStatus = pressed;
 
+                // --- NEW : gestion hotkeys spécifiques NumberTag (4 variantes)
+                pressed = (GetKeyState(Root.Hotkey_NTag_ShowWhite.Key) & 0x8000) == 0x8000;
+                if (pressed && !LastNumbStatus && Root.Hotkey_NTag_ShowWhite.ModifierMatch(control, alt, shift, win) && Root.Hotkey_NTag_ShowWhite.Key != 0)
+                {
+                    // pastille numérotée - première blanche
+                    ApplyNumberTagVariant(true, true);
+                    MouseTimeDown = DateTime.Now;
+                    FromHandToLineOnShift = false;
+                }
+                LastNumbStatus = LastNumbStatus || false; // pas d'impact ; on ne conserve pas un Last spécifique pour chacune (optionnel)
+
+                // ShowBlack
+                pressed = (GetKeyState(Root.Hotkey_NTag_ShowBlack.Key) & 0x8000) == 0x8000;
+                if (pressed && Root.Hotkey_NTag_ShowBlack.ModifierMatch(control, alt, shift, win) && Root.Hotkey_NTag_ShowBlack.Key != 0)
+                {
+                    ApplyNumberTagVariant(true, false);
+                    MouseTimeDown = DateTime.Now;
+                    FromHandToLineOnShift = false;
+                }
+
+                // HideWhite
+                pressed = (GetKeyState(Root.Hotkey_NTag_HideWhite.Key) & 0x8000) == 0x8000;
+                if (pressed && Root.Hotkey_NTag_HideWhite.ModifierMatch(control, alt, shift, win) && Root.Hotkey_NTag_HideWhite.Key != 0)
+                {
+                    ApplyNumberTagVariant(false, true);
+                    MouseTimeDown = DateTime.Now;
+                    FromHandToLineOnShift = false;
+                }
+
+                // HideBlack
+                pressed = (GetKeyState(Root.Hotkey_NTag_HideBlack.Key) & 0x8000) == 0x8000;
+                if (pressed && Root.Hotkey_NTag_HideBlack.ModifierMatch(control, alt, shift, win) && Root.Hotkey_NTag_HideBlack.Key != 0)
+                {
+                    ApplyNumberTagVariant(false, false);
+                    MouseTimeDown = DateTime.Now;
+                    FromHandToLineOnShift = false;
+                }
+
+
+
+
+
                 pressed = (GetKeyState(Root.Hotkey_Text.Key) & 0x8000) == 0x8000;
                 if (pressed && !LastTextStatus && Root.Hotkey_Text.ModifierMatch(control, alt, shift, win))
                 {

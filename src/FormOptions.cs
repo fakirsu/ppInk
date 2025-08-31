@@ -36,6 +36,17 @@ namespace gInk
         /// ################ goInk - START ####################
         // Controls pour l'onglet "Jeu de go"
         private TabPage tabPageGridTags;
+        // --- NEW : onglet "Jeu de go - Raccourcis" et contrôles hotkeys
+        private TabPage tabPageGoHotkeys;
+        private Label lblHK_ShowWhite;
+        private Label lblHK_ShowBlack;
+        private Label lblHK_HideWhite;
+        private Label lblHK_HideBlack;
+        private HotkeyInputBox hiHK_ShowWhite;
+        private HotkeyInputBox hiHK_ShowBlack;
+        private HotkeyInputBox hiHK_HideWhite;
+        private HotkeyInputBox hiHK_HideBlack;
+
         private Label lblTagCirclePerc;
         private NumericUpDown nudTagCirclePerc;
         private Label lblTagSizePerc;
@@ -61,6 +72,48 @@ namespace gInk
             // création dynamique de l'onglet "Jeu de go"
             tabPageGridTags = new TabPage();
             tabPageGridTags.Text = "Jeu de go";
+
+            // --- NEW : création simple de l'onglet "Jeu de go - Raccourcis" (placer dans l'initialisation des tabs)
+            tabPageGoHotkeys = new TabPage();
+            tabPageGoHotkeys.Text = "Jeu de go - Raccourcis";
+
+            int baseLeft = 12;
+            int col2 = 260;
+            int lineH = 30;
+            int top0 = 16;
+
+            lblHK_ShowWhite = new Label() { Left = baseLeft, Top = top0, AutoSize = true, Text = "Numérotée (1 blanche)" };
+            hiHK_ShowWhite = new HotkeyInputBox() { Left = col2, Top = top0 - 3, Width = 180 };
+            lblHK_ShowBlack = new Label() { Left = baseLeft, Top = top0 + lineH, AutoSize = true, Text = "Numérotée (1 noire)" };
+            hiHK_ShowBlack = new HotkeyInputBox() { Left = col2, Top = top0 + lineH - 3, Width = 180 };
+            lblHK_HideWhite = new Label() { Left = baseLeft, Top = top0 + 2 * lineH, AutoSize = true, Text = "Vide (1 blanche)" };
+            hiHK_HideWhite = new HotkeyInputBox() { Left = col2, Top = top0 + 2 * lineH - 3, Width = 180 };
+            lblHK_HideBlack = new Label() { Left = baseLeft, Top = top0 + 3 * lineH, AutoSize = true, Text = "Vide (1 noire)" };
+            hiHK_HideBlack = new HotkeyInputBox() { Left = col2, Top = top0 + 3 * lineH - 3, Width = 180 };
+
+            // Abonnements
+            hiHK_ShowWhite.OnHotkeyChanged += hi_OnHotkeyChanged;
+            hiHK_ShowBlack.OnHotkeyChanged += hi_OnHotkeyChanged;
+            hiHK_HideWhite.OnHotkeyChanged += hi_OnHotkeyChanged;
+            hiHK_HideBlack.OnHotkeyChanged += hi_OnHotkeyChanged;
+
+            // Ajout dans l'onglet
+            tabPageGoHotkeys.Controls.AddRange(new Control[]
+            {
+    lblHK_ShowWhite, hiHK_ShowWhite,
+    lblHK_ShowBlack, hiHK_ShowBlack,
+    lblHK_HideWhite, hiHK_HideWhite,
+    lblHK_HideBlack, hiHK_HideBlack
+            });
+
+            // Ajouter la page au TabControl existant (ex : VideoTabCtrl) si pas déjà présent
+            try
+            {
+                if (!VideoTabCtrl.TabPages.Contains(tabPageGoHotkeys))
+                    VideoTabCtrl.TabPages.Add(tabPageGoHotkeys);
+            }
+            catch { }
+
 
             lblTagCirclePerc = new Label();
             lblTagCirclePerc.Text = "Diamètre des pierres (%) :";
@@ -470,6 +523,12 @@ namespace gInk
             hiToolOval.Hotkey = Root.Hotkey_Oval;
             hiToolArrow.Hotkey = Root.Hotkey_Arrow;
             hiToolNumb.Hotkey = Root.Hotkey_Numb;
+            // NEW : liaisons des 4 hotkeys NumberTag
+            hiHK_ShowWhite.Hotkey = Root.Hotkey_NTag_ShowWhite;
+            hiHK_ShowBlack.Hotkey = Root.Hotkey_NTag_ShowBlack;
+            hiHK_HideWhite.Hotkey = Root.Hotkey_NTag_HideWhite;
+            hiHK_HideBlack.Hotkey = Root.Hotkey_NTag_HideBlack;
+
             HiToolText.Hotkey = Root.Hotkey_Text;
             hiToolEdit.Hotkey = Root.Hotkey_Edit;
             hiToolMagnet.Hotkey = Root.Hotkey_Magnet;
@@ -1330,33 +1389,113 @@ namespace gInk
 			Root.AllowHotkeyInPointerMode = cbAllowHotkeyInPointer.Checked;
 		}
 
-		private void hi_OnHotkeyChanged(object sender, EventArgs e)
-		{
-			foreach (Control c in tabPage3.Controls)
-			{
-				if (c.GetType() != typeof(HotkeyInputBox))
-					continue;
-				HotkeyInputBox hi = (HotkeyInputBox)c;
+        //private void hi_OnHotkeyChanged(object sender, EventArgs e)
+        //{
+        //	foreach (Control c in tabPage3.Controls)
+        //	{
+        //		if (c.GetType() != typeof(HotkeyInputBox))
+        //			continue;
+        //		HotkeyInputBox hi = (HotkeyInputBox)c;
 
-				hi.ExternalConflictFlag = false;
-				foreach (Control c2 in tabPage3.Controls)
-				{
-					if (c2.GetType() != typeof(HotkeyInputBox))
-						continue;
-					if (c == c2)
-						continue;
-					HotkeyInputBox hi2 = (HotkeyInputBox)c2;
+        //		hi.ExternalConflictFlag = false;
+        //		foreach (Control c2 in tabPage3.Controls)
+        //		{
+        //			if (c2.GetType() != typeof(HotkeyInputBox))
+        //				continue;
+        //			if (c == c2)
+        //				continue;
+        //			HotkeyInputBox hi2 = (HotkeyInputBox)c2;
 
-					if (hi.Hotkey.ConflictWith(hi2.Hotkey))
-					{
-						hi.ExternalConflictFlag = true;
-						break;
-					}
-				}
-			}
-		}
+        //			if (hi.Hotkey.ConflictWith(hi2.Hotkey))
+        //			{
+        //				hi.ExternalConflictFlag = true;
+        //				break;
+        //			}
+        //		}
 
-		private void comboLanguage_SelectedIndexChanged(object sender, EventArgs e)
+        //              // --- NEW : inclure tabPageGoHotkeys dans la détection de conflit
+        //              foreach (Control c in tabPageGoHotkeys.Controls)
+        //              {
+        //                  if (c.GetType() != typeof(HotkeyInputBox))
+        //                      continue;
+        //                  HotkeyInputBox hi = (HotkeyInputBox)c;
+        //                  hi.ExternalConflictFlag = false;
+        //                  // comparer avec tabPage3
+        //                  foreach (Control c2 in tabPage3.Controls)
+        //                  {
+        //                      if (c2.GetType() != typeof(HotkeyInputBox)) continue;
+        //                      if (c == c2) continue;
+        //                      HotkeyInputBox hi2 = (HotkeyInputBox)c2;
+        //                      if (hi.Hotkey.ConflictWith(hi2.Hotkey)) { hi.ExternalConflictFlag = true; break; }
+        //                  }
+        //                  if (hi.ExternalConflictFlag) continue;
+        //                  // comparer avec son propre onglet
+        //                  foreach (Control c2 in tabPageGoHotkeys.Controls)
+        //                  {
+        //                      if (c2.GetType() != typeof(HotkeyInputBox)) continue;
+        //                      if (c == c2) continue;
+        //                      HotkeyInputBox hi2 = (HotkeyInputBox)c2;
+        //                      if (hi.Hotkey.ConflictWith(hi2.Hotkey)) { hi.ExternalConflictFlag = true; break; }
+        //                  }
+        //              }
+
+        //          }
+        //}
+
+        private void hi_OnHotkeyChanged(object sender, EventArgs e)
+        {
+            // Rassembler tous les HotkeyInputBox des deux onglets concernés
+            var boxes = new List<HotkeyInputBox>();
+            foreach (Control ct in tabPage3.Controls)
+                if (ct is HotkeyInputBox)
+                    boxes.Add((HotkeyInputBox)ct);
+
+            if (tabPageGoHotkeys != null)
+            {
+                foreach (Control ct in tabPageGoHotkeys.Controls)
+                    if (ct is HotkeyInputBox)
+                        boxes.Add((HotkeyInputBox)ct);
+            }
+
+            // initialisation des flags
+            foreach (var hi in boxes)
+                hi.ExternalConflictFlag = false;
+
+            // détection des conflits (comparaisons pair-à-pair)
+            for (int i = 0; i < boxes.Count; i++)
+            {
+                var hi_i = boxes[i];
+                if (hi_i?.Hotkey == null) continue;
+
+                for (int j = 0; j < boxes.Count; j++)
+                {
+                    if (i == j) continue;
+                    var hi_j = boxes[j];
+                    if (hi_j?.Hotkey == null) continue;
+
+                    try
+                    {
+                        if (hi_i.Hotkey.ConflictWith(hi_j.Hotkey))
+                        {
+                            hi_i.ExternalConflictFlag = true;
+                            break; // suffit de trouver un conflit
+                        }
+                    }
+                    catch
+                    {
+                        // en cas d'exception, on ignore et on continue (ne pas casser l'UI)
+                    }
+                }
+            }
+
+            // mettre à jour l'affichage texte des contrôles si nécessaire
+            foreach (var hi in boxes)
+                hi.UpdateText();
+        }
+
+
+
+        private void comboLanguage_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (comboLanguage.Text != Root.Local.GetLanguagenameByFilename(Root.Local.CurrentLanguageFile))
 			{

@@ -214,6 +214,27 @@ namespace gInk
             catch { }
         }
 
+        //private void NumberTagBtn_Click(object sender, EventArgs e)
+        //{
+        //    var b = sender as Button;
+        //    if (b == null) return;
+        //    var tup = b.Tag as Tuple<bool, bool>;
+        //    if (tup == null) return;
+
+        //    // Nettoyage encre (comportement précédent conservé)
+        //    try { btClear_Click(null, null); } catch { }
+
+        //    NumberTag_ShowNumber = tup.Item1;
+        //    NumberTag_FirstIsWhite = tup.Item2;
+        //    NumberTag_Reset();
+        //    Root.FilledSelected = NumberTag_FirstIsWhite ? Filling.WhiteFilled : Filling.BlackFilled;
+
+        //    SelectTool(Tools.NumberTag, Root.FilledSelected);
+        //    UpdateNumberTagButtonBorders();
+        //    InvalidateNumberTagButtons();
+        //    Root.UponButtonsUpdate |= 0x2;
+        //}
+
         private void NumberTagBtn_Click(object sender, EventArgs e)
         {
             var b = sender as Button;
@@ -221,11 +242,18 @@ namespace gInk
             var tup = b.Tag as Tuple<bool, bool>;
             if (tup == null) return;
 
+            // Délègue l'action à un helper centralisé (utilisable par UI et hotkeys)
+            ApplyNumberTagVariant(tup.Item1, tup.Item2);
+        }
+
+        // helper utilisé à la fois par les boutons et par les hotkeys
+        public void ApplyNumberTagVariant(bool showNumbers, bool firstIsWhite)
+        {
             // Nettoyage encre (comportement précédent conservé)
             try { btClear_Click(null, null); } catch { }
 
-            NumberTag_ShowNumber = tup.Item1;
-            NumberTag_FirstIsWhite = tup.Item2;
+            NumberTag_ShowNumber = showNumbers;
+            NumberTag_FirstIsWhite = firstIsWhite;
             NumberTag_Reset();
             Root.FilledSelected = NumberTag_FirstIsWhite ? Filling.WhiteFilled : Filling.BlackFilled;
 
@@ -234,6 +262,7 @@ namespace gInk
             InvalidateNumberTagButtons();
             Root.UponButtonsUpdate |= 0x2;
         }
+
 
         private void ClearNumberTagButtonBorders()
         {
