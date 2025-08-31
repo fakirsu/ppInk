@@ -854,19 +854,51 @@ namespace gInk
                 btOval.Visible = true;
                 SetSmallButtonNext(btRect, btOval, dim2s);
 
+                //btArrow.Height = dim1s;
+                //btArrow.Width = dim1s;
+                //btArrow.Visible = true;
+                //SetButtonPosition(btRect, btArrow, dim3);
+                //btNumb.Height = dim1s;
+                //btNumb.Width = dim1s;
+                //btNumb.Visible = true;
+                //SetSmallButtonNext(btArrow, btNumb, dim2s);
+
+                //btText.Height = dim1s;
+                //btText.Width = dim1s;
+                //btText.Visible = true;
+                //SetButtonPosition(btArrow, btText, dim3);
+
                 btArrow.Height = dim1s;
                 btArrow.Width = dim1s;
                 btArrow.Visible = true;
                 SetButtonPosition(btRect, btArrow, dim3);
-                btNumb.Height = dim1s;
-                btNumb.Width = dim1s;
-                btNumb.Visible = true;
-                SetSmallButtonNext(btArrow, btNumb, dim2s);
 
+                // Création et insertion des 4 boutons NumberTag (show/hide × white/black)
+                Button lastNumBtn = CreateNumberTagButtons(dim1s, dim2s, btArrow);
+
+                //// Positionner btText après le dernier bouton number-tag
+                //btText.Height = dim1s;
+                //btText.Width = dim1s;
+                //btText.Visible = true;
+                //SetButtonPosition(lastNumBtn, btText, dim3);
+
+                //// Positionner btText comme avant, par rapport à btArrow (garde la ligne principale d'icônes)
+                //btText.Height = dim1s;
+                //btText.Width = dim1s;
+                //btText.Visible = true;
+                //SetButtonPosition(btArrow, btText, dim3);
+
+
+                // Positionner btText APRÈS la série des boutons number‑tag pour éviter chevauchement
                 btText.Height = dim1s;
                 btText.Width = dim1s;
                 btText.Visible = true;
-                SetButtonPosition(btArrow, btText, dim3);
+                SetButtonPosition(lastNumBtn, btText, dim3);
+
+
+
+
+
 
                 btClipArt.Height = dim1s;
                 btClipArt.Width = dim1s;
