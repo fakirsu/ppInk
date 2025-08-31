@@ -420,10 +420,14 @@
     <Content Include="tool_numb.png" />
     <Content Include="tool_numb_act.png" />
     <Content Include="tool_numb_fillB.png" />
-    <Content Include="tool_numb_fillBfalse.png" />
+    <Content Include="tool_numb_fillBfalse.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="tool_numb_fillC.png" />
     <Content Include="tool_numb_fillW.png" />
-    <Content Include="tool_numb_fillWfalse.png" />
+    <Content Include="tool_numb_fillWfalse.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="tool_oval_act.png" />
     <Content Include="tool_oval_filledB.png" />
     <Content Include="tool_oval_filledC.png" />
