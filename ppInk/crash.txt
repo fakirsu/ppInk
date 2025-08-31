@@ -149,3 +149,33 @@ Stack Trace:
    à System.Windows.Forms.NotifyIcon.WndProc(Message& msg)
    à System.Windows.Forms.NativeWindow.Callback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
 
+08 / 31 / 2025 12:18UnhandledException
+
+version 1.9.0.0 built on 31/08/2025 12:18
+Oops, ppInk crashed! Please include the following information if you plan to contact the developers:
+
+Les contrôles ButtonBase ne prennent pas en charge l'affectation de Transparent à BorderColor.
+
+Stack Trace:
+   à System.Windows.Forms.FlatButtonAppearance.set_BorderColor(Color value)
+   à gInk.FormCollection.CreateNumberTagButtons(Int32 dim1s, Int32 dim2s, Button anchor) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormCollection.NumberTagConfig.cs:ligne 247
+   à gInk.FormCollection.Initialize() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormCollection.cs:ligne 1048
+   à gInk.FormCollection..ctor(Root root) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormCollection.cs:ligne 591
+   à gInk.Root..ctor() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Root.cs:ligne 569
+   à gInk.Program.Main(String[] args) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Program.cs:ligne 92
+
+08 / 31 / 2025 12:18UnhandledException
+
+version 1.9.0.0 built on 31/08/2025 12:18
+Oops, ppInk crashed! Please include the following information if you plan to contact the developers:
+
+Les contrôles ButtonBase ne prennent pas en charge l'affectation de Transparent à BorderColor.
+
+Stack Trace:
+   à System.Windows.Forms.FlatButtonAppearance.set_BorderColor(Color value)
+   à gInk.FormCollection.CreateNumberTagButtons(Int32 dim1s, Int32 dim2s, Button anchor) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormCollection.NumberTagConfig.cs:ligne 247
+   à gInk.FormCollection.Initialize() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormCollection.cs:ligne 1048
+   à gInk.FormCollection..ctor(Root root) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\FormCollection.cs:ligne 591
+   à gInk.Root..ctor() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Root.cs:ligne 569
+   à gInk.Program.Main(String[] args) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Program.cs:ligne 92
+

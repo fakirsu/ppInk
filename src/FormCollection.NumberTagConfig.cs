@@ -47,9 +47,67 @@ namespace gInk
             return s;
         }
 
-        // Rogne les bords totalement transparents et recentre dans un carré dim×dim
+        //// Rogne les bords totalement transparents et recentre dans un carré dim×dim
+        //private Bitmap LoadNumberTagIconTrimmed(string name, int dim)
+        //{
+        //    Bitmap src = null;
+        //    try { src = getImgFromDiskOrRes(name, ImageExts); }
+        //    catch { return new Bitmap(dim, dim); }
+
+        //    int minX = src.Width, minY = src.Height, maxX = -1, maxY = -1;
+        //    for (int y = 0; y < src.Height; y++)
+        //    {
+        //        for (int x = 0; x < src.Width; x++)
+        //        {
+        //            Color c = src.GetPixel(x, y);
+        //            if (c.A > 8)
+        //            {
+        //                if (x < minX) minX = x;
+        //                if (y < minY) minY = y;
+        //                if (x > maxX) maxX = x;
+        //                if (y > maxY) maxY = y;
+        //            }
+        //        }
+        //    }
+        //    if (maxX < 0)
+        //    {
+        //        Bitmap empty = new Bitmap(dim, dim);
+        //        src.Dispose();
+        //        return empty;
+        //    }
+        //    int w = maxX - minX + 1;
+        //    int h = maxY - minY + 1;
+        //    Rectangle crop = new Rectangle(minX, minY, w, h);
+        //    Bitmap cropped = new Bitmap(w, h);
+        //    using (Graphics g = Graphics.FromImage(cropped))
+        //    {
+        //        g.DrawImage(src, new Rectangle(0, 0, w, h), crop, GraphicsUnit.Pixel);
+        //    }
+        //    src.Dispose();
+
+        //    Bitmap dst = new Bitmap(dim, dim);
+        //    using (Graphics g = Graphics.FromImage(dst))
+        //    {
+        //        g.Clear(Color.Transparent);
+        //        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+        //        float scale = Math.Min((float)dim / w, (float)dim / h);
+        //        int dw = (int)Math.Round(w * scale);
+        //        int dh = (int)Math.Round(h * scale);
+        //        int ox = (dim - dw) / 2;
+        //        int oy = (dim - dh) / 2;
+        //        g.DrawImage(cropped, new Rectangle(ox, oy, dw, dh), new Rectangle(0, 0, w, h), GraphicsUnit.Pixel);
+        //    }
+        //    cropped.Dispose();
+        //    return dst;
+        //}
+
+        // Rogne les bords, puis normalise le diamètre visible pour assurer une taille identique entre variantes
         private Bitmap LoadNumberTagIconTrimmed(string name, int dim)
         {
+            const int AlphaThreshold = 16;                 // seuil minimal pour considérer le pixel "non vide"
+            const float NormalizedContentRatio = 0.90f;    // pourcentage du côté dim occupé par le disque (adapter si nécessaire)
+            const bool DebugFrame = false;                 // true => dessine un cadre vert (diagnostic)
+
             Bitmap src = null;
             try { src = getImgFromDiskOrRes(name, ImageExts); }
             catch { return new Bitmap(dim, dim); }
@@ -59,8 +117,8 @@ namespace gInk
             {
                 for (int x = 0; x < src.Width; x++)
                 {
-                    Color c = src.GetPixel(x, y);
-                    if (c.A > 8)
+                    var c = src.GetPixel(x, y);
+                    if (c.A > AlphaThreshold)
                     {
                         if (x < minX) minX = x;
                         if (y < minY) minY = y;
@@ -69,15 +127,20 @@ namespace gInk
                     }
                 }
             }
+
             if (maxX < 0)
             {
+                // Icône vide
                 Bitmap empty = new Bitmap(dim, dim);
                 src.Dispose();
                 return empty;
             }
+
             int w = maxX - minX + 1;
             int h = maxY - minY + 1;
             Rectangle crop = new Rectangle(minX, minY, w, h);
+
+            // Extraction
             Bitmap cropped = new Bitmap(w, h);
             using (Graphics g = Graphics.FromImage(cropped))
             {
@@ -85,21 +148,39 @@ namespace gInk
             }
             src.Dispose();
 
+            // Normalisation du diamètre : on part de la plus grande dimension
+            int contentSize = Math.Max(w, h);
+            int targetContent = Math.Max(1, (int)Math.Round(dim * NormalizedContentRatio));
+            float scale = targetContent / (float)contentSize;
+
+            int dw = (int)Math.Round(w * scale);
+            int dh = (int)Math.Round(h * scale);
+
+            // Centrage
+            int ox = (dim - dw) / 2;
+            int oy = (dim - dh) / 2;
+
             Bitmap dst = new Bitmap(dim, dim);
             using (Graphics g = Graphics.FromImage(dst))
             {
                 g.Clear(Color.Transparent);
                 g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                float scale = Math.Min((float)dim / w, (float)dim / h);
-                int dw = (int)Math.Round(w * scale);
-                int dh = (int)Math.Round(h * scale);
-                int ox = (dim - dw) / 2;
-                int oy = (dim - dh) / 2;
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
                 g.DrawImage(cropped, new Rectangle(ox, oy, dw, dh), new Rectangle(0, 0, w, h), GraphicsUnit.Pixel);
+
+                if (DebugFrame)
+                {
+                    using (var pen = new Pen(Color.Lime, 1))
+                        g.DrawRectangle(pen, 0, 0, dim - 1, dim - 1);
+                }
             }
+
             cropped.Dispose();
             return dst;
         }
+
 
         public Button CreateNumberTagButtons(int dim1s, int dim2s, Button anchor)
         {
@@ -163,6 +244,7 @@ namespace gInk
                 TabStop = false
             };
             bShowWhite.FlatAppearance.BorderSize = 0;
+
             try { bShowWhite.BackgroundImage = LoadNumberTagIconTrimmed(cfg[0].icon, dim1s); } catch { }
             bShowWhite.Tag = Tuple.Create(cfg[0].show, cfg[0].firstWhite);
             try { toolTip.SetToolTip(bShowWhite, cfg[0].tip + " (1)"); } catch { }
@@ -312,15 +394,59 @@ namespace gInk
             Root.UponButtonsUpdate |= 0x2;
         }
 
-        // Met à jour l'apparence (bordure) des 4 boutons pour montrer la sélection active
+
+        // Efface toutes les bordures des 4 boutons de pastilles
+        private void ClearNumberTagButtonBorders()
+        {
+            void clr(Button b)
+            {
+                if (b == null) return;
+                b.FlatAppearance.BorderSize = 0;
+            }
+            clr(btNTag_Show_White);
+            clr(btNTag_Show_Black);
+            clr(btNTag_Hide_White);
+            clr(btNTag_Hide_Black);
+        }
+
+
+        //// Met à jour l'apparence (bordure) des 4 boutons pour montrer la sélection active
+        //private void UpdateNumberTagButtonBorders()
+        //{
+        //    foreach (Control c in gpButtons.Controls)
+        //    {
+        //        if (!(c is Button)) continue;
+        //        if (!c.Name.StartsWith("btNTag_")) continue;
+        //        (c as Button).FlatAppearance.BorderSize = 0;
+        //    }
+
+        //    string matchName;
+        //    if (NumberTag_ShowNumber && NumberTag_FirstIsWhite) matchName = "btNTag_0";
+        //    else if (NumberTag_ShowNumber && !NumberTag_FirstIsWhite) matchName = "btNTag_1";
+        //    else if (!NumberTag_ShowNumber && NumberTag_FirstIsWhite) matchName = "btNTag_2";
+        //    else matchName = "btNTag_3";
+
+        //    try
+        //    {
+        //        Control c = gpButtons.Controls[matchName];
+        //        if (c is Button)
+        //            (c as Button).FlatAppearance.BorderSize = 3;
+        //    }
+        //    catch { }
+        //}
+
+
+        // Met à jour l'apparence (bordure) des 4 boutons pour montrer la sélection active (uniquement si l'outil NumberTag est actif)
         private void UpdateNumberTagButtonBorders()
         {
-            foreach (Control c in gpButtons.Controls)
+            if (Root == null || Root.ToolSelected != Tools.NumberTag)
             {
-                if (!(c is Button)) continue;
-                if (!c.Name.StartsWith("btNTag_")) continue;
-                (c as Button).FlatAppearance.BorderSize = 0;
+                // Si on n'est plus dans l'outil NumberTag, on nettoie tout
+                ClearNumberTagButtonBorders();
+                return;
             }
+
+            ClearNumberTagButtonBorders();
 
             string matchName;
             if (NumberTag_ShowNumber && NumberTag_FirstIsWhite) matchName = "btNTag_0";
@@ -330,11 +456,16 @@ namespace gInk
 
             try
             {
-                Control c = gpButtons.Controls[matchName];
-                if (c is Button)
-                    (c as Button).FlatAppearance.BorderSize = 3;
+                var c = gpButtons.Controls[matchName] as Button;
+                if (c != null)
+                {
+                    c.FlatAppearance.BorderSize = 3;
+                    // Optionnel : couleur de bordure personnalisée
+                    c.FlatAppearance.BorderColor = Color.Orange; // Ajuster si besoin
+                }
             }
             catch { }
         }
+
     }
 }

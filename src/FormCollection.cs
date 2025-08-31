@@ -1058,15 +1058,47 @@ namespace gInk
                 }
                 catch { }
 
-                // Placer btText après la série NumberTag (sur la même rangée haute en horizontal)
-                btText.Height = dim1s;
+                //// Placer btText après la série NumberTag (sur la même rangée haute en horizontal)
+                //btText.Height = dim1s;
 
 
-                // Placer btText après la série NumberTag (sur la même rangée haute en horizontal)
+                //// Placer btText après la série NumberTag (sur la même rangée haute en horizontal)
+                //btText.Height = dim1s;
+                //btText.Width = dim1s;
+                //btText.Visible = true;
+                //SetButtonPosition(lastNumBtn, btText, dim3);
+
+                // Placer btText après la série NumberTag
                 btText.Height = dim1s;
                 btText.Width = dim1s;
                 btText.Visible = true;
-                SetButtonPosition(lastNumBtn, btText, dim3);
+
+                if (Root.ToolbarOrientation <= Orientation.Horizontal)
+                {
+                    // Barre horizontale : on reste sur la logique précédente (à droite du bloc)
+                    SetButtonPosition(lastNumBtn, btText, dim3);
+                }
+                else
+                {
+                    // Barre verticale : on calcule la position sous la rangée basse pour éviter tout chevauchement
+                    int maxBottom = 0;
+                    try
+                    {
+                        maxBottom = Math.Max(
+                            Math.Max(btNTag_Show_White?.Bottom ?? 0, btNTag_Show_Black?.Bottom ?? 0),
+                            Math.Max(btNTag_Hide_White?.Bottom ?? 0, btNTag_Hide_Black?.Bottom ?? 0)
+                        );
+                    }
+                    catch { }
+
+                    // Aligné sur la colonne gauche des pastilles
+                    if (btNTag_Show_White != null)
+                        btText.Left = btNTag_Show_White.Left;
+                    else
+                        btText.Left = lastNumBtn.Left; // fallback
+
+                    btText.Top = maxBottom + dim3;
+                }
 
 
 
@@ -4718,13 +4750,23 @@ namespace gInk
                 btArrow.BackgroundImage.Dispose();
                 btArrow.BackgroundImage = BuildArrowBtn(Root.ArrowHead[Root.CurrentArrow], Root.ArrowTail[Root.CurrentArrow], Color.Black);
             }
-            //btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb", ImageExts);
-            // Affiche par défaut l'icône pastille BLANCHE avant tout clic
-            //btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
+            ////btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb", ImageExts);
+            //// Affiche par défaut l'icône pastille BLANCHE avant tout clic
+            ////btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
+            //try
+            //{
+            //    // met à jour les bordures / état visuel des 4 pastilles
+            //    UpdateNumberTagButtonBorders();
+            //}
+            //catch { }
+
+
             try
             {
-                // met à jour les bordures / état visuel des 4 pastilles
-                UpdateNumberTagButtonBorders();
+                if (tool == Tools.NumberTag)
+                    UpdateNumberTagButtonBorders();
+                else
+                    ClearNumberTagButtonBorders();
             }
             catch { }
 
