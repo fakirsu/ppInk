@@ -600,6 +600,143 @@ namespace gInk
         private string MemoHintClose;
         private string MemoHintDock;
 
+
+
+        // Calcule dynamiquement les dimensions de la barre d'outils
+        
+        private void ComputeToolbarDimensions(out int dim, out int dim1, out int dim1s, out int dim2,
+                                      out int dim2s, out int dim3, out int dim4, out int dim4s)
+        {
+            // DPI scale safe try
+            float dpiScale = 1.0f;
+            try
+            {
+                using (Graphics g = this.CreateGraphics())
+                    dpiScale = g.DpiY / 96f;
+            }
+            catch { dpiScale = 1.0f; }
+
+            // taille de référence basée sur la hauteur de l'écran et l'option ToolbarHeight
+            dim = (int)Math.Round(Screen.PrimaryScreen.Bounds.Height * Root.ToolbarHeight * dpiScale);
+            dim = Math.Max(40, dim); // minimum raisonnable
+
+            dim1 = (int)(dim * NormSizePercent);
+            dim1s = (int)(dim * SmallSizePercent);
+            dim2 = (int)(dim * TopPercent);
+            dim2s = (int)(dim * SmallButtonNext);
+            dim3 = Math.Max(1, (int)Math.Round(dim * InterButtonGap));
+            dim4 = dim1 + dim3;
+            dim4s = dim1s + dim3;
+
+            // Estimation de l'espace nécessaire selon le contenu actif (nombre de stylos, boutons activés)
+            int nbPen = 0;
+            for (int b = 0; b < Root.MaxDisplayedPens; b++)
+                if (Root.PenEnabled[b]) nbPen++;
+
+            int penSec = Root.PensOnTwoLines ? ((int)Math.Ceiling(nbPen / 2.0) * dim4s) : (nbPen * dim4);
+
+            int contentLength = (int)((dim1 * .5 + dim3) + (penSec
+                + (Root.PensExtraSet ? (dim4 / 6) : 0)
+                + (Root.ToolsEnabled ? (6 * dim4s) : 0)
+                + (Root.EraserEnabled ? dim4 : 0)
+                + (Root.PanEnabled ? 2 * dim4s : 0)
+                + (Root.PointerEnabled ? dim4 : 0)
+                + (Root.PenWidthEnabled ? dim4 : 0)
+                + (Root.InkVisibleEnabled ? dim4 : 0)
+                + (Root.ZoomEnabled > 0 ? dim4s : 0)
+                + (Root.SnapEnabled ? dim4 : 0)
+                + (Root.UndoEnabled ? dim4 : 0)
+                + (Root.ClearEnabled ? dim4 : 0)
+                + (Root.PagesEnabled ? dim4s : 0)
+                + (Root.LoadSaveEnabled ? dim4s : 0)
+                + ((Root.VideoRecordMode != VideoRecordMode.NoVideo) ? dim4 : 0)
+                + dim1));
+
+            // limite pour ne pas dépasser la zone utile écran
+            // -> utiliser le bureau virtuel (tous écrans) pour autoriser une barre plus large sur multi‑moniteurs
+            int maxMain = (Root.ToolbarOrientation <= Orientation.Horizontal)
+                          ? SystemInformation.VirtualScreen.Width - 40
+                          : SystemInformation.VirtualScreen.Height - 40;
+
+            if (contentLength > maxMain && maxMain > 0)
+            {
+                float scale = (float)maxMain / contentLength;
+                dim1 = Math.Max(12, (int)(dim1 * scale));
+                dim1s = Math.Max(10, (int)(dim1s * scale));
+                dim3 = Math.Max(1, (int)(dim3 * scale));
+                dim4 = dim1 + dim3;
+                dim4s = dim1s + dim3;
+            }
+
+            // garanties minimales
+            dim = Math.Max(32, dim);
+            dim1 = Math.Max(12, dim1);
+            dim1s = Math.Max(10, dim1s);
+        }
+
+
+        // Ajuste la taille réelle de la barre après création/positionnement de tous les boutons.
+        // Corrige la troncation quand le calcul théorique sous-estime la largeur/hauteur.
+        private void AdjustToolbarSize()
+        {
+            if (gpButtons == null) return;
+            int maxRight = 0, maxBottom = 0;
+            foreach (Control c in gpButtons.Controls)
+            {
+                if (!c.Visible) continue;
+                if (c.Right > maxRight) maxRight = c.Right;
+                if (c.Bottom > maxBottom) maxBottom = c.Bottom;
+            }
+            const int margin = 2; // petite marge de respiration
+
+            if (Root.ToolbarOrientation <= Orientation.Horizontal)
+            {
+                int neededWidth = maxRight + margin;
+                if (neededWidth > gpButtons.Width)
+                    gpButtons.Width = neededWidth;
+                int neededHeight = maxBottom + margin;
+                if (neededHeight > gpButtons.Height)
+                    gpButtons.Height = neededHeight;
+            }
+            else
+            {
+                int neededHeight = maxBottom + margin;
+                if (neededHeight > gpButtons.Height)
+                    gpButtons.Height = neededHeight;
+                int neededWidth = maxRight + margin;
+                if (neededWidth > gpButtons.Width)
+                    gpButtons.Width = neededWidth;
+            }
+        }
+
+
+        // Recalage post-création : ajuste la taille réelle et synchronise les variables internes.
+        private void FixToolbarSizeForNumberTag()
+        {
+            if (gpButtons == null) return;
+
+            int maxRight = 0, maxBottom = 0;
+            foreach (Control c in gpButtons.Controls)
+            {
+                if (!c.Visible) continue;
+                if (c.Right > maxRight) maxRight = c.Right;
+                if (c.Bottom > maxBottom) maxBottom = c.Bottom;
+            }
+            const int margin = 2;
+
+            if (maxRight + margin > gpButtons.Width)
+                gpButtons.Width = maxRight + margin;
+            if (maxBottom + margin > gpButtons.Height)
+                gpButtons.Height = maxBottom + margin;
+
+            // Synchronise les valeurs utilisées par l'animation / pliage
+            gpButtonsWidth = gpButtons.Width;
+            gpButtonsHeight = gpButtons.Height;
+            VisibleToolbar.Width = gpButtonsWidth;
+            VisibleToolbar.Height = gpButtonsHeight;
+        }
+
+
         public void Initialize()
         {
 
@@ -704,15 +841,22 @@ namespace gInk
                 FirstPenDisplayed++;
             oldShiftPensExtra = null;
 
-            // set dimensions and positions 
-            int dim = (int)Math.Round(Screen.PrimaryScreen.Bounds.Height * Root.ToolbarHeight);
-            int dim1 = (int)(dim * NormSizePercent);
-            int dim1s = (int)(dim * SmallSizePercent);
-            int dim2 = (int)(dim * TopPercent);
-            int dim2s = (int)(dim * SmallButtonNext);
-            int dim3 = (int)(dim * InterButtonGap);
-            int dim4 = dim1 + dim3;
-            int dim4s = dim1s + dim3;
+            //// set dimensions and positions 
+            //int dim = (int)Math.Round(Screen.PrimaryScreen.Bounds.Height * Root.ToolbarHeight);
+            //int dim1 = (int)(dim * NormSizePercent);
+            //int dim1s = (int)(dim * SmallSizePercent);
+            //int dim2 = (int)(dim * TopPercent);
+            //int dim2s = (int)(dim * SmallButtonNext);
+            //int dim3 = (int)(dim * InterButtonGap);
+            //int dim4 = dim1 + dim3;
+            //int dim4s = dim1s + dim3;
+
+
+            // set dimensions and positions (remplacé par calcul dynamique)
+            int dim, dim1, dim1s, dim2, dim2s, dim3, dim4, dim4s;
+            ComputeToolbarDimensions(out dim, out dim1, out dim1s, out dim2, out dim2s, out dim3, out dim4, out dim4s);
+
+
 
             int penSec = Root.PensOnTwoLines ? ((int)Math.Ceiling(nbPen / 2.0) * dim4s) : (nbPen * dim4);
             if (Root.ToolbarOrientation <= Orientation.Horizontal)
@@ -868,28 +1012,57 @@ namespace gInk
                 //btText.Visible = true;
                 //SetButtonPosition(btArrow, btText, dim3);
 
-                btArrow.Height = dim1s;
-                btArrow.Width = dim1s;
-                btArrow.Visible = true;
-                SetButtonPosition(btRect, btArrow, dim3);
+                //btArrow.Height = dim1s;
+                //btArrow.Width = dim1s;
+                //btArrow.Visible = true;
+                //SetButtonPosition(btRect, btArrow, dim3);
 
-                // Création et insertion des 4 boutons NumberTag (show/hide × white/black)
-                Button lastNumBtn = CreateNumberTagButtons(dim1s, dim2s, btArrow);
+                //// Création et insertion des 4 boutons NumberTag (show/hide × white/black)
+                //Button lastNumBtn = CreateNumberTagButtons(dim1s, dim2s, btArrow);
 
-                //// Positionner btText après le dernier bouton number-tag
+                ////// Positionner btText après le dernier bouton number-tag
+                ////btText.Height = dim1s;
+                ////btText.Width = dim1s;
+                ////btText.Visible = true;
+                ////SetButtonPosition(lastNumBtn, btText, dim3);
+
+                ////// Positionner btText comme avant, par rapport à btArrow (garde la ligne principale d'icônes)
+                ////btText.Height = dim1s;
+                ////btText.Width = dim1s;
+                ////btText.Visible = true;
+                ////SetButtonPosition(btArrow, btText, dim3);
+
+
+                //// Positionner btText APRÈS la série des boutons number‑tag pour éviter chevauchement
                 //btText.Height = dim1s;
                 //btText.Width = dim1s;
                 //btText.Visible = true;
                 //SetButtonPosition(lastNumBtn, btText, dim3);
 
-                //// Positionner btText comme avant, par rapport à btArrow (garde la ligne principale d'icônes)
-                //btText.Height = dim1s;
-                //btText.Width = dim1s;
-                //btText.Visible = true;
-                //SetButtonPosition(btArrow, btText, dim3);
+                btArrow.Height = dim1s;
+                btArrow.Width = dim1s;
+                btArrow.Visible = true;
+                SetButtonPosition(btRect, btArrow, dim3);
+
+                // 4 boutons NumberTag (2x2) : on récupère le bouton de référence (top-right ou bottom-left selon orientation)
+                Button lastNumBtn = CreateNumberTagButtons(dim1s, dim2s, btArrow);
 
 
-                // Positionner btText APRÈS la série des boutons number‑tag pour éviter chevauchement
+                // Masquer explicitement le vieux bouton designers btNumb (ne pas l'utiliser pour l'affichage)
+                try
+                {
+                    btNumb.Visible = false;
+                    // libère l'image si elle est déjà allouée (sécurise contre fuite mémoire)
+                    btNumb.BackgroundImage?.Dispose();
+                    btNumb.BackgroundImage = null;
+                }
+                catch { }
+
+                // Placer btText après la série NumberTag (sur la même rangée haute en horizontal)
+                btText.Height = dim1s;
+
+
+                // Placer btText après la série NumberTag (sur la même rangée haute en horizontal)
                 btText.Height = dim1s;
                 btText.Width = dim1s;
                 btText.Visible = true;
@@ -1070,18 +1243,216 @@ namespace gInk
                 btZoom.Visible = false;
             }
 
-            if (Root.PenWidthEnabled)
-            {
-                btPenWidth.Height = dim1;
-                btPenWidth.Width = dim1;
-                btPenWidth.Visible = true;
-                btPenWidth.BackgroundImage = getImgFromDiskOrRes("penwidth", ImageExts);
-                SetButtonPosition(prev, btPenWidth, dim3);
-                prev = btPenWidth;
-            }
-            else
-                btPenWidth.Visible = false;
+            //if (Root.PenWidthEnabled)
+            //{
+            //    btPenWidth.Height = dim1;
+            //    btPenWidth.Width = dim1;
+            //    btPenWidth.Visible = true;
+            //    btPenWidth.BackgroundImage = getImgFromDiskOrRes("penwidth", ImageExts);
+            //    SetButtonPosition(prev, btPenWidth, dim3);
+            //    prev = btPenWidth;
+            //}
+            //else
+            //    btPenWidth.Visible = false;
 
+
+            //if (Root.PenWidthEnabled)
+            //{
+            //    // top-left
+            //    btPenWidth.Height = dim1s;
+            //    btPenWidth.Width = dim1s;
+            //    btPenWidth.Visible = true;
+            //    btPenWidth.BackgroundImage = getImgFromDiskOrRes("penwidth", ImageExts);
+            //    SetButtonPosition(prev, btPenWidth, dim3);
+            //}
+            //else
+            //{
+            //    btPenWidth.Visible = false;
+            //}
+
+
+            //if (Root.InkVisibleEnabled)
+            //{
+            //    btInkVisible.Visible = true;
+            //    btInkVisible.Height = dim1;
+            //    btInkVisible.Width = dim1;
+            //    image_visible_not = getImgFromDiskOrRes("visible_not", ImageExts);
+            //    image_visible = getImgFromDiskOrRes("visible", ImageExts);
+            //    btInkVisible.BackgroundImage = image_visible;
+            //    SetButtonPosition(prev, btInkVisible, dim3);
+            //    prev = btInkVisible;
+            //}
+            //else
+            //    btInkVisible.Visible = false;
+
+            ////if (Root.SnapEnabled)
+            ////{
+            ////    btSnap.Visible = true;
+            ////    btSnap.Height = dim1;
+            ////    btSnap.Width = dim1;
+            ////    btSnap.BackgroundImage = getImgFromDiskOrRes("snap", ImageExts); ;
+            ////    SetButtonPosition(prev, btSnap, dim3);
+            ////    prev = btSnap;
+            ////}
+            ////else
+            ////    btSnap.Visible = false;
+
+
+            //if (Root.SnapEnabled)
+            //{
+            //    // top-right (à droite de penWidth)
+            //    btSnap.Visible = true;
+            //    btSnap.Height = dim1s;
+            //    btSnap.Width = dim1s;
+            //    btSnap.BackgroundImage = getImgFromDiskOrRes("snap", ImageExts);
+            //    // si penWidth n'est pas visible, se placer après prev
+            //    if (btPenWidth.Visible)
+            //        SetButtonPosition(btPenWidth, btSnap, dim3);
+            //    else
+            //        SetButtonPosition(prev, btSnap, dim3);
+            //}
+            //else
+            //{
+            //    btSnap.Visible = false;
+            //}
+
+
+
+
+            ////if (Root.UndoEnabled)
+            ////{
+            ////    btUndo.Visible = true;
+            ////    btUndo.Height = dim1;
+            ////    btUndo.Width = dim1;
+            ////    btUndo.BackgroundImage = getImgFromDiskOrRes("undo", ImageExts);
+            ////    SetButtonPosition(prev, btUndo, dim3);
+            ////    prev = btUndo;
+            ////}
+            ////else
+            ////    btUndo.Visible = false;
+
+            //if (Root.UndoEnabled)
+            //{
+            //    // bottom-left (sous penWidth)
+            //    btUndo.Visible = true;
+            //    btUndo.Height = dim1s;
+            //    btUndo.Width = dim1s;
+            //    btUndo.BackgroundImage = getImgFromDiskOrRes("undo", ImageExts);
+            //    if (btPenWidth.Visible)
+            //        SetSmallButtonNext(btPenWidth, btUndo, dim2s);
+            //    else if (btSnap.Visible)
+            //        SetSmallButtonNext(btSnap, btUndo, dim2s); // fallback: sous snap si penWidth absent
+            //    else
+            //        SetButtonPosition(prev, btUndo, dim3);
+            //}
+            //else
+            //{
+            //    btUndo.Visible = false;
+            //}
+
+
+
+            ////if (Root.ClearEnabled)
+            ////{
+            ////    btClear.Visible = true;
+            ////    btClear.Height = dim1;
+            ////    btClear.Width = dim1;
+            ////    btClear.BackgroundImage = getImgFromDiskOrRes("garbage", ImageExts);
+            ////    SetButtonPosition(prev, btClear, dim3);
+            ////    prev = btClear;
+            ////}
+            ////else
+            ////    btClear.Visible = false;
+
+            //if (Root.ClearEnabled)
+            //{
+            //    // bottom-right (sous snap)
+            //    btClear.Visible = true;
+            //    btClear.Height = dim1s;
+            //    btClear.Width = dim1s;
+            //    btClear.BackgroundImage = getImgFromDiskOrRes("garbage", ImageExts);
+            //    if (btSnap.Visible)
+            //        SetSmallButtonNext(btSnap, btClear, dim2s);
+            //    else if (btPenWidth.Visible)
+            //        SetSmallButtonNext(btPenWidth, btClear, dim2s); // fallback
+            //    else
+            //        SetButtonPosition(prev, btClear, dim3);
+
+            //    // la colonne suivante doit commencer après la colonne de droite -> prev = btClear
+            //    prev = btClear;
+            //}
+            //else
+            //{
+            //    btClear.Visible = false;
+            //    // si btClear absent, avancer prev au dernier créé visible (favoriser btUndo / btSnap / btPenWidth)
+            //    if (btUndo.Visible) prev = btUndo;
+            //    else if (btSnap.Visible) prev = btSnap;
+            //    else if (btPenWidth.Visible) prev = btPenWidth;
+            //}
+
+
+            // --- Grille 2x2 : PenWidth / Snap (haut), Undo / Clear (bas) ---
+            // On retire l’ancienne logique éclatée qui mélangeait InkVisible entre ces boutons.
+            // Construction d’une liste ordonnée (pour un fallback propre si certains sont désactivés).
+            var smallQuad = new List<(Button btn, bool enabled, Action prepare)>
+            {
+                (btPenWidth, Root.PenWidthEnabled, () => {
+                    btPenWidth.Height = dim1s; btPenWidth.Width = dim1s;
+                    btPenWidth.BackgroundImage = getImgFromDiskOrRes("penwidth", ImageExts);
+                }),
+                (btSnap, Root.SnapEnabled, () => {
+                    btSnap.Height = dim1s; btSnap.Width = dim1s;
+                    btSnap.BackgroundImage = getImgFromDiskOrRes("snap", ImageExts);
+                }),
+                (btUndo, Root.UndoEnabled, () => {
+                    btUndo.Height = dim1s; btUndo.Width = dim1s;
+                    btUndo.BackgroundImage = getImgFromDiskOrRes("undo", ImageExts);
+                }),
+                (btClear, Root.ClearEnabled, () => {
+                    btClear.Height = dim1s; btClear.Width = dim1s;
+                    btClear.BackgroundImage = getImgFromDiskOrRes("garbage", ImageExts);
+                })
+            };
+
+            // Filtrer les actifs
+            var actives = smallQuad.Where(x => x.enabled).ToList();
+            foreach (var x in smallQuad)
+                x.btn.Visible = x.enabled;
+
+            if (actives.Count > 0)
+            {
+                // Top-left
+                actives[0].prepare();
+                SetButtonPosition(prev, actives[0].btn, dim3);
+
+                // Top-right
+                if (actives.Count > 1)
+                {
+                    actives[1].prepare();
+                    SetButtonPosition(actives[0].btn, actives[1].btn, dim3);
+                }
+
+                // Bottom-left
+                if (actives.Count > 2)
+                {
+                    actives[2].prepare();
+                    SetSmallButtonNext(actives[0].btn, actives[2].btn, dim2s);
+                }
+
+                // Bottom-right
+                if (actives.Count > 3)
+                {
+                    actives[3].prepare();
+                    // si top-right existe, se placer dessous ; sinon sous le top-left
+                    var anchorTopRight = (actives.Count > 1) ? actives[1].btn : actives[0].btn;
+                    SetSmallButtonNext(anchorTopRight, actives[3].btn, dim2s);
+                }
+
+                // Référence pour la suite : le bouton haut le plus à droite (s’il existe), sinon le seul
+                prev = (actives.Count > 1) ? actives[1].btn : actives[0].btn;
+            }
+
+            // --- InkVisible (placé après la grille 2x2) ---
             if (Root.InkVisibleEnabled)
             {
                 btInkVisible.Visible = true;
@@ -1096,41 +1467,7 @@ namespace gInk
             else
                 btInkVisible.Visible = false;
 
-            if (Root.SnapEnabled)
-            {
-                btSnap.Visible = true;
-                btSnap.Height = dim1;
-                btSnap.Width = dim1;
-                btSnap.BackgroundImage = getImgFromDiskOrRes("snap", ImageExts); ;
-                SetButtonPosition(prev, btSnap, dim3);
-                prev = btSnap;
-            }
-            else
-                btSnap.Visible = false;
 
-            if (Root.UndoEnabled)
-            {
-                btUndo.Visible = true;
-                btUndo.Height = dim1;
-                btUndo.Width = dim1;
-                btUndo.BackgroundImage = getImgFromDiskOrRes("undo", ImageExts);
-                SetButtonPosition(prev, btUndo, dim3);
-                prev = btUndo;
-            }
-            else
-                btUndo.Visible = false;
-
-            if (Root.ClearEnabled)
-            {
-                btClear.Visible = true;
-                btClear.Height = dim1;
-                btClear.Width = dim1;
-                btClear.BackgroundImage = getImgFromDiskOrRes("garbage", ImageExts);
-                SetButtonPosition(prev, btClear, dim3);
-                prev = btClear;
-            }
-            else
-                btClear.Visible = false;
 
             if (Root.PagesEnabled)
             {
@@ -1213,57 +1550,227 @@ namespace gInk
             btStop.BackgroundImage = getImgFromDiskOrRes("exit", ImageExts);
             SetButtonPosition(prev, btStop, dim3);
 
+            //gpButtonsWidth = gpButtons.Width;
+            // Après positionnement de tous les boutons, ajuste la taille réelle.
+            AdjustToolbarSize();
+
+            FixToolbarSizeForNumberTag();
+
+
+
+
             gpButtonsWidth = gpButtons.Width;
             gpButtonsHeight = gpButtons.Height;
             VisibleToolbar.Width = gpButtonsWidth;
             VisibleToolbar.Height = gpButtonsHeight;
             gpButtonsLeft = Root.gpButtonsLeft;
             gpButtonsTop = Root.gpButtonsTop;
+
+
+
+
+
+            gpButtonsHeight = gpButtons.Height;
+            VisibleToolbar.Width = gpButtonsWidth;
+            VisibleToolbar.Height = gpButtonsHeight;
+            gpButtonsLeft = Root.gpButtonsLeft;
+            gpButtonsTop = Root.gpButtonsTop;
+            //if (((true || Root.AllowDraggingToolbar) && (
+            //      !(IsInsideVisibleScreen(gpButtonsLeft, gpButtonsTop) &&
+            //      IsInsideVisibleScreen(gpButtonsLeft + gpButtonsWidth, gpButtonsTop) &&
+            //      IsInsideVisibleScreen(gpButtonsLeft, gpButtonsTop + gpButtonsHeight) &&
+            //      IsInsideVisibleScreen(gpButtonsLeft + gpButtonsWidth, gpButtonsTop + gpButtonsHeight))
+            //      ||
+            //      (gpButtonsLeft == 0 && gpButtonsTop == 0)))
+            //    || (!Root.AllowDraggingToolbar))
+            //{
+            //    if (Root.WindowRect.Width <= 0 || Root.WindowRect.Height <= 0)
+            //        //{
+            //        //    switch (Root.ToolbarOrientation)
+            //        //    {
+            //        //        case Orientation.toLeft:
+            //        //            gpButtonsLeft = Screen.PrimaryScreen.WorkingArea.Right - gpButtons.Width + PrimaryLeft;
+            //        //            gpButtonsTop = Screen.PrimaryScreen.WorkingArea.Bottom - gpButtons.Height - 15 + PrimaryTop;
+            //        //            gpButtons.Left = gpButtonsLeft + gpButtons.Width;
+            //        //            gpButtons.Top = gpButtonsTop;
+            //        //            VisibleToolbar.Width = 0;
+            //        //            break;
+            //        //        case Orientation.toRight:
+            //        //            gpButtonsLeft = Screen.PrimaryScreen.WorkingArea.Left + PrimaryLeft;
+            //        //            gpButtonsTop = Screen.PrimaryScreen.WorkingArea.Bottom - gpButtons.Height - 15 + PrimaryTop;
+            //        //            gpButtons.Left = gpButtonsLeft;
+            //        //            gpButtons.Top = gpButtonsTop;
+            //        //            VisibleToolbar.Width = 0;
+            //        //            break;
+            //        //        case Orientation.toUp:
+            //        //            gpButtonsLeft = Screen.PrimaryScreen.WorkingArea.Right - gpButtons.Width - 15 + PrimaryLeft;
+            //        //            gpButtonsTop = Screen.PrimaryScreen.WorkingArea.Bottom - gpButtons.Height + PrimaryTop;
+            //        //            gpButtons.Left = gpButtonsLeft;
+            //        //            gpButtons.Top = gpButtonsTop + gpButtons.Height;
+            //        //            VisibleToolbar.Height = 0;
+            //        //            break;
+            //        //        case Orientation.toDown:
+            //        //            gpButtonsLeft = Screen.PrimaryScreen.WorkingArea.Right - gpButtons.Width - 15 + PrimaryLeft;
+            //        //            gpButtonsTop = Screen.PrimaryScreen.WorkingArea.Top + PrimaryTop;
+            //        //            gpButtons.Left = gpButtonsLeft;
+            //        //            gpButtons.Top = gpButtonsTop;
+            //        //            VisibleToolbar.Height = 0;
+            //        //            break;
+            //        //    }
+            //        //}
+
+            //        var virt = SystemInformation.VirtualScreen;
+            //    switch (Root.ToolbarOrientation)
+            //    {
+            //        case Orientation.toLeft:
+            //            gpButtonsLeft = virt.Right - gpButtons.Width + PrimaryLeft;
+            //            gpButtonsTop = virt.Bottom - gpButtons.Height - 15 + PrimaryTop;
+            //            gpButtons.Left = gpButtonsLeft + gpButtons.Width;
+            //            gpButtons.Top = gpButtonsTop;
+            //            VisibleToolbar.Width = 0;
+            //            break;
+            //        case Orientation.toRight:
+            //            gpButtonsLeft = virt.Left + PrimaryLeft;
+            //            gpButtonsTop = virt.Bottom - gpButtons.Height - 15 + PrimaryTop;
+            //            gpButtons.Left = gpButtonsLeft;
+            //            gpButtons.Top = gpButtonsTop;
+            //            VisibleToolbar.Width = 0;
+            //            break;
+            //        case Orientation.toUp:
+            //            gpButtonsLeft = virt.Right - gpButtons.Width - 15 + PrimaryLeft;
+            //            gpButtonsTop = virt.Bottom - gpButtons.Height + PrimaryTop;
+            //            gpButtons.Left = gpButtonsLeft;
+            //            gpButtons.Top = gpButtonsTop + gpButtons.Height;
+            //            VisibleToolbar.Height = 0;
+            //            break;
+            //        case Orientation.toDown:
+            //            gpButtonsLeft = virt.Right - gpButtons.Width - 15 + PrimaryLeft;
+            //            gpButtonsTop = virt.Top + PrimaryTop;
+            //            gpButtons.Left = gpButtonsLeft;
+            //            gpButtons.Top = gpButtonsTop;
+            //            VisibleToolbar.Height = 0;
+            //            break;
+            //    }
+
+
+
+            //    else
+            //    {
+            //        if (Root.ToolbarOrientation <= Orientation.Horizontal)
+            //        {
+            //            gpButtonsLeft = this.ClientRectangle.Right - gpButtons.Width;
+            //            gpButtonsTop = this.ClientRectangle.Bottom - gpButtons.Height;
+            //            gpButtons.Left = gpButtonsLeft + gpButtons.Width;
+            //            gpButtons.Top = gpButtonsTop;
+            //            VisibleToolbar.Width = 0;
+            //        }
+            //        else
+            //        {
+            //            gpButtonsLeft = this.ClientRectangle.Right - gpButtons.Width;
+            //            gpButtonsTop = this.ClientRectangle.Top;
+            //            gpButtons.Left = gpButtonsLeft;
+            //            gpButtons.Top = gpButtonsTop;
+            //            VisibleToolbar.Height = 0;
+            //        }
+            //    }
+            //    Root.gpButtonsLeft = gpButtonsLeft;
+            //    Root.gpButtonsTop = gpButtonsTop;
+            //}
+            //else
+            //{
+            //    switch (Root.ToolbarOrientation)
+            //    {
+            //        case Orientation.toLeft:
+            //            gpButtons.Left = gpButtonsLeft + gpButtonsWidth;
+            //            gpButtons.Top = gpButtonsTop;
+            //            VisibleToolbar.Width = 0;
+            //            break;
+            //        case Orientation.toRight:
+            //            gpButtons.Left = gpButtonsLeft;
+            //            gpButtons.Top = gpButtonsTop;
+            //            VisibleToolbar.Width = 0;
+            //            break;
+            //        case Orientation.toUp:
+            //            gpButtons.Left = gpButtonsLeft + gpButtonsHeight;
+            //            gpButtons.Top = gpButtonsTop;
+            //            VisibleToolbar.Height = 0;
+            //            break;
+            //        case Orientation.toDown:
+            //            gpButtons.Left = gpButtonsLeft;
+            //            gpButtons.Top = gpButtonsTop;
+            //            VisibleToolbar.Height = 0;
+            //            break;
+            //    }
+
+            //}
+
             if (((true || Root.AllowDraggingToolbar) && (
-                  !(IsInsideVisibleScreen(gpButtonsLeft, gpButtonsTop) &&
-                  IsInsideVisibleScreen(gpButtonsLeft + gpButtonsWidth, gpButtonsTop) &&
-                  IsInsideVisibleScreen(gpButtonsLeft, gpButtonsTop + gpButtonsHeight) &&
-                  IsInsideVisibleScreen(gpButtonsLeft + gpButtonsWidth, gpButtonsTop + gpButtonsHeight))
-                  ||
-                  (gpButtonsLeft == 0 && gpButtonsTop == 0)))
-                || (!Root.AllowDraggingToolbar))
+      !(IsInsideVisibleScreen(gpButtonsLeft, gpButtonsTop) &&
+      IsInsideVisibleScreen(gpButtonsLeft + gpButtonsWidth, gpButtonsTop) &&
+      IsInsideVisibleScreen(gpButtonsLeft, gpButtonsTop + gpButtonsHeight) &&
+      IsInsideVisibleScreen(gpButtonsLeft + gpButtonsWidth, gpButtonsTop + gpButtonsHeight))
+      ||
+      (gpButtonsLeft == 0 && gpButtonsTop == 0)))
+    || (!Root.AllowDraggingToolbar))
             {
                 if (Root.WindowRect.Width <= 0 || Root.WindowRect.Height <= 0)
                 {
+                    // utiliser le bureau virtuel pour multi-écrans
+                    var virt = SystemInformation.VirtualScreen;
                     switch (Root.ToolbarOrientation)
                     {
                         case Orientation.toLeft:
-                            gpButtonsLeft = Screen.PrimaryScreen.WorkingArea.Right - gpButtons.Width + PrimaryLeft;
-                            gpButtonsTop = Screen.PrimaryScreen.WorkingArea.Bottom - gpButtons.Height - 15 + PrimaryTop;
+                            gpButtonsLeft = virt.Right - gpButtons.Width + PrimaryLeft;
+                            gpButtonsTop = virt.Bottom - gpButtons.Height - 15 + PrimaryTop;
                             gpButtons.Left = gpButtonsLeft + gpButtons.Width;
                             gpButtons.Top = gpButtonsTop;
                             VisibleToolbar.Width = 0;
                             break;
                         case Orientation.toRight:
-                            gpButtonsLeft = Screen.PrimaryScreen.WorkingArea.Left + PrimaryLeft;
-                            gpButtonsTop = Screen.PrimaryScreen.WorkingArea.Bottom - gpButtons.Height - 15 + PrimaryTop;
+                            gpButtonsLeft = virt.Left + PrimaryLeft;
+                            gpButtonsTop = virt.Bottom - gpButtons.Height - 15 + PrimaryTop;
                             gpButtons.Left = gpButtonsLeft;
                             gpButtons.Top = gpButtonsTop;
                             VisibleToolbar.Width = 0;
                             break;
                         case Orientation.toUp:
-                            gpButtonsLeft = Screen.PrimaryScreen.WorkingArea.Right - gpButtons.Width - 15 + PrimaryLeft;
-                            gpButtonsTop = Screen.PrimaryScreen.WorkingArea.Bottom - gpButtons.Height + PrimaryTop;
+                            gpButtonsLeft = virt.Right - gpButtons.Width - 15 + PrimaryLeft;
+                            gpButtonsTop = virt.Bottom - gpButtons.Height + PrimaryTop;
                             gpButtons.Left = gpButtonsLeft;
                             gpButtons.Top = gpButtonsTop + gpButtons.Height;
                             VisibleToolbar.Height = 0;
                             break;
                         case Orientation.toDown:
-                            gpButtonsLeft = Screen.PrimaryScreen.WorkingArea.Right - gpButtons.Width - 15 + PrimaryLeft;
-                            gpButtonsTop = Screen.PrimaryScreen.WorkingArea.Top + PrimaryTop;
+                            gpButtonsLeft = virt.Right - gpButtons.Width - 15 + PrimaryLeft;
+                            gpButtonsTop = virt.Top + PrimaryTop;
                             gpButtons.Left = gpButtonsLeft;
                             gpButtons.Top = gpButtonsTop;
                             VisibleToolbar.Height = 0;
+                            break;
+                        default:
+                            // sécurité : fallback sur la fenêtre courante
+                            if (Root.ToolbarOrientation <= Orientation.Horizontal)
+                            {
+                                gpButtonsLeft = this.ClientRectangle.Right - gpButtons.Width;
+                                gpButtonsTop = this.ClientRectangle.Bottom - gpButtons.Height;
+                                gpButtons.Left = gpButtonsLeft + gpButtons.Width;
+                                gpButtons.Top = gpButtonsTop;
+                                VisibleToolbar.Width = 0;
+                            }
+                            else
+                            {
+                                gpButtonsLeft = this.ClientRectangle.Right - gpButtons.Width;
+                                gpButtonsTop = this.ClientRectangle.Top;
+                                gpButtons.Left = gpButtonsLeft;
+                                gpButtons.Top = gpButtonsTop;
+                                VisibleToolbar.Height = 0;
+                            }
                             break;
                     }
                 }
                 else
                 {
+                    // window mode : position relative à la FormCollection client rectangle
                     if (Root.ToolbarOrientation <= Orientation.Horizontal)
                     {
                         gpButtonsLeft = this.ClientRectangle.Right - gpButtons.Width;
@@ -1281,6 +1788,7 @@ namespace gInk
                         VisibleToolbar.Height = 0;
                     }
                 }
+
                 Root.gpButtonsLeft = gpButtonsLeft;
                 Root.gpButtonsTop = gpButtonsTop;
             }
@@ -1309,8 +1817,12 @@ namespace gInk
                         VisibleToolbar.Height = 0;
                         break;
                 }
-
             }
+
+
+
+
+
 
             pboxPenWidthIndicator.Top = 0;
             pboxPenWidthIndicator.Left = (int)Math.Sqrt(Root.GlobalPenWidth * 30.0F);
@@ -4208,7 +4720,16 @@ namespace gInk
             }
             //btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb", ImageExts);
             // Affiche par défaut l'icône pastille BLANCHE avant tout clic
-            btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
+            //btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb_fillW", ImageExts);
+            try
+            {
+                // met à jour les bordures / état visuel des 4 pastilles
+                UpdateNumberTagButtonBorders();
+            }
+            catch { }
+
+
+
             btText.BackgroundImage = getImgFromDiskOrRes("tool_txtL", ImageExts);
             btEdit.BackgroundImage = getImgFromDiskOrRes("tool_edit", ImageExts);
             btClipArt.BackgroundImage = getImgFromDiskOrRes("tool_clipart", ImageExts);
