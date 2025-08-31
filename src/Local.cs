@@ -138,6 +138,14 @@ namespace gInk
         public string OptionsTabPens;
         public string OptionsTabHotkeys;
 
+        
+        // 
+        public string OptionsTabGoHotkeys;
+        public string OptionsGoHotkeys_ShowWhite;
+        public string OptionsGoHotkeys_ShowBlack;
+        public string OptionsGoHotkeys_HideWhite;
+        public string OptionsGoHotkeys_HideBlack;
+
         public string OptionsGeneralLanguage;
         public string OptionsGeneralToolBarColorText;
         public string OptionsGeneralAltTabActivateText;
