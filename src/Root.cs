@@ -160,6 +160,16 @@ namespace gInk
         public const int SavedPenDA = MaxPenCount;
         public const int LassoPercent = 80;
 
+        // Déclarations (dans la classe Root – section autres paramètres)
+        public int GoFillOpacityPercent = 50;      // 0-100 (% visible) => Transparency = 255 - %
+        public int GoStrokeOpacityPercent = 0;     // 0-100 (% visible)
+        public float GoStrokeWidth = 3.0f;         // largeur finale (HiMetric)
+
+        public Hotkey Hotkey_HandFilledWhite = new Hotkey();
+        public Hotkey Hotkey_HandFilledBlack = new Hotkey();
+
+
+
         //public Guid TYPE_GUID = new Guid(10, 11, 12, 10, 0, 0, 0, 0, 0, 0, 0);
         public static readonly Guid TEXT_GUID = new Guid(10, 11, 12, 10, 0, 0, 0, 0, 0, 0, 1);
         public static readonly Guid TEXTX_GUID = new Guid(10, 11, 12, 10, 0, 0, 0, 0, 0, 0, 2);
@@ -1199,6 +1209,7 @@ namespace gInk
                     string[] tab;
                     switch (sName)
                     {
+                        
                         case "LANGUAGE_FILE":
                             ChangeLanguage(sPara);
                             break;
@@ -1358,6 +1369,29 @@ namespace gInk
                         case "CURSOR_RED":
                             cursorredFileName = sPara;
                             break;
+
+
+                        // Ajouter dans le switch(sName) de ReadOptions :
+                        case "GOFILLOPACITY":
+                            if (int.TryParse(sPara, out tempi))
+                                GoFillOpacityPercent = Math.Max(0, Math.Min(100, tempi));
+                            break;
+                        case "GOSTROKEOPACITY":
+                            if (int.TryParse(sPara, out tempi))
+                                GoStrokeOpacityPercent = Math.Max(0, Math.Min(100, tempi));
+                            break;
+                        case "GOSTROKEWIDTH":
+                            if (float.TryParse(sPara, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out tempf))
+                                GoStrokeWidth = Math.Max(0.1f, tempf);
+                            break;
+                        case "HOTKEY_HANDFILLEDWHITE":
+                            Hotkey_HandFilledWhite.Parse(sPara);
+                            break;
+                        case "HOTKEY_HANDFILLEDBLACK":
+                            Hotkey_HandFilledBlack.Parse(sPara);
+                            break;
+
+
 
                         case "BUTTONCLICK_FOR_LINESTYLE":
                             if (sPara.ToUpper() == "TRUE" || sPara == "1" || sPara.ToUpper() == "ON")
@@ -2386,6 +2420,25 @@ namespace gInk
                             sPara = Hotkey_Lasso.ToStringInvariant();
                             break;
 
+
+                        // 
+                        case "GOFILLOPACITY":
+                            sPara = GoFillOpacityPercent.ToString();
+                            break;
+                        case "GOSTROKEOPACITY":
+                            sPara = GoStrokeOpacityPercent.ToString();
+                            break;
+                        case "GOSTROKEWIDTH":
+                            sPara = GoStrokeWidth.ToString(CultureInfo.InvariantCulture);
+                            break;
+                        case "HOTKEY_HANDFILLEDWHITE":
+                            sPara = Hotkey_HandFilledWhite.ToStringInvariant();
+                            break;
+                        case "HOTKEY_HANDFILLEDBLACK":
+                            sPara = Hotkey_HandFilledBlack.ToStringInvariant();
+                            break;
+
+
                         case "BUTTONCLICK_FOR_LINESTYLE":
                             sPara = ButtonClick_For_LineStyle?"True":"False";
                             break;
@@ -2898,6 +2951,34 @@ namespace gInk
                 writelines.Add("TAGNUMBEROPACITY_PERCENT=" + TagNumberOpacityPercent.ToString(CultureInfo.InvariantCulture));
 
             // ################ goInk - END ##############################################################
+
+
+
+
+            // --- Inserter ceci dans SaveOptions, juste avant le bloc "Ensure NumberTag hotkey keys are present" ---
+            {
+                bool hasGoFill = false, hasGoStrokeOp = false, hasGoStrokeW = false;
+                bool hasHotHandW = false, hasHotHandB = false;
+                for (int i = 0; i < writelines.Count; i++)
+                {
+                    string s = writelines[i].TrimStart();
+                    if (s.StartsWith("GOFILLOPACITY=", StringComparison.InvariantCultureIgnoreCase)) hasGoFill = true;
+                    if (s.StartsWith("GOSTROKEOPACITY=", StringComparison.InvariantCultureIgnoreCase)) hasGoStrokeOp = true;
+                    if (s.StartsWith("GOSTROKEWIDTH=", StringComparison.InvariantCultureIgnoreCase)) hasGoStrokeW = true;
+                    if (s.StartsWith("HOTKEY_HANDFILLEDWHITE=", StringComparison.InvariantCultureIgnoreCase)) hasHotHandW = true;
+                    if (s.StartsWith("HOTKEY_HANDFILLEDBLACK=", StringComparison.InvariantCultureIgnoreCase)) hasHotHandB = true;
+                }
+                if (!hasGoFill)
+                    writelines.Add("GOFILLOPACITY= " + GoFillOpacityPercent.ToString());
+                if (!hasGoStrokeOp)
+                    writelines.Add("GOSTROKEOPACITY= " + GoStrokeOpacityPercent.ToString());
+                if (!hasGoStrokeW)
+                    writelines.Add("GOSTROKEWIDTH= " + GoStrokeWidth.ToString(CultureInfo.InvariantCulture));
+                if (!hasHotHandW)
+                    writelines.Add("HOTKEY_HANDFILLEDWHITE= " + Hotkey_HandFilledWhite.ToStringInvariant());
+                if (!hasHotHandB)
+                    writelines.Add("HOTKEY_HANDFILLEDBLACK= " + Hotkey_HandFilledBlack.ToStringInvariant());
+            }
 
 
             // Ensure NumberTag hotkey keys are present so SaveOptions writes them (adds missing keys)

@@ -43,8 +43,12 @@ namespace gInk
         private Label lblHK_HideBlack;
         private HotkeyInputBox hiHK_ShowWhite;
         private HotkeyInputBox hiHK_ShowBlack;
+
         private HotkeyInputBox hiHK_HideWhite;
         private HotkeyInputBox hiHK_HideBlack;
+
+
+
 
         private Label lblTagCirclePerc;
         private NumericUpDown nudTagCirclePerc;
@@ -55,6 +59,22 @@ namespace gInk
         private Label lblTagOpacityPerc;
         private NumericUpDown nudTagOpacityPerc;
         private Label lblTagNumberOpacityPerc;
+
+        // --- INSÉRER ) ---
+        private Label lblHK_HandWhite;
+        private Label lblHK_HandBlack;
+        private HotkeyInputBox hiHK_HandWhite;
+        private HotkeyInputBox hiHK_HandBlack;
+
+        private Label lblGoFillOpacity;
+        private NumericUpDown nudGoFillOpacity;
+        private Label lblGoStrokeOpacity;
+        private NumericUpDown nudGoStrokeOpacity;
+        private Label lblGoStrokeWidth;
+        private NumericUpDown nudGoStrokeWidth;
+
+
+
         private NumericUpDown nudTagNumberOpacityPerc;
         // ################ goInk - END ####################
 
@@ -86,13 +106,44 @@ namespace gInk
             hiHK_HideWhite.OnHotkeyChanged += hi_OnHotkeyChanged;
             hiHK_HideBlack.OnHotkeyChanged += hi_OnHotkeyChanged;
 
+            //tabPageGoHotkeys.Controls.AddRange(new Control[]
+
+
+            // --- INSÉRER dans le constructeur FormOptions(Root root), après la création des hiHK_Show... et l'ajout à tabPageGoHotkeys ---
+            int yExtra = lblHK_HideBlack.Bottom + 12;
+            lblHK_HandWhite = new Label { Left = baseLeft, Top = yExtra, AutoSize = true, Text = "Main — Rempli blanc (hotkey)" };
+            hiHK_HandWhite = new HotkeyInputBox { Left = col2, Top = yExtra - 3, Width = 180 };
+            yExtra += lineH;
+            lblHK_HandBlack = new Label { Left = baseLeft, Top = yExtra, AutoSize = true, Text = "Main — Rempli noir (hotkey)" };
+            hiHK_HandBlack = new HotkeyInputBox { Left = col2, Top = yExtra - 3, Width = 180 };
+
+            hiHK_HandWhite.OnHotkeyChanged += (s, e) =>
+            {
+                try { Root.Hotkey_HandFilledWhite = hiHK_HandWhite.Hotkey; } catch { }
+                try { Root.SetHotkey(); } catch { }
+                try { Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { }
+                // Conflict visual update (reuse existing helper)
+                hi_OnHotkeyChanged(s, e);
+            };
+            hiHK_HandBlack.OnHotkeyChanged += (s, e) =>
+            {
+                try { Root.Hotkey_HandFilledBlack = hiHK_HandBlack.Hotkey; } catch { }
+                try { Root.SetHotkey(); } catch { }
+                try { Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { }
+                hi_OnHotkeyChanged(s, e);
+            };
+
+            // après avoir créé tous les HotkeyInputBox (hiHK_ShowWhite, hiHK_ShowBlack, hiHK_HideWhite, hiHK_HideBlack, hiHK_HandWhite, hiHK_HandBlack)
             tabPageGoHotkeys.Controls.AddRange(new Control[]
             {
-                lblHK_ShowWhite, hiHK_ShowWhite,
-                lblHK_ShowBlack, hiHK_ShowBlack,
-                lblHK_HideWhite, hiHK_HideWhite,
-                lblHK_HideBlack, hiHK_HideBlack
+    lblHK_ShowWhite, hiHK_ShowWhite,
+    lblHK_ShowBlack, hiHK_ShowBlack,
+    lblHK_HideWhite, hiHK_HideWhite,
+    lblHK_HideBlack, hiHK_HideBlack,
+    lblHK_HandWhite, hiHK_HandWhite,
+    lblHK_HandBlack, hiHK_HandBlack
             });
+
 
             try
             {
@@ -215,6 +266,39 @@ namespace gInk
             tabPageGridTags.Controls.Add(lblTagNumberOpacityPerc);
             tabPageGridTags.Controls.Add(nudTagNumberOpacityPerc);
             tabPageGridTags.Controls.Add(lblGridType);
+            // Go : contrôles de remplissage / contour / largeur
+            lblGoFillOpacity = new Label { Text = "Opacité remplissage (%) :", AutoSize = true, Left = 12, Top = lblGridType.Bottom + 18 };
+            nudGoFillOpacity = new NumericUpDown { Minimum = 0, Maximum = 100, DecimalPlaces = 0, Increment = 1, Left = 220, Top = lblGoFillOpacity.Top - 3, Width = 90, Value = (decimal)Root.GoFillOpacityPercent };
+            nudGoFillOpacity.ValueChanged += (s, e) =>
+            {
+                Root.GoFillOpacityPercent = (int)nudGoFillOpacity.Value;
+                try { Root.SaveOptions(Program.RunningFolder + "config.ini"); } catch { }
+            };
+
+            lblGoStrokeOpacity = new Label { Text = "Opacité contour (%) :", AutoSize = true, Left = 12, Top = lblGoFillOpacity.Bottom + 18 };
+            nudGoStrokeOpacity = new NumericUpDown { Minimum = 0, Maximum = 100, DecimalPlaces = 0, Increment = 1, Left = 220, Top = lblGoStrokeOpacity.Top - 3, Width = 90, Value = (decimal)Root.GoStrokeOpacityPercent };
+            nudGoStrokeOpacity.ValueChanged += (s, e) =>
+            {
+                Root.GoStrokeOpacityPercent = (int)nudGoStrokeOpacity.Value;
+                try { Root.SaveOptions(Program.RunningFolder + "config.ini"); } catch { }
+            };
+
+            lblGoStrokeWidth = new Label { Text = "Épaisseur contour (HiMetric) :", AutoSize = true, Left = 12, Top = lblGoStrokeOpacity.Bottom + 18 };
+            nudGoStrokeWidth = new NumericUpDown { Minimum = 1, Maximum = 3000, DecimalPlaces = 1, Increment = 1, Left = 220, Top = lblGoStrokeWidth.Top - 3, Width = 90, Value = (decimal)Root.GoStrokeWidth };
+            nudGoStrokeWidth.ValueChanged += (s, e) =>
+            {
+                Root.GoStrokeWidth = (float)nudGoStrokeWidth.Value;
+                try { Root.SaveOptions(Program.RunningFolder + "config.ini"); } catch { }
+            };
+
+            tabPageGridTags.Controls.Add(lblGoFillOpacity);
+            tabPageGridTags.Controls.Add(nudGoFillOpacity);
+            tabPageGridTags.Controls.Add(lblGoStrokeOpacity);
+            tabPageGridTags.Controls.Add(nudGoStrokeOpacity);
+            tabPageGridTags.Controls.Add(lblGoStrokeWidth);
+            tabPageGridTags.Controls.Add(nudGoStrokeWidth);
+
+
             tabPageGridTags.Controls.Add(cbGridType);
 
             try
@@ -403,6 +487,11 @@ namespace gInk
                     nudTagOpacityPerc.Value = ClampDecimal(nudTagOpacityPerc, Root.TagStoneOpacityPercent);
                 if (nudTagNumberOpacityPerc != null)
                     nudTagNumberOpacityPerc.Value = ClampDecimal(nudTagNumberOpacityPerc, Root.TagNumberOpacityPercent);
+
+                if (nudGoFillOpacity != null) nudGoFillOpacity.Value = ClampDecimal(nudGoFillOpacity, Root.GoFillOpacityPercent);
+                if (nudGoStrokeOpacity != null) nudGoStrokeOpacity.Value = ClampDecimal(nudGoStrokeOpacity, Root.GoStrokeOpacityPercent);
+                if (nudGoStrokeWidth != null) nudGoStrokeWidth.Value = ClampDecimal(nudGoStrokeWidth, Root.GoStrokeWidth);
+
                 if (cbGridType != null)
                 {
                     if (Root.GridRows == 13) cbGridType.SelectedIndex = 1;
@@ -540,6 +629,9 @@ namespace gInk
             hiHK_ShowBlack.Hotkey = Root.Hotkey_NTag_ShowBlack;
             hiHK_HideWhite.Hotkey = Root.Hotkey_NTag_HideWhite;
             hiHK_HideBlack.Hotkey = Root.Hotkey_NTag_HideBlack;
+            hiHK_HandWhite.Hotkey = Root.Hotkey_HandFilledWhite;
+            hiHK_HandBlack.Hotkey = Root.Hotkey_HandFilledBlack;
+
             HiToolText.Hotkey = Root.Hotkey_Text;
             hiToolEdit.Hotkey = Root.Hotkey_Edit;
             hiToolMagnet.Hotkey = Root.Hotkey_Magnet;
@@ -598,6 +690,14 @@ namespace gInk
             lblHK_ShowBlack.Text = Root.Local.OptionsGoHotkeys_ShowBlack ?? lblHK_ShowBlack.Text;
             lblHK_HideWhite.Text = Root.Local.OptionsGoHotkeys_HideWhite ?? lblHK_HideWhite.Text;
             lblHK_HideBlack.Text = Root.Local.OptionsGoHotkeys_HideBlack ?? lblHK_HideBlack.Text;
+
+            lblHK_HandWhite.Text = Root.Local.OptionsGoHotkeys_HandWhite ?? lblHK_HandWhite.Text;
+            lblHK_HandBlack.Text = Root.Local.OptionsGoHotkeys_HandBlack ?? lblHK_HandBlack.Text;
+
+            lblGoFillOpacity.Text = Root.Local.OptionsGoFillOpacity ?? lblGoFillOpacity.Text;
+            lblGoStrokeOpacity.Text = Root.Local.OptionsGoStrokeOpacity ?? lblGoStrokeOpacity.Text;
+            lblGoStrokeWidth.Text = Root.Local.OptionsGoStrokeWidth ?? lblGoStrokeWidth.Text;
+
 
             this.Text = Root.Local.MenuEntryOptions + " - ppInk";
             SubToolsBar_cb.Text = Root.Local.SubToolsBarCbText;

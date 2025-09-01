@@ -1763,7 +1763,8 @@ namespace gInk
                     {
                         DXInProgressGraphics.Clear(Color.Transparent);
                         if (Root.ToolSelected == Tools.Hand)
-                            DrawOneStroke(DXInProgressGraphics, stroke, Root.FormCollection.IC.DefaultDrawingAttributes, DXInprogressBmp);
+                        //    DrawOneStroke(DXInProgressGraphics, stroke, Root.FormCollection.IC.DefaultDrawingAttributes, DXInprogressBmp);
+                        DrawOneStroke(DXInProgressGraphics, stroke, stroke.DrawingAttributes, DXInprogressBmp);
                         else
                             DrawCustomOnGraphic(DXInProgressGraphics, Root.CursorX0, Root.CursorY0, Root.CursorX, Root.CursorY);
                         System.IO.MemoryStream io = new System.IO.MemoryStream();

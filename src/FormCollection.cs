@@ -2562,6 +2562,29 @@ namespace gInk
 
         }
 
+
+        private void ApplyHandFilledStroke(Stroke st, Color color, int opacityPercent, float width, int filling)
+        {
+            if (st == null) return;
+            try
+            {
+                try { if (st.ExtendedProperties.Contains(Root.ISHIDDEN_GUID)) st.ExtendedProperties.Remove(Root.ISHIDDEN_GUID); } catch { }
+                st.DrawingAttributes.Color = color;
+                int op = Math.Max(0, Math.Min(100, opacityPercent)); // clamp 0..100
+                st.DrawingAttributes.Transparency = (byte)(255 - (op * 255 / 100));
+                st.DrawingAttributes.Width = width;
+                setStrokeProperties(ref st, filling);
+            }
+            catch
+            {
+                // silent
+            }
+            try { if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st); } catch { }
+        }
+
+
+
+
         int NB_ELLIPSE_PTS = 36 * 3;
 
 
@@ -3679,19 +3702,20 @@ namespace gInk
             //}
             else if (Root.ToolSelected == Tools.HandFilledWhite)
             {
+                //Stroke st = e.Stroke;
                 Stroke st = e.Stroke;
+                ApplyHandFilledStroke(st, Color.White, Root.GoStrokeOpacityPercent, Root.GoStrokeWidth, Filling.WhiteFilled);
+
                 try
                 {
-                    try { if (st.ExtendedProperties.Contains(Root.ISHIDDEN_GUID)) st.ExtendedProperties.Remove(Root.ISHIDDEN_GUID); } catch { }
+                    if (st.ExtendedProperties.Contains(Root.ISHIDDEN_GUID)) st.ExtendedProperties.Remove(Root.ISHIDDEN_GUID);
                     st.DrawingAttributes.Color = Color.White;
-                    st.DrawingAttributes.Transparency = 128;
+                    st.DrawingAttributes.Transparency = (byte)(255 - (Root.GoStrokeOpacityPercent * 255 / 100));
+                    st.DrawingAttributes.Width = Root.GoStrokeWidth;
                     setStrokeProperties(ref st, Filling.WhiteFilled);
-                    // réimpose la transparence (au cas où un dessin secondaire la neutraliserait)
-                    st.DrawingAttributes.Transparency = 128;
                 }
                 catch { }
-                if (st.ExtendedProperties.Contains(Root.FADING_PEN))
-                    FadingList.Add(st);
+                if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st);
             }
 
 
@@ -3710,18 +3734,30 @@ namespace gInk
             //}
             else if (Root.ToolSelected == Tools.HandFilledBlack)
             {
+                //Stroke st = e.Stroke;
+                //try
+                //{
+                //    try { if (st.ExtendedProperties.Contains(Root.ISHIDDEN_GUID)) st.ExtendedProperties.Remove(Root.ISHIDDEN_GUID); } catch { }
+                //    st.DrawingAttributes.Color = Color.Black;
+                //    st.DrawingAttributes.Transparency = 128;
+                //    setStrokeProperties(ref st, Filling.BlackFilled);
+                //    st.DrawingAttributes.Transparency = 128;
+                //}
+                //catch { }
+                //if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+                //    FadingList.Add(st);
+                // Dans IC_Stroke: bloc HandFilledWhite
                 Stroke st = e.Stroke;
                 try
                 {
-                    try { if (st.ExtendedProperties.Contains(Root.ISHIDDEN_GUID)) st.ExtendedProperties.Remove(Root.ISHIDDEN_GUID); } catch { }
+                    if (st.ExtendedProperties.Contains(Root.ISHIDDEN_GUID)) st.ExtendedProperties.Remove(Root.ISHIDDEN_GUID);
                     st.DrawingAttributes.Color = Color.Black;
-                    st.DrawingAttributes.Transparency = 128;
+                    st.DrawingAttributes.Transparency = (byte)(255 - (Root.GoStrokeOpacityPercent * 255 / 100));
+                    st.DrawingAttributes.Width = Root.GoStrokeWidth;
                     setStrokeProperties(ref st, Filling.BlackFilled);
-                    st.DrawingAttributes.Transparency = 128;
                 }
                 catch { }
-                if (st.ExtendedProperties.Contains(Root.FADING_PEN))
-                    FadingList.Add(st);
+                if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st);
             }
 
 
@@ -5445,34 +5481,31 @@ namespace gInk
             // --- START ajout SelectTool pour HandFilledWhite / HandFilledBlack ---
             else if (tool == Tools.HandFilledWhite)
             {
+                
+                
+                
+                
                 // Forcer état de remplissage et attributs par défaut (blanc semi‑transparent)
                 Root.FilledSelected = Filling.WhiteFilled;
+                
+                
+
+                //  HandFilledWhite
                 try
                 {
                     IC.DefaultDrawingAttributes.Color = Color.White;
-                    IC.DefaultDrawingAttributes.Transparency = 128; // ~50%
+                    IC.DefaultDrawingAttributes.Transparency = (byte)(255 - (Root.GoFillOpacityPercent * 255 / 100));
                     if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
                     {
                         Root.PenAttr[Root.CurrentPen].Color = Color.White;
-                        Root.PenAttr[Root.CurrentPen].Transparency = 128;
+                        Root.PenAttr[Root.CurrentPen].Transparency = IC.DefaultDrawingAttributes.Transparency;
                     }
-                }
-                catch { }
-
-
-                try
-                {
-                    IC.DefaultDrawingAttributes.Color = Color.White;
-                    IC.DefaultDrawingAttributes.Transparency = 128;
-                    if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
-                    {
-                        Root.PenAttr[Root.CurrentPen].Color = Color.White;
-                        Root.PenAttr[Root.CurrentPen].Transparency = 128;
-                    }
-                    // MAJ curseur pour refléter la couleur
                     SetPenTipCursor();
                 }
                 catch { }
+
+
+               
 
 
                 // Met à jour l'icône pour retour visuel si souhaité
@@ -5482,34 +5515,48 @@ namespace gInk
             else if (tool == Tools.HandFilledBlack)
             {
                 Root.FilledSelected = Filling.BlackFilled;
-                try
-                {
-                    IC.DefaultDrawingAttributes.Color = Color.Black;
-                    IC.DefaultDrawingAttributes.Transparency = 128;
-                    if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
-                    {
-                        Root.PenAttr[Root.CurrentPen].Color = Color.Black;
-                        Root.PenAttr[Root.CurrentPen].Transparency = 128;
-                    }
-                }
-                catch { }
+
+                //try
+                //{
+                //    IC.DefaultDrawingAttributes.Color = Color.Black;
+                //    IC.DefaultDrawingAttributes.Transparency = 128;
+                //    if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
+                //    {
+                //        Root.PenAttr[Root.CurrentPen].Color = Color.Black;
+                //        Root.PenAttr[Root.CurrentPen].Transparency = 128;
+                //    }
+                //}
+                //catch { }
+
                 try { btHandBlack.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledB", ImageExts); } catch { }
                 Root.ToolSelected = tool;
 
+                //try
+                //{
+                //    IC.DefaultDrawingAttributes.Color = Color.Black;
+                //    IC.DefaultDrawingAttributes.Transparency = 128;
+                //    if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
+                //    {
+                //        Root.PenAttr[Root.CurrentPen].Color = Color.Black;
+                //        Root.PenAttr[Root.CurrentPen].Transparency = 128;
+                //    }
+                //    SetPenTipCursor();
+                //}
+                //catch { }
+
+                // Dans SelectTool -> bloc HandFilledWhite
                 try
                 {
                     IC.DefaultDrawingAttributes.Color = Color.Black;
-                    IC.DefaultDrawingAttributes.Transparency = 128;
+                    IC.DefaultDrawingAttributes.Transparency = (byte)(255 - (Root.GoFillOpacityPercent * 255 / 100));
                     if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
                     {
                         Root.PenAttr[Root.CurrentPen].Color = Color.Black;
-                        Root.PenAttr[Root.CurrentPen].Transparency = 128;
+                        Root.PenAttr[Root.CurrentPen].Transparency = IC.DefaultDrawingAttributes.Transparency;
                     }
                     SetPenTipCursor();
                 }
                 catch { }
-
-
 
             }
             // --- END ajout SelectTool ---
@@ -6425,6 +6472,8 @@ namespace gInk
         bool LastVideoStatus = false;
         bool LastDockStatus = false;
         bool LastHandStatus = false;
+        bool LastHandFilledWhiteStatus = false;
+        bool LastHandFilledBlackStatus = false;
         bool LastLineStatus = false;
         bool LastRectStatus = false;
         bool LastOvalStatus = false;
@@ -7399,6 +7448,32 @@ namespace gInk
                     btTool_Click(btHand, null);
                 }
                 LastHandStatus = pressed;
+
+                // HandFilledWhite hotkey
+                pressed = (GetKeyState(Root.Hotkey_HandFilledWhite.Key) & 0x8000) == 0x8000;
+                if (pressed && !LastHandFilledWhiteStatus && Root.Hotkey_HandFilledWhite.ModifierMatch(control, alt, shift, win))
+                {
+                    // preserve last pen and open the tool like clicking the toolbar button
+                    SelectPen(LastPenSelected);
+                    SelectTool(Tools.HandFilledWhite, Filling.WhiteFilled);
+                }
+                LastHandFilledWhiteStatus = pressed;
+
+                // HandFilledBlack hotkey
+                pressed = (GetKeyState(Root.Hotkey_HandFilledBlack.Key) & 0x8000) == 0x8000;
+                if (pressed && !LastHandFilledBlackStatus && Root.Hotkey_HandFilledBlack.ModifierMatch(control, alt, shift, win))
+                {
+                    SelectPen(LastPenSelected);
+                    SelectTool(Tools.HandFilledBlack, Filling.BlackFilled);
+                }
+                LastHandFilledBlackStatus = pressed;
+
+
+
+
+
+
+
 
                 // if shift is pressed in handtool we go to line tool temporaly
                 if (Root.AltAsOneCommand >= 1)
