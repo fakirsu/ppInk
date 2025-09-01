@@ -1160,6 +1160,10 @@ namespace gInk
 		public System.Windows.Forms.Button btUndo;
 		public System.Windows.Forms.Panel gpButtons;
 
+        // ajout des boutons de couleur
+        public System.Windows.Forms.Button btHandWhite;
+        public System.Windows.Forms.Button btHandBlack;
+
         public System.Windows.Forms.Button btHand;
         public System.Windows.Forms.Button btLine;
         public System.Windows.Forms.Button btRect;

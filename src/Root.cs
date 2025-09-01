@@ -23,6 +23,19 @@ namespace gInk
         public static string ProgramFolder = "";
     }
 
+    //public class Tools
+    //{
+    //    public const int Invalid = -1;
+    //    public const int Hand = 0; public const int Line = 1; public const int Rect = 2; public const int Oval = 3;
+    //    public const int StartArrow = 4; public const int EndArrow = 5; public const int NumberTag = 6;
+    //    public const int Edit = 7; public const int txtLeftAligned = 8; public const int txtRightAligned = 9;
+    //    public const int Move = 10; public const int Copy = 11; public const int Scale = 12; public const int Rotate = 13;
+    //    public const int Poly = 21; public const int ClipArt = 22; public const int PatternLine = 23;
+    //    public static readonly int[] All = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 21, 22, 23 };
+    //    public static readonly string[] Names = { "Hand", "Line", "Rect", "Oval", "StartArrow", "EndArrow", "Numbering", "Edit", "Text Left Aligned", "Text Right Aligned",
+    //                                              "Move", "Copy", "Resize", "Rotate", "PolyLine", "ClipArt", "PatternOnStroke"};
+    //}
+
     public class Tools
     {
         public const int Invalid = -1;
@@ -30,11 +43,15 @@ namespace gInk
         public const int StartArrow = 4; public const int EndArrow = 5; public const int NumberTag = 6;
         public const int Edit = 7; public const int txtLeftAligned = 8; public const int txtRightAligned = 9;
         public const int Move = 10; public const int Copy = 11; public const int Scale = 12; public const int Rotate = 13;
+        // Nouveaux outils : main remplie (blanc / noir)
+        public const int HandFilledWhite = 14;
+        public const int HandFilledBlack = 15;
         public const int Poly = 21; public const int ClipArt = 22; public const int PatternLine = 23;
-        public static readonly int[] All = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 21, 22, 23 };
+        public static readonly int[] All = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 21, 22, 23 };
         public static readonly string[] Names = { "Hand", "Line", "Rect", "Oval", "StartArrow", "EndArrow", "Numbering", "Edit", "Text Left Aligned", "Text Right Aligned",
-                                                  "Move", "Copy", "Resize", "Rotate", "PolyLine", "ClipArt", "PatternOnStroke"};
+                                                  "Move", "Copy", "Resize", "Rotate", "Hand Filled White", "Hand Filled Black", "PolyLine", "ClipArt", "PatternOnStroke"};
     }
+
     public class Filling {
         public const int NoFrame = -1;      // for Stamps
         public const int Empty = 0;

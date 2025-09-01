@@ -984,15 +984,248 @@ namespace gInk
                 btHand.Width = dim1s;
                 btHand.Visible = true;
                 SetButtonPosition(prev, btHand, dim3);
+
+
+
+
+                prev = btHand;
+
+                //// --- START ajout : boutons Hand Filled White / Black ---
+                //btHandWhite = new Button();
+                //btHandWhite.Name = "btHandWhite";
+                //btHandWhite.FlatAppearance.BorderSize = 0;
+                //btHandWhite.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+                //btHandWhite.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+                //btHandWhite.BackColor = System.Drawing.Color.Transparent;
+                //btHandWhite.BackgroundImageLayout = ImageLayout.Stretch;
+                //btHandWhite.Height = dim1s;
+                //btHandWhite.Width = dim1s;
+                //btHandWhite.Visible = true;
+                //btHandWhite.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledW", ImageExts);
+                //SetButtonPosition(prev, btHandWhite, dim3);
+                //this.toolTip.SetToolTip(this.btHandWhite, Root.Local.ButtonNameHandWhite ?? (Root.Local.ButtonNameHand + " — White"));
+                //btHandWhite.Click += new System.EventHandler(btTool_Click);
+                //gpButtons.Controls.Add(btHandWhite);
+
+                //// bouton noir à côté du blanc
+                //btHandBlack = new Button();
+                //btHandBlack.Name = "btHandBlack";
+                //btHandBlack.FlatAppearance.BorderSize = 0;
+                //btHandBlack.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+                //btHandBlack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+                //btHandBlack.BackColor = System.Drawing.Color.Transparent;
+                //btHandBlack.BackgroundImageLayout = ImageLayout.Stretch;
+                //btHandBlack.Height = dim1s;
+                //btHandBlack.Width = dim1s;
+                //btHandBlack.Visible = true;
+                //btHandBlack.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledB", ImageExts);
+                //SetSmallButtonNext(btHandWhite, btHandBlack, dim2s);
+                //this.toolTip.SetToolTip(this.btHandBlack, Root.Local.ButtonNameHandBlack ?? (Root.Local.ButtonNameHand + " — Black"));
+                //btHandBlack.Click += new System.EventHandler(btTool_Click);
+                //gpButtons.Controls.Add(btHandBlack);
+
+                //prev = btHandBlack; // 
+                //                    // --- END ajout ---
+                //// --- START ajout : boutons Hand Filled White / Black (corrected) ---
+                //btHandWhite = new Button();
+                //btHandWhite.Name = "btHandWhite";
+                //btHandWhite.FlatAppearance.BorderSize = 0;
+                //btHandWhite.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+                //btHandWhite.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+                //btHandWhite.BackColor = System.Drawing.Color.Transparent;
+                //btHandWhite.BackgroundImageLayout = ImageLayout.Stretch;
+                //btHandWhite.Height = dim1s;
+                //btHandWhite.Width = dim1s;
+                //btHandWhite.Visible = true;
+                //btHandWhite.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledW", ImageExts);
+                //// positionner immédiatement à droite / dessous de btHand
+                //SetButtonPosition(prev, btHandWhite, dim3);
+                //// handlers globaux (long click / context / mouse up/down) — idem que pour les autres boutons
+                //btHandWhite.Click += new System.EventHandler(btTool_Click);
+                //btHandWhite.MouseDown += new MouseEventHandler(this.btAllButtons_MouseDown);
+                //btHandWhite.MouseUp += new MouseEventHandler(this.btAllButtons_MouseUp);
+                //btHandWhite.MouseMove += new MouseEventHandler(this.gpButtons_MouseMove);
+                //btHandWhite.ContextMenu = new ContextMenu();
+                //btHandWhite.ContextMenu.Popup += new System.EventHandler(this.btAllButtons_RightClick);
+                //this.toolTip.SetToolTip(this.btHandWhite, Root.Local.ButtonNameHandWhite ?? (Root.Local.ButtonNameHand + " — White"));
+                //gpButtons.Controls.Add(btHandWhite);
+
+                //// bouton noir placé à côté du blanc
+                //btHandBlack = new Button();
+                //btHandBlack.Name = "btHandBlack";
+                //btHandBlack.FlatAppearance.BorderSize = 0;
+                //btHandBlack.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+                //btHandBlack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+                //btHandBlack.BackColor = System.Drawing.Color.Transparent;
+                //btHandBlack.BackgroundImageLayout = ImageLayout.Stretch;
+                //btHandBlack.Height = dim1s;
+                //btHandBlack.Width = dim1s;
+                //btHandBlack.Visible = true;
+                //btHandBlack.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledB", ImageExts);
+                //// petit incrément par rapport au bouton blanc
+                //SetSmallButtonNext(btHandWhite, btHandBlack, dim2s);
+                //btHandBlack.Click += new System.EventHandler(btTool_Click);
+                //btHandBlack.MouseDown += new MouseEventHandler(this.btAllButtons_MouseDown);
+                //btHandBlack.MouseUp += new MouseEventHandler(this.btAllButtons_MouseUp);
+                //btHandBlack.MouseMove += new MouseEventHandler(this.gpButtons_MouseMove);
+                //btHandBlack.ContextMenu = new ContextMenu();
+                //btHandBlack.ContextMenu.Popup += new System.EventHandler(this.btAllButtons_RightClick);
+                //this.toolTip.SetToolTip(this.btHandBlack, Root.Local.ButtonNameHandBlack ?? (Root.Local.ButtonNameHand + " — Black"));
+                //gpButtons.Controls.Add(btHandBlack);
+                //btHandWhite.BringToFront();
+                //btHandBlack.BringToFront();
+
+                //// mettre prev sur le dernier ajouté pour la suite
+                //prev = btHandBlack;
+                //// --- END ajout ---
+
+                //// --- INSERT btHandWhite si manquant (placer JUSTE avant "btHandBlack = new Button();") ---
+                //btHandWhite = new Button();
+                //btHandWhite.Name = "btHandWhite";
+                //btHandWhite.FlatAppearance.BorderSize = 0;
+                //btHandWhite.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+                //btHandWhite.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+                //btHandWhite.BackColor = System.Drawing.Color.Transparent;
+                //btHandWhite.BackgroundImageLayout = ImageLayout.Stretch;
+                //btHandWhite.Height = dim1s;
+                //btHandWhite.Width = dim1s;
+                //btHandWhite.Visible = true;
+                //btHandWhite.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledW", ImageExts);
+                //// positionner à droite / nouvelle colonne (ancre = prev qui est le top de la colonne précédente)
+                //SetButtonPosition(prev, btHandWhite, dim3);
+                //// handlers globaux pour que le bouton soit interactif comme les autres
+                //btHandWhite.Click += new System.EventHandler(btTool_Click);
+                //btHandWhite.MouseDown += new MouseEventHandler(this.btAllButtons_MouseDown);
+                //btHandWhite.MouseUp += new MouseEventHandler(this.btAllButtons_MouseUp);
+                //btHandWhite.MouseMove += new MouseEventHandler(this.gpButtons_MouseMove);
+                //btHandWhite.ContextMenu = new ContextMenu();
+                //btHandWhite.ContextMenu.Popup += new System.EventHandler(this.btAllButtons_RightClick);
+                //this.toolTip.SetToolTip(this.btHandWhite, Root.Local.ButtonNameHandWhite ?? (Root.Local.ButtonNameHand + " — White"));
+                //gpButtons.Controls.Add(btHandWhite);
+                //// bring to front pour éviter que d'autres contrôles recouvrent sa zone
+                //btHandWhite.BringToFront();
+
+                /////
+
+                //// bouton noir placé sous le blanc
+                //btHandBlack = new Button();
+                //btHandBlack.Name = "btHandBlack";
+                //btHandBlack.FlatAppearance.BorderSize = 0;
+                //btHandBlack.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+                //btHandBlack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+                //btHandBlack.BackColor = System.Drawing.Color.Transparent;
+                //btHandBlack.BackgroundImageLayout = ImageLayout.Stretch;
+                //btHandBlack.Height = dim1s;
+                //btHandBlack.Width = dim1s;
+                //btHandBlack.Visible = true;
+                //btHandBlack.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledB", ImageExts);
+                //SetSmallButtonNext(btHandWhite, btHandBlack, dim2s);
+                //btHandBlack.Click += new System.EventHandler(btTool_Click);
+                //btHandBlack.MouseDown += new MouseEventHandler(this.btAllButtons_MouseDown);
+                //btHandBlack.MouseUp += new MouseEventHandler(this.btAllButtons_MouseUp);
+                //btHandBlack.MouseMove += new MouseEventHandler(this.gpButtons_MouseMove);
+                //btHandBlack.ContextMenu = new ContextMenu();
+                //btHandBlack.ContextMenu.Popup += new System.EventHandler(this.btAllButtons_RightClick);
+                //this.toolTip.SetToolTip(this.btHandBlack, Root.Local.ButtonNameHandBlack ?? (Root.Local.ButtonNameHand + " — Black"));
+                //gpButtons.Controls.Add(btHandBlack);
+                //// Ajustement prophylactique : si la largeur/hauteur calculée est trop juste, on ajoute une marge
+                //if (gpButtons.Width < btHandWhite.Right + dim1s)
+                //    gpButtons.Width = btHandWhite.Right + dim1s + dim3;
+                //if (gpButtons.Height < btHandBlack.Bottom + dim3)
+                //    gpButtons.Height = btHandBlack.Bottom + dim3;
+
+                // sécurise l'ajout / configuration de btHandWhite / btHandBlack (évite doublons si Designer les a déjà créés)
+                bool createdWhite = false;
+                if (btHandWhite == null)
+                {
+                    btHandWhite = new Button();
+                    createdWhite = true;
+                }
+                btHandWhite.Name = "btHandWhite";
+                btHandWhite.FlatAppearance.BorderSize = 0;
+                btHandWhite.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+                btHandWhite.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+                btHandWhite.BackColor = System.Drawing.Color.Transparent;
+                btHandWhite.BackgroundImageLayout = ImageLayout.Stretch;
+                btHandWhite.Height = dim1s;
+                btHandWhite.Width = dim1s;
+                btHandWhite.Visible = true;
+                btHandWhite.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledW", ImageExts);
+                // positionner par rapport au bouton HAUT de la colonne (prev est btHand)
+                SetButtonPosition(prev, btHandWhite, dim3);
+                // handlers globaux (attache seulement si pas déjà attaché)
+                btHandWhite.Click -= btTool_Click; btHandWhite.Click += btTool_Click;
+                btHandWhite.MouseDown -= btAllButtons_MouseDown; btHandWhite.MouseDown += btAllButtons_MouseDown;
+                btHandWhite.MouseUp -= btAllButtons_MouseUp; btHandWhite.MouseUp += btAllButtons_MouseUp;
+                btHandWhite.MouseMove -= gpButtons_MouseMove; btHandWhite.MouseMove += gpButtons_MouseMove;
+                if (btHandWhite.ContextMenu == null) btHandWhite.ContextMenu = new ContextMenu();
+                btHandWhite.ContextMenu.Popup -= btAllButtons_RightClick; btHandWhite.ContextMenu.Popup += btAllButtons_RightClick;
+                this.toolTip.SetToolTip(this.btHandWhite, Root.Local.ButtonNameHandWhite ?? (Root.Local.ButtonNameHand + " — White"));
+                if (createdWhite) gpButtons.Controls.Add(btHandWhite);
+                btHandWhite.BringToFront();
+
+                // bouton noir (ancré sous btHandWhite)
+                bool createdBlack = false;
+                if (btHandBlack == null)
+                {
+                    btHandBlack = new Button();
+                    createdBlack = true;
+                }
+                btHandBlack.Name = "btHandBlack";
+                btHandBlack.FlatAppearance.BorderSize = 0;
+                btHandBlack.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+                btHandBlack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+                btHandBlack.BackColor = System.Drawing.Color.Transparent;
+                btHandBlack.BackgroundImageLayout = ImageLayout.Stretch;
+                btHandBlack.Height = dim1s;
+                btHandBlack.Width = dim1s;
+                btHandBlack.Visible = true;
+                btHandBlack.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledB", ImageExts);
+                SetSmallButtonNext(btHandWhite, btHandBlack, dim2s);
+                btHandBlack.Click -= btTool_Click; btHandBlack.Click += btTool_Click;
+                btHandBlack.MouseDown -= btAllButtons_MouseDown; btHandBlack.MouseDown += btAllButtons_MouseDown;
+                btHandBlack.MouseUp -= btAllButtons_MouseUp; btHandBlack.MouseUp += btAllButtons_MouseUp;
+                btHandBlack.MouseMove -= gpButtons_MouseMove; btHandBlack.MouseMove += gpButtons_MouseMove;
+                if (btHandBlack.ContextMenu == null) btHandBlack.ContextMenu = new ContextMenu();
+                btHandBlack.ContextMenu.Popup -= btAllButtons_RightClick; btHandBlack.ContextMenu.Popup += btAllButtons_RightClick;
+                this.toolTip.SetToolTip(this.btHandBlack, Root.Local.ButtonNameHandBlack ?? (Root.Local.ButtonNameHand + " — Black"));
+                if (createdBlack) gpButtons.Controls.Add(btHandBlack);
+                btHandWhite.BringToFront();
+                btHandBlack.BringToFront();
+
+                // Ajustement prophylactique des dimensions du panel si nécessaire
+                if (gpButtons.Width < btHandWhite.Right + dim1s)
+                    gpButtons.Width = btHandWhite.Right + dim1s + dim3;
+                if (gpButtons.Height < btHandBlack.Bottom + dim3)
+                    gpButtons.Height = btHandBlack.Bottom + dim3;
+
+
+                // S’assurer que les deux sont au-dessus
+                btHandWhite.BringToFront();
+                btHandBlack.BringToFront();
+
+                // IMPORTANT : on conserve la colonne “main” alignée sur le bouton du HAUT
+                // donc prev DOIT rester btHandWhite (et non btHandBlack)
+                prev = btHandWhite;
+
+
                 btLine.Height = dim1s;
                 btLine.Width = dim1s;
                 btLine.Visible = true;
-                SetSmallButtonNext(btHand, btLine, dim2s);
+                //SetSmallButtonNext(btHand, btLine, dim2s);
+                //SetSmallButtonNext(btHandBlack, btLine, dim2s);
+                //SetSmallButtonNext(prev, btLine, dim2s);
+                SetSmallButtonNext(btHandBlack, btLine, dim2s);
+                // garder prev = btHandWhite (top de colonne) pour les colonnes suivantes
+                btHandBlack.BringToFront();
+                btHandWhite.BringToFront();
 
                 btRect.Height = dim1s;
                 btRect.Width = dim1s;
                 btRect.Visible = true;
-                SetButtonPosition(btHand, btRect, dim3);
+                //SetButtonPosition(btHand, btRect, dim3);
+                SetButtonPosition(prev, btRect, dim3);
+
                 btOval.Height = dim1s;
                 btOval.Width = dim1s;
                 btOval.Visible = true;
@@ -1172,6 +1405,8 @@ namespace gInk
                     btClip3.Tag = Root.ImageStamp3.Clone();
                 }
                 prev = btClip2;
+                // Recalage final après insertion des nouveaux outils + colonnes
+                AdjustToolbarSize();
             }
             else
             {
@@ -3324,6 +3559,67 @@ namespace gInk
                 if (st.ExtendedProperties.Contains(Root.FADING_PEN))
                     FadingList.Add(st);
             }
+
+            //else if (Root.ToolSelected == Tools.HandFilledWhite)
+            //{
+            //    Stroke st = e.Stroke;
+            //    try
+            //    {
+            //        st.DrawingAttributes.Color = Color.White;
+            //        st.DrawingAttributes.Transparency = 128;
+            //        setStrokeProperties(ref st, Filling.WhiteFilled);
+            //    }
+            //    catch { }
+            //    if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+            //        FadingList.Add(st);
+            //}
+            else if (Root.ToolSelected == Tools.HandFilledWhite)
+            {
+                Stroke st = e.Stroke;
+                try
+                {
+                    try { if (st.ExtendedProperties.Contains(Root.ISHIDDEN_GUID)) st.ExtendedProperties.Remove(Root.ISHIDDEN_GUID); } catch { }
+                    st.DrawingAttributes.Color = Color.White;
+                    st.DrawingAttributes.Transparency = 128;
+                    setStrokeProperties(ref st, Filling.WhiteFilled);
+                }
+                catch { }
+                if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+                    FadingList.Add(st);
+            }
+
+
+
+            //else if (Root.ToolSelected == Tools.HandFilledBlack)
+            //{
+            //    Stroke st = e.Stroke;
+            //    try
+            //    {
+            //        st.DrawingAttributes.Color = Color.Black;
+            //        st.DrawingAttributes.Transparency = 128;
+            //        setStrokeProperties(ref st, Filling.BlackFilled);
+            //    }
+            //    catch { }
+            //    if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+            //        FadingList.Add(st);
+            //}
+            else if (Root.ToolSelected == Tools.HandFilledBlack)
+            {
+                Stroke st = e.Stroke;
+                try
+                {
+                    try { if (st.ExtendedProperties.Contains(Root.ISHIDDEN_GUID)) st.ExtendedProperties.Remove(Root.ISHIDDEN_GUID); } catch { }
+                    st.DrawingAttributes.Color = Color.Black;
+                    st.DrawingAttributes.Transparency = 128;
+                    setStrokeProperties(ref st, Filling.BlackFilled);
+                }
+                catch { }
+                if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+                    FadingList.Add(st);
+            }
+
+
+
             else if (Root.ToolSelected == Tools.PatternLine && PatternLineSteps == 2) //Draw the stroke and is ready for a new one ; the remaing is below
             {
                 if (PatternPoints.Count == 0)
@@ -3906,10 +4202,20 @@ namespace gInk
                 e.Stroke.DrawingAttributes.Transparency = 0;
                 e.Stroke.DrawingAttributes.Width = Root.PixelToHiMetric(1);
             }
-            else if (Root.ToolSelected == Tools.Hand)
-                e.Stroke.ExtendedProperties.Add(Root.ISSTROKE_GUID, true); // we set the ISTROKE_GUID in order to draw the inprogress as a line
+            //else if (Root.ToolSelected == Tools.Hand)
+            //    e.Stroke.ExtendedProperties.Add(Root.ISSTROKE_GUID, true); // we set the ISTROKE_GUID in order to draw the inprogress as a line
+            //else
+            //    e.Stroke.ExtendedProperties.Add(Root.ISHIDDEN_GUID, true); // Others should be hidden.
+            if (Root.ToolSelected == Tools.Hand
+            || Root.ToolSelected == Tools.HandFilledWhite
+            || Root.ToolSelected == Tools.HandFilledBlack)
+            {
+                e.Stroke.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
+            }
             else
-                e.Stroke.ExtendedProperties.Add(Root.ISHIDDEN_GUID, true); // Others should be hidden.
+            {
+                e.Stroke.ExtendedProperties.Add(Root.ISHIDDEN_GUID, true);
+            }
 
             if (Root.LassoMode)
             {
@@ -4742,6 +5048,9 @@ namespace gInk
         // filled is applicable to Hand,Rect,Oval
         {
             btHand.BackgroundImage = getImgFromDiskOrRes("tool_hand", ImageExts);
+            btHandWhite.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledW", ImageExts);
+            btHandBlack.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledB", ImageExts);
+
             btLine.BackgroundImage = getImgFromDiskOrRes("tool_line", ImageExts);
             btRect.BackgroundImage = getImgFromDiskOrRes("tool_rect", ImageExts);
             btOval.BackgroundImage = getImgFromDiskOrRes("tool_oval", ImageExts);
@@ -4935,6 +5244,48 @@ namespace gInk
                     btLine.BackgroundImage = getImgFromDiskOrRes("tool_mlines_filledB", ImageExts);
 
             }
+
+            // --- START ajout SelectTool pour HandFilledWhite / HandFilledBlack ---
+            else if (tool == Tools.HandFilledWhite)
+            {
+                // Forcer état de remplissage et attributs par défaut (blanc semi‑transparent)
+                Root.FilledSelected = Filling.WhiteFilled;
+                try
+                {
+                    IC.DefaultDrawingAttributes.Color = Color.White;
+                    IC.DefaultDrawingAttributes.Transparency = 128; // ~50%
+                    if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
+                    {
+                        Root.PenAttr[Root.CurrentPen].Color = Color.White;
+                        Root.PenAttr[Root.CurrentPen].Transparency = 128;
+                    }
+                }
+                catch { }
+                // Met à jour l'icône pour retour visuel si souhaité
+                try { btHandWhite.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledW", ImageExts); } catch { }
+                Root.ToolSelected = tool;
+            }
+            else if (tool == Tools.HandFilledBlack)
+            {
+                Root.FilledSelected = Filling.BlackFilled;
+                try
+                {
+                    IC.DefaultDrawingAttributes.Color = Color.Black;
+                    IC.DefaultDrawingAttributes.Transparency = 128;
+                    if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
+                    {
+                        Root.PenAttr[Root.CurrentPen].Color = Color.Black;
+                        Root.PenAttr[Root.CurrentPen].Transparency = 128;
+                    }
+                }
+                catch { }
+                try { btHandBlack.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledB", ImageExts); } catch { }
+                Root.ToolSelected = tool;
+            }
+            // --- END ajout SelectTool ---
+
+
+
             else if (tool == Tools.Rect)
             {
                 if (Root.FilledSelected == Filling.Empty)
@@ -7914,6 +8265,23 @@ namespace gInk
 
         public void btTool_Click(object sender, EventArgs e)
         {
+
+            // Gestion directe des boutons HandFilled (préférer avant le test "Contains(\"Hand\")")
+            if (((Button)sender).Name.Contains("HandWhite"))
+            {
+                SelectPen(LastPenSelected);
+                SelectTool(Tools.HandFilledWhite, Filling.WhiteFilled);
+                return;
+            }
+            if (((Button)sender).Name.Contains("HandBlack"))
+            {
+                SelectPen(LastPenSelected);
+                SelectTool(Tools.HandFilledBlack, Filling.BlackFilled);
+                return;
+            }
+
+
+
             //btClear.RightToLeft = RightToLeft.No;
             longClickTimer.Stop(); // for an unkown reason the mouse arrives later
             if (sender is ContextMenu)
