@@ -162,7 +162,7 @@ namespace gInk
 
         // Déclarations (dans la classe Root – section autres paramètres)
         public int GoFillOpacityPercent = 50;      // 0-100 (% visible) => Transparency = 255 - %
-        public int GoStrokeOpacityPercent = 0;     // 0-100 (% visible)
+        public int GoStrokeOpacityPercent = 50;     // 0-100 (% visible)
         public float GoStrokeWidth = 3.0f;         // largeur finale (HiMetric)
 
         public Hotkey Hotkey_HandFilledWhite = new Hotkey();
@@ -1372,18 +1372,35 @@ namespace gInk
 
 
                         // Ajouter dans le switch(sName) de ReadOptions :
+                        //case "GOFILLOPACITY":
+                        //    if (int.TryParse(sPara, out tempi))
+                        //        GoFillOpacityPercent = Math.Max(0, Math.Min(100, tempi));
+                        //    break;
+                        //case "GOSTROKEOPACITY":
+                        //    if (int.TryParse(sPara, out tempi))
+                        //        GoStrokeOpacityPercent = Math.Max(0, Math.Min(100, tempi));
+                        //    break;
+                        //case "GOSTROKEWIDTH":
+                        //    if (float.TryParse(sPara, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out tempf))
+                        //        GoStrokeWidth = Math.Max(0.1f, tempf);
+                        //    break;
+
+
                         case "GOFILLOPACITY":
-                            if (int.TryParse(sPara, out tempi))
-                                GoFillOpacityPercent = Math.Max(0, Math.Min(100, tempi));
+                            if (int.TryParse(sPara, out int gof)) GoFillOpacityPercent = Math.Max(0, Math.Min(100, gof));
                             break;
                         case "GOSTROKEOPACITY":
-                            if (int.TryParse(sPara, out tempi))
-                                GoStrokeOpacityPercent = Math.Max(0, Math.Min(100, tempi));
+                            if (int.TryParse(sPara, out int gos)) GoStrokeOpacityPercent = Math.Max(0, Math.Min(100, gos));
                             break;
                         case "GOSTROKEWIDTH":
-                            if (float.TryParse(sPara, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out tempf))
-                                GoStrokeWidth = Math.Max(0.1f, tempf);
+                            if (float.TryParse(sPara, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float gsw))
+                                GoStrokeWidth = Math.Max(0f, Math.Min(100f, gsw));
                             break;
+
+
+
+
+
                         case "HOTKEY_HANDFILLEDWHITE":
                             Hotkey_HandFilledWhite.Parse(sPara);
                             break;
@@ -2422,15 +2439,23 @@ namespace gInk
 
 
                         // 
-                        case "GOFILLOPACITY":
-                            sPara = GoFillOpacityPercent.ToString();
-                            break;
-                        case "GOSTROKEOPACITY":
-                            sPara = GoStrokeOpacityPercent.ToString();
-                            break;
-                        case "GOSTROKEWIDTH":
-                            sPara = GoStrokeWidth.ToString(CultureInfo.InvariantCulture);
-                            break;
+                        //case "GOFILLOPACITY":
+                        //    sPara = GoFillOpacityPercent.ToString();
+                        //    break;
+                        //case "GOSTROKEOPACITY":
+                        //    sPara = GoStrokeOpacityPercent.ToString();
+                        //    break;
+                        //case "GOSTROKEWIDTH":
+                        //    sPara = GoStrokeWidth.ToString(CultureInfo.InvariantCulture);
+                        //    break;
+
+                        case "GOFILLOPACITY": sPara = GoFillOpacityPercent.ToString(); break;
+                        case "GOSTROKEOPACITY": sPara = GoStrokeOpacityPercent.ToString(); break;
+                        case "GOSTROKEWIDTH": sPara = GoStrokeWidth.ToString(System.Globalization.CultureInfo.InvariantCulture); break;
+
+
+
+
                         case "HOTKEY_HANDFILLEDWHITE":
                             sPara = Hotkey_HandFilledWhite.ToStringInvariant();
                             break;

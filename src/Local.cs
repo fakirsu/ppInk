@@ -302,10 +302,11 @@ namespace gInk
             GoOptionsHandStrokeAlpha = "Outline opacity of areas (%)";
             GoOptionsHandStrokeWidth = "Area outline thickness";
 
-            // alias de compatibilité utilisés par FormOptions
-            OptionsGoFillOpacity = GoOptionsHandWhiteAlpha;
-            OptionsGoStrokeOpacity = GoOptionsHandStrokeAlpha;
-            OptionsGoStrokeWidth = GoOptionsHandStrokeWidth;
+            //// alias de compatibilité utilisés par FormOptions
+            OptionsGoFillOpacity = GoOptionsHandWhiteAlpha;     // Libellé pour l'opacité du remplissage
+            OptionsGoStrokeOpacity = GoOptionsHandStrokeAlpha;  // Libellé pour l'opacité du contour
+            OptionsGoStrokeWidth = GoOptionsHandStrokeWidth;    // Libellé pour l'épaisseur du contour
+
 
             LoadKeyNames();
 
