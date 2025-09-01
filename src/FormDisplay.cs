@@ -1640,14 +1640,30 @@ namespace gInk
 				if (Root.FormCollection.IC.Ink.Strokes.Count > 0)
 				{
 					Stroke stroke = Root.FormCollection.IC.Ink.Strokes[Root.FormCollection.IC.Ink.Strokes.Count - 1];
-					if ((!stroke.Deleted) && (!Root.FormCollection.ZoomCapturing)&&(Root.ToolSelected == Tools.Hand))
+                    //if ((!stroke.Deleted) && (!Root.FormCollection.ZoomCapturing)&&(Root.ToolSelected == Tools.Hand))
+                    //               {
+                    //                   BitBlt(OutcanvusDc, 0, 0, this.Width, this.Height, canvusDc, 0, 0, 0x00CC0020);
+                    //                   //Root.FormCollection.IC.Renderer.Draw(gOutCanvus, stroke, Root.FormCollection.IC.DefaultDrawingAttributes);
+                    //                   DrawOneStroke(gOutCanvus, stroke, Root.FormCollection.IC.DefaultDrawingAttributes);
+                    //               }
+                    //               UpdateFormDisplay(true, (Root.ToolSelected == Tools.Hand) && (!Root.FormCollection.ZoomCapturing));
+
+                    if ((!stroke.Deleted) && (!Root.FormCollection.ZoomCapturing) &&
+    (Root.ToolSelected == Tools.Hand ||
+     Root.ToolSelected == Tools.HandFilledWhite ||
+     Root.ToolSelected == Tools.HandFilledBlack))
                     {
                         BitBlt(OutcanvusDc, 0, 0, this.Width, this.Height, canvusDc, 0, 0, 0x00CC0020);
-                        //Root.FormCollection.IC.Renderer.Draw(gOutCanvus, stroke, Root.FormCollection.IC.DefaultDrawingAttributes);
-                        DrawOneStroke(gOutCanvus, stroke, Root.FormCollection.IC.DefaultDrawingAttributes);
+                        // On dessine avec les attributs de la stroke (couleur correcte white/black déjà forcée dans IC_CursorDown)
+                        DrawOneStroke(gOutCanvus, stroke, stroke.DrawingAttributes);
                     }
-                    UpdateFormDisplay(true, (Root.ToolSelected == Tools.Hand) && (!Root.FormCollection.ZoomCapturing));
-                    
+                    UpdateFormDisplay(true,
+                        (Root.ToolSelected == Tools.Hand ||
+                         Root.ToolSelected == Tools.HandFilledWhite ||
+                         Root.ToolSelected == Tools.HandFilledBlack) &&
+                        (!Root.FormCollection.ZoomCapturing));
+
+
                 }
             }
 

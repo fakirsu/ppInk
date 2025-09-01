@@ -2569,6 +2569,44 @@ namespace gInk
 
 
 
+        //private Stroke AddEllipseStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, int FilledSelected)
+        //{
+        //    // calcul des demi-axes (peuvent être négatifs si CursorX < CursorX0, on garde signe)
+        //    int dX = CursorX - CursorX0;
+        //    int dY = CursorY - CursorY0;
+
+        //    // utiliser un nombre de points proportionnel au rayon pour un pourtour plus lisse
+        //    int maxRadius = Math.Max(Math.Abs(dX), Math.Abs(dY));
+        //    // estimer circonférence et choisir un nombre de points ~ 1 point / pixel de circonférence
+        //    int estimated = (int)Math.Round(2.0 * Math.PI * Math.Max(1, maxRadius));
+        //    int ptsCount = Math.Max(36, Math.Min(estimated, 720)); // bornes : [36,720] pour qualité/perf
+        //    Point[] pts = new Point[ptsCount + 1];
+
+        //    double angleStep = 2.0 * Math.PI / ptsCount;
+        //    double offset = ptsCount / 8.0; // conserve un décalage similaire à l'implémentation précédente
+
+        //    for (int i = 0; i <= ptsCount; i++)
+        //    {
+        //        double theta = angleStep * (i + offset);
+        //        double fx = dX * Math.Cos(theta);
+        //        double fy = dY * Math.Sin(theta);
+        //        pts[i] = new Point(CursorX0 + (int)Math.Round(fx), CursorY0 + (int)Math.Round(fy));
+        //    }
+
+        //    // conversion pixel -> inkspace
+        //    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+
+        //    Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
+        //    st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+        //    st.DrawingAttributes.AntiAliased = true;
+        //    st.DrawingAttributes.FitToCurve = Root.FitToCurve;
+        //    setStrokeProperties(ref st, FilledSelected);
+        //    Root.FormCollection.IC.Ink.Strokes.Add(st);
+        //    if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+        //        FadingList.Add(st);
+        //    return st;
+        //}
+
         private Stroke AddEllipseStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, int FilledSelected)
         {
             // calcul des demi-axes (peuvent être négatifs si CursorX < CursorX0, on garde signe)
@@ -2577,7 +2615,6 @@ namespace gInk
 
             // utiliser un nombre de points proportionnel au rayon pour un pourtour plus lisse
             int maxRadius = Math.Max(Math.Abs(dX), Math.Abs(dY));
-            // estimer circonférence et choisir un nombre de points ~ 1 point / pixel de circonférence
             int estimated = (int)Math.Round(2.0 * Math.PI * Math.Max(1, maxRadius));
             int ptsCount = Math.Max(36, Math.Min(estimated, 720)); // bornes : [36,720] pour qualité/perf
             Point[] pts = new Point[ptsCount + 1];
@@ -2596,18 +2633,37 @@ namespace gInk
             // conversion pixel -> inkspace
             IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
 
-            Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
-            st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+            Stroke st = IC.Ink.CreateStroke(pts);
+            st.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
+            // Appliquer la couleur/transparence adaptée pour les filled
+            try
+            {
+                if (FilledSelected == Filling.NoFrame)
+                {
+                    st.DrawingAttributes.Transparency = 255; // fully transparent stroke (no frame)
+                }
+                else if (FilledSelected == Filling.WhiteFilled)
+                {
+                    st.DrawingAttributes.Color = Color.White;
+                    st.DrawingAttributes.Transparency = 128;
+                }
+                else if (FilledSelected == Filling.BlackFilled)
+                {
+                    st.DrawingAttributes.Color = Color.Black;
+                    st.DrawingAttributes.Transparency = 128;
+                }
+                // Filling.PenColorFilled conserve la couleur/transparence du pen courant (par défaut IC.DefaultDrawingAttributes)
+            }
+            catch { }
+
             st.DrawingAttributes.AntiAliased = true;
             st.DrawingAttributes.FitToCurve = Root.FitToCurve;
             setStrokeProperties(ref st, FilledSelected);
-            Root.FormCollection.IC.Ink.Strokes.Add(st);
+            IC.Ink.Strokes.Add(st);
             if (st.ExtendedProperties.Contains(Root.FADING_PEN))
                 FadingList.Add(st);
             return st;
         }
-
-
 
 
 
@@ -2649,6 +2705,34 @@ namespace gInk
         //        FadingList.Add(st);
         //    return st;
         //}
+        //private Stroke AddRectStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, int FilledSelected)
+        //{
+        //    Point[] pts = new Point[9];
+        //    int i = 0;
+        //    pts[i++] = new Point(CursorX0, CursorY0);
+        //    pts[i++] = new Point(CursorX0, (CursorY0 + CursorY) / 2);
+        //    pts[i++] = new Point(CursorX0, CursorY);
+        //    pts[i++] = new Point((CursorX0 + CursorX) / 2, CursorY);
+        //    pts[i++] = new Point(CursorX, CursorY);
+        //    pts[i++] = new Point(CursorX, (CursorY0 + CursorY) / 2);
+        //    pts[i++] = new Point(CursorX, CursorY0);
+        //    pts[i++] = new Point((CursorX0 + CursorX) / 2, CursorY0);
+        //    pts[i++] = new Point(CursorX0, CursorY0);
+
+        //    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+        //    Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
+        //    st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+        //    if (FilledSelected == Filling.NoFrame)
+        //        st.DrawingAttributes.Transparency = 255;
+        //    st.DrawingAttributes.AntiAliased = true;
+        //    st.DrawingAttributes.FitToCurve = false;
+        //    setStrokeProperties(ref st, FilledSelected);
+        //    Root.FormCollection.IC.Ink.Strokes.Add(st);
+        //    if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+        //        FadingList.Add(st);
+        //    return st;
+        //}
+
         private Stroke AddRectStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, int FilledSelected)
         {
             Point[] pts = new Point[9];
@@ -2664,18 +2748,38 @@ namespace gInk
             pts[i++] = new Point(CursorX0, CursorY0);
 
             IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
-            Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
-            st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
-            if (FilledSelected == Filling.NoFrame)
-                st.DrawingAttributes.Transparency = 255;
+            Stroke st = IC.Ink.CreateStroke(pts);
+            st.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
+
+            // Appliquer la couleur/transparence adaptée pour les filled
+            try
+            {
+                if (FilledSelected == Filling.NoFrame)
+                    st.DrawingAttributes.Transparency = 255;
+                else if (FilledSelected == Filling.WhiteFilled)
+                {
+                    st.DrawingAttributes.Color = Color.White;
+                    st.DrawingAttributes.Transparency = 128;
+                }
+                else if (FilledSelected == Filling.BlackFilled)
+                {
+                    st.DrawingAttributes.Color = Color.Black;
+                    st.DrawingAttributes.Transparency = 128;
+                }
+                // Filling.PenColorFilled laisse les attributs par défaut (couleur + opacité du pen courant)
+            }
+            catch { }
+
             st.DrawingAttributes.AntiAliased = true;
             st.DrawingAttributes.FitToCurve = false;
             setStrokeProperties(ref st, FilledSelected);
-            Root.FormCollection.IC.Ink.Strokes.Add(st);
+            IC.Ink.Strokes.Add(st);
             if (st.ExtendedProperties.Contains(Root.FADING_PEN))
                 FadingList.Add(st);
             return st;
         }
+
+
         // ################### goInk START #######################
 
         private Stroke AddImageStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string fn, int Filling = -10)
@@ -3582,12 +3686,13 @@ namespace gInk
                     st.DrawingAttributes.Color = Color.White;
                     st.DrawingAttributes.Transparency = 128;
                     setStrokeProperties(ref st, Filling.WhiteFilled);
+                    // réimpose la transparence (au cas où un dessin secondaire la neutraliserait)
+                    st.DrawingAttributes.Transparency = 128;
                 }
                 catch { }
                 if (st.ExtendedProperties.Contains(Root.FADING_PEN))
                     FadingList.Add(st);
             }
-
 
 
             //else if (Root.ToolSelected == Tools.HandFilledBlack)
@@ -3612,12 +3717,12 @@ namespace gInk
                     st.DrawingAttributes.Color = Color.Black;
                     st.DrawingAttributes.Transparency = 128;
                     setStrokeProperties(ref st, Filling.BlackFilled);
+                    st.DrawingAttributes.Transparency = 128;
                 }
                 catch { }
                 if (st.ExtendedProperties.Contains(Root.FADING_PEN))
                     FadingList.Add(st);
             }
-
 
 
             else if (Root.ToolSelected == Tools.PatternLine && PatternLineSteps == 2) //Draw the stroke and is ready for a new one ; the remaing is below
@@ -4217,6 +4322,28 @@ namespace gInk
                 e.Stroke.ExtendedProperties.Add(Root.ISHIDDEN_GUID, true);
             }
 
+            // Après avoir défini ISSTROKE_GUID pour les outils main, rendre le preview plus visible
+            if (Root.ToolSelected == Tools.HandFilledWhite)
+            {
+                try
+                {
+                    e.Stroke.DrawingAttributes.Color = Color.White;
+                    // rendre visible pendant le dessin (0 = opaque pour l'overlay)
+                    e.Stroke.DrawingAttributes.Transparency = 0;
+                }
+                catch { }
+            }
+            else if (Root.ToolSelected == Tools.HandFilledBlack)
+            {
+                try
+                {
+                    e.Stroke.DrawingAttributes.Color = Color.Black;
+                    e.Stroke.DrawingAttributes.Transparency = 0;
+                }
+                catch { }
+            }
+
+
             if (Root.LassoMode)
             {
                 e.Stroke.ExtendedProperties.Add(Root.ISLASSO_GUID, true);
@@ -4284,6 +4411,8 @@ namespace gInk
             switch (Root.ToolSelected)
             {
                 case Tools.Hand:
+                case Tools.HandFilledWhite:
+                case Tools.HandFilledBlack:
                 case Tools.Line:
                 case Tools.Poly:
                 case Tools.Rect:
@@ -4629,7 +4758,58 @@ namespace gInk
                 Root.UponAllDrawingUpdate = true;
             }
 
-            if (currentStroke != null && Root.MeasureEnabled)
+            //if (currentStroke != null && Root.MeasureEnabled)
+            //{
+            //    if ((DateTime.Now.Ticks - lastHintDraw) > (200 * 10000))
+            //    {
+            //        string str = "?????";
+            //        Double dx = Root.CursorX0 == int.MinValue ? 0 : ConvertMeasureLength(Math.Abs(Root.PixelToHiMetric(Root.CursorX - Root.CursorX0)));
+            //        Double dy = Root.CursorY0 == int.MinValue ? 0 : ConvertMeasureLength(Math.Abs(Root.PixelToHiMetric(Root.CursorY - Root.CursorY0)));
+
+            //        //switch (Root.ToolSelected)
+            //        //{
+            //        //    case Tools.Hand:
+            //        //        str = string.Format(MeasureNumberFormat, Root.Local.FormatLength,
+            //        //                            ConvertMeasureLength(StrokeLength(currentStroke)), Root.Measure2Unit);
+            //        //        break;
+            //        //    case Tools.Line:
+            //        switch (Root.ToolSelected)
+            //        {
+            //            case Tools.Hand:
+            //            case Tools.HandFilledWhite:
+            //            case Tools.HandFilledBlack:
+            //                str = string.Format(MeasureNumberFormat, Root.Local.FormatLength,
+            //                                    ConvertMeasureLength(StrokeLength(currentStroke)), Root.Measure2Unit);
+            //                break;
+            //            case Tools.Line:
+            //            case Tools.EndArrow:
+            //            case Tools.StartArrow:
+            //                str = string.Format(MeasureNumberFormat, Root.Local.FormatLength,
+            //                                    Math.Sqrt(dx * dx + dy * dy), Root.Measure2Unit);
+            //                break;
+            //            case Tools.Rect:
+            //                str = string.Format(MeasureNumberFormat, Root.Local.FormatRectSize, dx, dy, Root.Measure2Unit);
+            //                break;
+            //            case Tools.Oval:
+            //                str = string.Format(MeasureNumberFormat, Root.Local.FormatEllipseSize, dx, dy, Root.Measure2Unit);
+            //                break;
+            //            case Tools.Poly:
+            //                str = string.Format(MeasureNumberFormat, Root.Local.FormatLength,
+            //                                    ConvertMeasureLength(StrokeLength(PolyLineInProgress)) + Math.Sqrt(dx * dx + dy * dy), Root.Measure2Unit);
+            //                break;
+            //        }
+
+            //        MetricToolTip.Show(str, this, e.X, e.Y - 80);
+            //        lastHintDraw = DateTime.Now.Ticks;
+            //    }
+            //}
+
+            // Affichage de la pastille de mesure pendant le dessin
+            // Ne pas afficher pour les outils "Hand" (normale + variantes remplies)
+            if (currentStroke != null && Root.MeasureEnabled
+                && !(Root.ToolSelected == Tools.Hand
+                     || Root.ToolSelected == Tools.HandFilledWhite
+                     || Root.ToolSelected == Tools.HandFilledBlack))
             {
                 if ((DateTime.Now.Ticks - lastHintDraw) > (200 * 10000))
                 {
@@ -4640,6 +4820,8 @@ namespace gInk
                     switch (Root.ToolSelected)
                     {
                         case Tools.Hand:
+                        case Tools.HandFilledWhite:
+                        case Tools.HandFilledBlack:
                             str = string.Format(MeasureNumberFormat, Root.Local.FormatLength,
                                                 ConvertMeasureLength(StrokeLength(currentStroke)), Root.Measure2Unit);
                             break;
@@ -4665,6 +4847,7 @@ namespace gInk
                     lastHintDraw = DateTime.Now.Ticks;
                 }
             }
+
             HideMetricCountDown = 3000 / tiSlide.Interval;
 
             LasteXY = currentxy;
@@ -5171,6 +5354,20 @@ namespace gInk
 
 
 
+            // Activation du rendu dynamique uniquement pour les tracés libres (main + variantes)
+            try
+            {
+                IC.DynamicRendering = (tool == Tools.Hand ||
+                                       tool == Tools.HandFilledWhite ||
+                                       tool == Tools.HandFilledBlack);
+            }
+            catch { }
+
+
+
+
+
+
 
             Root.UponButtonsUpdate |= 0x2;
             EnterEraserMode(false);
@@ -5261,6 +5458,23 @@ namespace gInk
                     }
                 }
                 catch { }
+
+
+                try
+                {
+                    IC.DefaultDrawingAttributes.Color = Color.White;
+                    IC.DefaultDrawingAttributes.Transparency = 128;
+                    if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
+                    {
+                        Root.PenAttr[Root.CurrentPen].Color = Color.White;
+                        Root.PenAttr[Root.CurrentPen].Transparency = 128;
+                    }
+                    // MAJ curseur pour refléter la couleur
+                    SetPenTipCursor();
+                }
+                catch { }
+
+
                 // Met à jour l'icône pour retour visuel si souhaité
                 try { btHandWhite.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledW", ImageExts); } catch { }
                 Root.ToolSelected = tool;
@@ -5281,6 +5495,22 @@ namespace gInk
                 catch { }
                 try { btHandBlack.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledB", ImageExts); } catch { }
                 Root.ToolSelected = tool;
+
+                try
+                {
+                    IC.DefaultDrawingAttributes.Color = Color.Black;
+                    IC.DefaultDrawingAttributes.Transparency = 128;
+                    if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
+                    {
+                        Root.PenAttr[Root.CurrentPen].Color = Color.Black;
+                        Root.PenAttr[Root.CurrentPen].Transparency = 128;
+                    }
+                    SetPenTipCursor();
+                }
+                catch { }
+
+
+
             }
             // --- END ajout SelectTool ---
 
