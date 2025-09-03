@@ -5307,7 +5307,7 @@ namespace gInk
             while (exc && exceptiontick < 3);
         }
 
-        private readonly int[] applicableTool = { Tools.Hand, Tools.Line, Tools.Poly, Tools.Rect, Tools.Oval, Tools.NumberTag };
+        private readonly int[] applicableTool = { Tools.Hand, Tools.Line, Tools.Poly, Tools.Oval, Tools.NumberTag };
         public void SelectTool(int tool, int filled = -1)
         // Hand (0),Line(1),Rect(2),Oval(3),StartArrow(4),EndArrow(5),NumberTag(6),Edit(7),txtLeftAligned(8),txtRightAligned(9),Move(10),Copy(11),polyline/polygone(21)
         // filled : empty(0),PenColorFilled(1),WhiteFilled(2),BlackFilled(3)
@@ -8678,17 +8678,29 @@ namespace gInk
             i = Root.ToolSelected == Tools.Poly ? Tools.Poly : Tools.Line;    // to keep filled
             }
 
+            //else if (((Button)sender).Name.Contains("Rect"))
+            //{
+            //    CustomizeAndOpenSubTools(-1, "SubToolsRect", new string[] { "tool_rect_act", "tool_rect_filledC", "tool_rect_out", "tool_rect_filledW", "tool_rect_filledB" }, Root.Local.RectSubToolsHints,
+            //                         new Func<int, bool>[] { ii => { SelectTool(Tools.Rect,Filling.Empty); return true; },
+            //                                                 ii => { SelectTool(Tools.Rect,Filling.PenColorFilled); return true; },
+            //                                                 ii => { SelectTool(Tools.Rect,Filling.Outside); return true; },
+            //                                                 ii => { SelectTool(Tools.Rect,Filling.WhiteFilled); return true; },
+            //                                                 ii => { SelectTool(Tools.Rect,Filling.BlackFilled); return true; } });
+            //    i = Tools.Rect;
+
+            //}
             else if (((Button)sender).Name.Contains("Rect"))
             {
-                CustomizeAndOpenSubTools(-1, "SubToolsRect", new string[] { "tool_rect_act", "tool_rect_filledC", "tool_rect_out", "tool_rect_filledW", "tool_rect_filledB" }, Root.Local.RectSubToolsHints,
-                                     new Func<int, bool>[] { ii => { SelectTool(Tools.Rect,Filling.Empty); return true; },
-                                                             ii => { SelectTool(Tools.Rect,Filling.PenColorFilled); return true; },
-                                                             ii => { SelectTool(Tools.Rect,Filling.Outside); return true; },
-                                                             ii => { SelectTool(Tools.Rect,Filling.WhiteFilled); return true; },
-                                                             ii => { SelectTool(Tools.Rect,Filling.BlackFilled); return true; } });
+                // Limiter Rect à l'état "rectangle simple" :
+                // - ne pas ouvrir la barre de sous‑outils
+                // - forcer le remplissage à Empty (simple contour)
+                Root.FilledSelected = Filling.Empty;
                 i = Tools.Rect;
-
             }
+
+
+
+
             else if (((Button)sender).Name.Contains("Oval"))
             {
                 CustomizeAndOpenSubTools(-1, "SubToolsOval", new string[] { "tool_oval_act", "tool_oval_filledC", "tool_oval_out", "tool_oval_filledW", "tool_oval_filledB" }, Root.Local.OvalSubToolsHints,
