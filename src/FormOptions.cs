@@ -154,7 +154,8 @@ namespace gInk
 
             lblTagCirclePerc = new Label
             {
-                Text = "Diamètre des pierres (%) :",
+                //Text = "Diamètre des pierres (%) :",
+                Text = Root.Local.OptionsTagCirclePerc ?? "Diamètre des pierres (%) :",
                 AutoSize = true,
                 Left = 12,
                 Top = 16
@@ -174,7 +175,8 @@ namespace gInk
 
             lblTagSizePerc = new Label
             {
-                Text = "Taille des numéros (%) :",
+                //Text = "Taille des numéros (%) :",
+                Text = Root.Local.OptionsTagSizePerc ?? "Taille des numéros (%) :",
                 AutoSize = true,
                 Left = 12,
                 Top = lblTagCirclePerc.Bottom + 18
@@ -192,13 +194,23 @@ namespace gInk
             };
             nudTagSizePerc.ValueChanged += (s, e) => Root.TagSizePercent = (double)nudTagSizePerc.Value;
 
+            //lblTagOpacityPerc = new Label
+            //{
+            //    Text = "Opacité des pierres (%) :",
+            //    AutoSize = true,
+            //    Left = 12,
+            //    Top = lblTagSizePerc.Bottom + 18
+            //};
             lblTagOpacityPerc = new Label
             {
-                Text = "Opacité des pierres (%) :",
+                //Text = Root.Local.OptionsTagOpacityPerc ?? "Opacité des pierres (%) :",
+                Text = Root.Local.OptionsTagOpacityPerc ?? "Opacité des pierres (%) :",
                 AutoSize = true,
                 Left = 12,
                 Top = lblTagSizePerc.Bottom + 18
             };
+
+
             nudTagOpacityPerc = new NumericUpDown
             {
                 Minimum = 0,
@@ -214,7 +226,8 @@ namespace gInk
 
             lblTagNumberOpacityPerc = new Label
             {
-                Text = "Opacité des numéros (%) :",
+                //Text = "Opacité des numéros (%) :",
+                Text = Root.Local.OptionsTagNumberOpacityPerc ?? "Opacité des numéros (%) :",
                 AutoSize = true,
                 Left = 12,
                 Top = lblTagOpacityPerc.Bottom + 18

@@ -66,7 +66,11 @@ namespace gInk
         public string OptionsGoFillOpacity;
         public string OptionsGoStrokeOpacity;
         public string OptionsGoStrokeWidth;
-
+        // -> nouvelles clés pour goInk (localisation)
+        public string OptionsTagOpacityPerc;
+        public string OptionsTagCirclePerc;
+        public string OptionsTagSizePerc;
+        public string OptionsTagNumberOpacityPerc;
 
         public string SubToolsBarCbText;
         public string OptionPensOnTwoLinesCb;
@@ -306,6 +310,12 @@ namespace gInk
             OptionsGoFillOpacity = GoOptionsHandWhiteAlpha;     // Libellé pour l'opacité du remplissage
             OptionsGoStrokeOpacity = GoOptionsHandStrokeAlpha;  // Libellé pour l'opacité du contour
             OptionsGoStrokeWidth = GoOptionsHandStrokeWidth;    // Libellé pour l'épaisseur du contour
+
+            // libellés pour les tags / pastilles (valeurs par défaut en anglais)
+            OptionsTagOpacityPerc = "Stone opacity (%) :";
+            OptionsTagCirclePerc = "Stone diameter (%) :";
+            OptionsTagSizePerc = "Number size (%) :";
+            OptionsTagNumberOpacityPerc = "Number opacity (%) :";
 
 
             LoadKeyNames();
