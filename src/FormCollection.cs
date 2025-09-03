@@ -2532,35 +2532,82 @@ namespace gInk
             // No Fading;
         }
 
+        //private void setStrokeProperties(ref Stroke st, int FilledSelected)
+        //{
+        //    try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
+        //    try { st.ExtendedProperties.Remove(Root.ISFILLEDCOLOR_GUID); } catch { }
+        //    try { st.ExtendedProperties.Remove(Root.ISFILLEDOUTSIDE_GUID); } catch { }
+        //    try { st.ExtendedProperties.Remove(Root.ISFILLEDWHITE_GUID); } catch { }
+        //    try { st.ExtendedProperties.Remove(Root.ISFILLEDBLACK_GUID); } catch { }
+
+        //    if (FilledSelected != Filling.PenColorFilled && FilledSelected != Filling.Outside && st.DrawingAttributes.Width > 0)
+        //        st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
+        //    if (FilledSelected == Filling.Empty)
+        //        ;
+        //    else if (FilledSelected == Filling.PenColorFilled)
+        //        st.ExtendedProperties.Add(Root.ISFILLEDCOLOR_GUID, true);
+        //    else if (FilledSelected == Filling.WhiteFilled)
+        //        st.ExtendedProperties.Add(Root.ISFILLEDWHITE_GUID, true);
+        //    else if (FilledSelected == Filling.BlackFilled)
+        //        st.ExtendedProperties.Add(Root.ISFILLEDBLACK_GUID, true);
+        //    else if (FilledSelected == Filling.Outside)
+        //        st.ExtendedProperties.Add(Root.ISFILLEDOUTSIDE_GUID, true);
+        //    try
+        //    {
+        //        // if the penattributes is not fading there is no properties and it will turn into an exception
+        //        if (st.DrawingAttributes.ExtendedProperties.Contains(Root.FADING_PEN))
+        //            st.ExtendedProperties.Add(Root.FADING_PEN, DateTime.Now.AddSeconds((float)(st.DrawingAttributes.ExtendedProperties[Root.FADING_PEN].Data)).Ticks);
+        //    }
+        //    catch { };
+
+        //}
+
+
         private void setStrokeProperties(ref Stroke st, int FilledSelected)
         {
-            try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
-            try { st.ExtendedProperties.Remove(Root.ISFILLEDCOLOR_GUID); } catch { }
-            try { st.ExtendedProperties.Remove(Root.ISFILLEDOUTSIDE_GUID); } catch { }
-            try { st.ExtendedProperties.Remove(Root.ISFILLEDWHITE_GUID); } catch { }
-            try { st.ExtendedProperties.Remove(Root.ISFILLEDBLACK_GUID); } catch { }
+            if (st == null) return;
 
-            if (FilledSelected != Filling.PenColorFilled && FilledSelected != Filling.Outside && st.DrawingAttributes.Width > 0)
-                st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
-            if (FilledSelected == Filling.Empty)
-                ;
-            else if (FilledSelected == Filling.PenColorFilled)
-                st.ExtendedProperties.Add(Root.ISFILLEDCOLOR_GUID, true);
-            else if (FilledSelected == Filling.WhiteFilled)
-                st.ExtendedProperties.Add(Root.ISFILLEDWHITE_GUID, true);
-            else if (FilledSelected == Filling.BlackFilled)
-                st.ExtendedProperties.Add(Root.ISFILLEDBLACK_GUID, true);
-            else if (FilledSelected == Filling.Outside)
-                st.ExtendedProperties.Add(Root.ISFILLEDOUTSIDE_GUID, true);
-            try
+            var props = st.ExtendedProperties;
+
+            // retire proprement les marqueurs possibles s'ils existent
+            try { if (props.Contains(Root.ISSTROKE_GUID)) props.Remove(Root.ISSTROKE_GUID); } catch { }
+            try { if (props.Contains(Root.ISFILLEDCOLOR_GUID)) props.Remove(Root.ISFILLEDCOLOR_GUID); } catch { }
+            try { if (props.Contains(Root.ISFILLEDOUTSIDE_GUID)) props.Remove(Root.ISFILLEDOUTSIDE_GUID); } catch { }
+            try { if (props.Contains(Root.ISFILLEDWHITE_GUID)) props.Remove(Root.ISFILLEDWHITE_GUID); } catch { }
+            try { if (props.Contains(Root.ISFILLEDBLACK_GUID)) props.Remove(Root.ISFILLEDBLACK_GUID); } catch { }
+
+            // ajout du flag ISSTROKE si nécessaire (évite l'exception si DrawingAttributes est null)
+            bool hasWidth = false;
+            try { hasWidth = st.DrawingAttributes != null && st.DrawingAttributes.Width > 0; } catch { hasWidth = false; }
+            if (FilledSelected != Filling.PenColorFilled && FilledSelected != Filling.Outside && hasWidth)
             {
-                // if the penattributes is not fading there is no properties and it will turn into an exception
-                if (st.DrawingAttributes.ExtendedProperties.Contains(Root.FADING_PEN))
-                    st.ExtendedProperties.Add(Root.FADING_PEN, DateTime.Now.AddSeconds((float)(st.DrawingAttributes.ExtendedProperties[Root.FADING_PEN].Data)).Ticks);
+                try { props.Add(Root.ISSTROKE_GUID, true); } catch { }
             }
-            catch { };
 
+            // gestion des différents types de remplissage
+            switch (FilledSelected)
+            {
+                case Filling.Empty:
+                    // pas de propriété additionnelle
+                    break;
+                case Filling.PenColorFilled:
+                    try { props.Add(Root.ISFILLEDCOLOR_GUID, true); } catch { }
+                    break;
+                case Filling.WhiteFilled:
+                    try { props.Add(Root.ISFILLEDWHITE_GUID, true); } catch { }
+                    break;
+                case Filling.BlackFilled:
+                    try { props.Add(Root.ISFILLEDBLACK_GUID, true); } catch { }
+                    break;
+                case Filling.Outside:
+                    try { props.Add(Root.ISFILLEDOUTSIDE_GUID, true); } catch { }
+                    break;
+                default:
+                    // cas inattendu : ne rien faire
+                    break;
+            }
         }
+
 
 
         private void ApplyHandFilledStroke(Stroke st, Color color, int opacityPercent, float width, int filling)
