@@ -23,6 +23,19 @@ namespace gInk
         public static string ProgramFolder = "";
     }
 
+    //public class Tools
+    //{
+    //    public const int Invalid = -1;
+    //    public const int Hand = 0; public const int Line = 1; public const int Rect = 2; public const int Oval = 3;
+    //    public const int StartArrow = 4; public const int EndArrow = 5; public const int NumberTag = 6;
+    //    public const int Edit = 7; public const int txtLeftAligned = 8; public const int txtRightAligned = 9;
+    //    public const int Move = 10; public const int Copy = 11; public const int Scale = 12; public const int Rotate = 13;
+    //    public const int Poly = 21; public const int ClipArt = 22; public const int PatternLine = 23;
+    //    public static readonly int[] All = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 21, 22, 23 };
+    //    public static readonly string[] Names = { "Hand", "Line", "Rect", "Oval", "StartArrow", "EndArrow", "Numbering", "Edit", "Text Left Aligned", "Text Right Aligned",
+    //                                              "Move", "Copy", "Resize", "Rotate", "PolyLine", "ClipArt", "PatternOnStroke"};
+    //}
+
     public class Tools
     {
         public const int Invalid = -1;
@@ -30,11 +43,15 @@ namespace gInk
         public const int StartArrow = 4; public const int EndArrow = 5; public const int NumberTag = 6;
         public const int Edit = 7; public const int txtLeftAligned = 8; public const int txtRightAligned = 9;
         public const int Move = 10; public const int Copy = 11; public const int Scale = 12; public const int Rotate = 13;
+        // Nouveaux outils : main remplie (blanc / noir)
+        public const int HandFilledWhite = 14;
+        public const int HandFilledBlack = 15;
         public const int Poly = 21; public const int ClipArt = 22; public const int PatternLine = 23;
-        public static readonly int[] All = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 21, 22, 23 };
+        public static readonly int[] All = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 21, 22, 23 };
         public static readonly string[] Names = { "Hand", "Line", "Rect", "Oval", "StartArrow", "EndArrow", "Numbering", "Edit", "Text Left Aligned", "Text Right Aligned",
-                                                  "Move", "Copy", "Resize", "Rotate", "PolyLine", "ClipArt", "PatternOnStroke"};
+                                                  "Move", "Copy", "Resize", "Rotate", "Hand Filled White", "Hand Filled Black", "PolyLine", "ClipArt", "PatternOnStroke"};
     }
+
     public class Filling {
         public const int NoFrame = -1;      // for Stamps
         public const int Empty = 0;
@@ -142,6 +159,16 @@ namespace gInk
         public const int MaxDisplayedPens = 10;
         public const int SavedPenDA = MaxPenCount;
         public const int LassoPercent = 80;
+
+        // Déclarations (dans la classe Root – section autres paramètres)
+        public int GoFillOpacityPercent = 50;      // 0-100 (% visible) => Transparency = 255 - %
+        public int GoStrokeOpacityPercent = 50;     // 0-100 (% visible)
+        public float GoStrokeWidth = 3.0f;         // largeur finale (HiMetric)
+
+        public Hotkey Hotkey_HandFilledWhite = new Hotkey();
+        public Hotkey Hotkey_HandFilledBlack = new Hotkey();
+
+
 
         //public Guid TYPE_GUID = new Guid(10, 11, 12, 10, 0, 0, 0, 0, 0, 0, 0);
         public static readonly Guid TEXT_GUID = new Guid(10, 11, 12, 10, 0, 0, 0, 0, 0, 0, 1);
@@ -1182,6 +1209,7 @@ namespace gInk
                     string[] tab;
                     switch (sName)
                     {
+                        
                         case "LANGUAGE_FILE":
                             ChangeLanguage(sPara);
                             break;
@@ -1341,6 +1369,46 @@ namespace gInk
                         case "CURSOR_RED":
                             cursorredFileName = sPara;
                             break;
+
+
+                        // Ajouter dans le switch(sName) de ReadOptions :
+                        //case "GOFILLOPACITY":
+                        //    if (int.TryParse(sPara, out tempi))
+                        //        GoFillOpacityPercent = Math.Max(0, Math.Min(100, tempi));
+                        //    break;
+                        //case "GOSTROKEOPACITY":
+                        //    if (int.TryParse(sPara, out tempi))
+                        //        GoStrokeOpacityPercent = Math.Max(0, Math.Min(100, tempi));
+                        //    break;
+                        //case "GOSTROKEWIDTH":
+                        //    if (float.TryParse(sPara, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out tempf))
+                        //        GoStrokeWidth = Math.Max(0.1f, tempf);
+                        //    break;
+
+
+                        case "GOFILLOPACITY":
+                            if (int.TryParse(sPara, out int gof)) GoFillOpacityPercent = Math.Max(0, Math.Min(100, gof));
+                            break;
+                        case "GOSTROKEOPACITY":
+                            if (int.TryParse(sPara, out int gos)) GoStrokeOpacityPercent = Math.Max(0, Math.Min(100, gos));
+                            break;
+                        case "GOSTROKEWIDTH":
+                            if (float.TryParse(sPara, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float gsw))
+                                GoStrokeWidth = Math.Max(0f, Math.Min(100f, gsw));
+                            break;
+
+
+
+
+
+                        case "HOTKEY_HANDFILLEDWHITE":
+                            Hotkey_HandFilledWhite.Parse(sPara);
+                            break;
+                        case "HOTKEY_HANDFILLEDBLACK":
+                            Hotkey_HandFilledBlack.Parse(sPara);
+                            break;
+
+
 
                         case "BUTTONCLICK_FOR_LINESTYLE":
                             if (sPara.ToUpper() == "TRUE" || sPara == "1" || sPara.ToUpper() == "ON")
@@ -2133,12 +2201,46 @@ namespace gInk
             bool ArrowHeadAlreadyFilled = false;
             bool ArrowTailAlreadyFilled = false;
 
-            if (!File.Exists(file))
-				file = Program.RunningFolder+ file;
-			if (!File.Exists(file))
-				return;
+   //         if (!File.Exists(file))
+			//	file = Program.RunningFolder+ file;
+			//if (!File.Exists(file))
+			//	return;
 
-			FileStream fini = new FileStream(file, FileMode.Open);
+            // Résolution du fichier de config : si le fichier n'existe pas, on tente de le créer dans Program.RunningFolder ou Program.ProgramFolder
+            if (!File.Exists(file))
+            {
+                string candidate = Program.RunningFolder + file;
+                try
+                {
+                    string dir = Path.GetDirectoryName(candidate);
+                    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                        Directory.CreateDirectory(dir);
+                    if (!File.Exists(candidate))
+                        File.Create(candidate).Close();
+                    file = candidate;
+                }
+                catch
+                {
+                    try
+                    {
+                        string candidate2 = Program.ProgramFolder + file;
+                        string dir2 = Path.GetDirectoryName(candidate2);
+                        if (!string.IsNullOrEmpty(dir2) && !Directory.Exists(dir2))
+                            Directory.CreateDirectory(dir2);
+                        if (!File.Exists(candidate2))
+                            File.Create(candidate2).Close();
+                        file = candidate2;
+                    }
+                    catch
+                    {
+                        // impossible de créer le fichier -> rien à sauvegarder
+                        return;
+                    }
+                }
+            }
+
+
+            FileStream fini = new FileStream(file, FileMode.Open);
 			StreamReader srini = new StreamReader(fini);
 			string sLine = "";
 			string sNameO = "";
@@ -2368,6 +2470,33 @@ namespace gInk
                         case "HOTKEY_LASSO":
                             sPara = Hotkey_Lasso.ToStringInvariant();
                             break;
+
+
+                        // 
+                        //case "GOFILLOPACITY":
+                        //    sPara = GoFillOpacityPercent.ToString();
+                        //    break;
+                        //case "GOSTROKEOPACITY":
+                        //    sPara = GoStrokeOpacityPercent.ToString();
+                        //    break;
+                        //case "GOSTROKEWIDTH":
+                        //    sPara = GoStrokeWidth.ToString(CultureInfo.InvariantCulture);
+                        //    break;
+
+                        case "GOFILLOPACITY": sPara = GoFillOpacityPercent.ToString(); break;
+                        case "GOSTROKEOPACITY": sPara = GoStrokeOpacityPercent.ToString(); break;
+                        case "GOSTROKEWIDTH": sPara = GoStrokeWidth.ToString(System.Globalization.CultureInfo.InvariantCulture); break;
+
+
+
+
+                        case "HOTKEY_HANDFILLEDWHITE":
+                            sPara = Hotkey_HandFilledWhite.ToStringInvariant();
+                            break;
+                        case "HOTKEY_HANDFILLEDBLACK":
+                            sPara = Hotkey_HandFilledBlack.ToStringInvariant();
+                            break;
+
 
                         case "BUTTONCLICK_FOR_LINESTYLE":
                             sPara = ButtonClick_For_LineStyle?"True":"False";
@@ -2881,6 +3010,68 @@ namespace gInk
                 writelines.Add("TAGNUMBEROPACITY_PERCENT=" + TagNumberOpacityPercent.ToString(CultureInfo.InvariantCulture));
 
             // ################ goInk - END ##############################################################
+
+
+
+
+            // --- Inserter ceci dans SaveOptions, juste avant le bloc "Ensure NumberTag hotkey keys are present" ---
+            //{
+            //    bool hasGoFill = false, hasGoStrokeOp = false, hasGoStrokeW = false;
+            //    bool hasHotHandW = false, hasHotHandB = false;
+            //    for (int i = 0; i < writelines.Count; i++)
+            //    {
+            //        string s = writelines[i].TrimStart();
+            //        if (s.StartsWith("GOFILLOPACITY=", StringComparison.InvariantCultureIgnoreCase)) hasGoFill = true;
+            //        if (s.StartsWith("GOSTROKEOPACITY=", StringComparison.InvariantCultureIgnoreCase)) hasGoStrokeOp = true;
+            //        if (s.StartsWith("GOSTROKEWIDTH=", StringComparison.InvariantCultureIgnoreCase)) hasGoStrokeW = true;
+            //        if (s.StartsWith("HOTKEY_HANDFILLEDWHITE=", StringComparison.InvariantCultureIgnoreCase)) hasHotHandW = true;
+            //        if (s.StartsWith("HOTKEY_HANDFILLEDBLACK=", StringComparison.InvariantCultureIgnoreCase)) hasHotHandB = true;
+            //    }
+            //    if (!hasGoFill)
+            //        writelines.Add("GOFILLOPACITY= " + GoFillOpacityPercent.ToString());
+            //    if (!hasGoStrokeOp)
+            //        writelines.Add("GOSTROKEOPACITY= " + GoStrokeOpacityPercent.ToString());
+            //    if (!hasGoStrokeW)
+            //        writelines.Add("GOSTROKEWIDTH= " + GoStrokeWidth.ToString(CultureInfo.InvariantCulture));
+            //    if (!hasHotHandW)
+            //        writelines.Add("HOTKEY_HANDFILLEDWHITE= " + Hotkey_HandFilledWhite.ToStringInvariant());
+            //    if (!hasHotHandB)
+            //        writelines.Add("HOTKEY_HANDFILLEDBLACK= " + Hotkey_HandFilledBlack.ToStringInvariant());
+            //}
+
+
+            // Ensure / replace explicitement les clés GO et TAG (remplace si ligne existante, sinon ajoute)
+            {
+                void SetOrReplace(List<string> lines, string key, string value)
+                {
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        string t = lines[i].TrimStart();
+                        if (t.StartsWith(key + "=", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            // préserve l'indentation initiale si nécessaire
+                            string prefix = lines[i].Substring(0, lines[i].IndexOf(t));
+                            lines[i] = prefix + key + "= " + value;
+                            return;
+                        }
+                    }
+                    lines.Add(key + "= " + value);
+                }
+
+                SetOrReplace(writelines, "GOFILLOPACITY", GoFillOpacityPercent.ToString());
+                SetOrReplace(writelines, "GOSTROKEOPACITY", GoStrokeOpacityPercent.ToString());
+                SetOrReplace(writelines, "GOSTROKEWIDTH", GoStrokeWidth.ToString(System.Globalization.CultureInfo.InvariantCulture));
+
+                // Tags / goInk specific (force la persistance)
+                SetOrReplace(writelines, "TAGSIZE_PERCENT", TagSizePercent.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                SetOrReplace(writelines, "TAGCIRCLE_PERCENT", TagCirclePercent.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                SetOrReplace(writelines, "TAGSTONEOPACITY_PERCENT", TagStoneOpacityPercent.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                SetOrReplace(writelines, "TAGNUMBEROPACITY_PERCENT", TagNumberOpacityPercent.ToString(System.Globalization.CultureInfo.InvariantCulture));
+
+                // hotkeys go
+                SetOrReplace(writelines, "HOTKEY_HANDFILLEDWHITE", Hotkey_HandFilledWhite.ToStringInvariant());
+                SetOrReplace(writelines, "HOTKEY_HANDFILLEDBLACK", Hotkey_HandFilledBlack.ToStringInvariant());
+            }
 
 
             // Ensure NumberTag hotkey keys are present so SaveOptions writes them (adds missing keys)

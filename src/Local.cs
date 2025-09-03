@@ -55,6 +55,23 @@ namespace gInk
         public string QuestionClipArtUpdate;
         public string ButtonActivateDebug;
 
+        public string ButtonNameHandWhite;
+        public string ButtonNameHandBlack;
+        public string OptionsGoHotkeys_HandWhite;
+        public string OptionsGoHotkeys_HandBlack;
+        public string GoOptionsHandWhiteAlpha; // libellé transparence
+        public string GoOptionsHandStrokeAlpha;
+        public string GoOptionsHandStrokeWidth;
+
+        public string OptionsGoFillOpacity;
+        public string OptionsGoStrokeOpacity;
+        public string OptionsGoStrokeWidth;
+        // -> nouvelles clés pour goInk (localisation)
+        public string OptionsTagOpacityPerc;
+        public string OptionsTagCirclePerc;
+        public string OptionsTagSizePerc;
+        public string OptionsTagNumberOpacityPerc;
+
         public string SubToolsBarCbText;
         public string OptionPensOnTwoLinesCb;
         public string OptionsSwapSnapshotBehavior;
@@ -138,7 +155,17 @@ namespace gInk
         public string OptionsTabPens;
         public string OptionsTabHotkeys;
 
-        
+
+        //// 
+        //public string OptionsTabGoHotkeys;
+        //public string OptionsGoHotkeys_ShowWhite;
+        //public string OptionsGoHotkeys_ShowBlack;
+        //public string OptionsGoHotkeys_HideWhite;
+        //public string OptionsGoHotkeys_HideBlack;
+
+        //public string OptionsGoFillOpacity;
+        //public string OptionsGoStrokeOpacity;
+        //public string OptionsGoStrokeWidth;
         // 
         public string OptionsTabGoHotkeys;
         public string OptionsGoHotkeys_ShowWhite;
@@ -268,6 +295,28 @@ namespace gInk
             ButtonNamePen[17] = "Pen 17";
             ButtonNamePen[18] = "Pen 18";
             ButtonNamePen[19] = "Pen 19";
+            // Go game labels (valeurs par défaut)
+            ButtonNameHandWhite = "White Filled Freehand";
+            ButtonNameHandBlack = "Black Filled Freehand";
+            OptionsGoHotkeys_HandWhite = "White filled freehand";
+            OptionsGoHotkeys_HandBlack = "Black filled freehand";
+
+            // libellés pour les options Go (valeurs par défaut)
+            GoOptionsHandWhiteAlpha = "White filled opacity (%)";
+            GoOptionsHandStrokeAlpha = "Outline opacity of areas (%)";
+            GoOptionsHandStrokeWidth = "Area outline thickness";
+
+            //// alias de compatibilité utilisés par FormOptions
+            OptionsGoFillOpacity = GoOptionsHandWhiteAlpha;     // Libellé pour l'opacité du remplissage
+            OptionsGoStrokeOpacity = GoOptionsHandStrokeAlpha;  // Libellé pour l'opacité du contour
+            OptionsGoStrokeWidth = GoOptionsHandStrokeWidth;    // Libellé pour l'épaisseur du contour
+
+            // libellés pour les tags / pastilles (valeurs par défaut en anglais)
+            OptionsTagOpacityPerc = "Stone opacity (%) :";
+            OptionsTagCirclePerc = "Stone diameter (%) :";
+            OptionsTagSizePerc = "Number size (%) :";
+            OptionsTagNumberOpacityPerc = "Number opacity (%) :";
+
 
             LoadKeyNames();
 
