@@ -171,7 +171,6 @@ namespace gInk
                 Width = 90,
                 Value = (decimal)Root.TagCirclePercent
             };
-            nudTagCirclePerc.ValueChanged += (s, e) => Root.TagCirclePercent = (double)nudTagCirclePerc.Value;
 
             lblTagSizePerc = new Label
             {
@@ -192,7 +191,6 @@ namespace gInk
                 Width = 90,
                 Value = (decimal)Root.TagSizePercent
             };
-            nudTagSizePerc.ValueChanged += (s, e) => Root.TagSizePercent = (double)nudTagSizePerc.Value;
 
             //lblTagOpacityPerc = new Label
             //{
@@ -222,7 +220,6 @@ namespace gInk
                 Width = 90,
                 Value = (decimal)Root.TagStoneOpacityPercent
             };
-            nudTagOpacityPerc.ValueChanged += (s, e) => Root.TagStoneOpacityPercent = (double)nudTagOpacityPerc.Value;
 
             lblTagNumberOpacityPerc = new Label
             {
@@ -232,6 +229,17 @@ namespace gInk
                 Left = 12,
                 Top = lblTagOpacityPerc.Bottom + 18
             };
+            //{
+            //    Minimum = 0,
+            //    Maximum = 100,
+            //    DecimalPlaces = 0,
+            //    Increment = 1,
+            //    Left = 220,
+            //    Top = lblTagNumberOpacityPerc.Top - 3,
+            //    Width = 90,
+            //    Value = (decimal)Root.TagNumberOpacityPercent
+            //};
+
             nudTagNumberOpacityPerc = new NumericUpDown
             {
                 Minimum = 0,
@@ -243,7 +251,6 @@ namespace gInk
                 Width = 90,
                 Value = (decimal)Root.TagNumberOpacityPercent
             };
-            nudTagNumberOpacityPerc.ValueChanged += (s, e) => Root.TagNumberOpacityPercent = (double)nudTagNumberOpacityPerc.Value;
 
             lblGridType = new Label
             {
@@ -263,12 +270,46 @@ namespace gInk
             if (Root.GridRows == 13) cbGridType.SelectedIndex = 1;
             else if (Root.GridRows == 9) cbGridType.SelectedIndex = 2;
             else cbGridType.SelectedIndex = 0;
+
+            //nudTagCirclePerc.ValueChanged += (s, e) => Root.TagCirclePercent = (double)nudTagCirclePerc.Value;
+            //nudTagSizePerc.ValueChanged += (s, e) => Root.TagSizePercent = (double)nudTagSizePerc.Value;
+            //nudTagOpacityPerc.ValueChanged += (s, e) => Root.TagStoneOpacityPercent = (double)nudTagOpacityPerc.Value;
+            //nudTagNumberOpacityPerc.ValueChanged += (s, e) => Root.TagNumberOpacityPercent = (double)nudTagNumberOpacityPerc.Value;
+            //cbGridType.SelectedIndexChanged += (s, e) =>
+            //{
+            //    int v = (cbGridType.SelectedIndex == 0) ? 19 : (cbGridType.SelectedIndex == 1 ? 13 : 9);
+            //    Root.GridRows = v;
+            //    Root.GridCols = v;
+            //};
+
+            nudTagCirclePerc.ValueChanged += (s, e) =>
+            {
+                Root.TagCirclePercent = (double)nudTagCirclePerc.Value;
+                ScheduleConfigSave();
+            };
+            nudTagSizePerc.ValueChanged += (s, e) =>
+            {
+                Root.TagSizePercent = (double)nudTagSizePerc.Value;
+                ScheduleConfigSave();
+            };
+            nudTagOpacityPerc.ValueChanged += (s, e) =>
+            {
+                Root.TagStoneOpacityPercent = (double)nudTagOpacityPerc.Value;
+                ScheduleConfigSave();
+            };
+            nudTagNumberOpacityPerc.ValueChanged += (s, e) =>
+            {
+                Root.TagNumberOpacityPercent = (double)nudTagNumberOpacityPerc.Value;
+                ScheduleConfigSave();
+            };
             cbGridType.SelectedIndexChanged += (s, e) =>
             {
                 int v = (cbGridType.SelectedIndex == 0) ? 19 : (cbGridType.SelectedIndex == 1 ? 13 : 9);
                 Root.GridRows = v;
                 Root.GridCols = v;
+                ScheduleConfigSave();
             };
+
 
             tabPageGridTags.Controls.Add(lblTagCirclePerc);
             tabPageGridTags.Controls.Add(nudTagCirclePerc);
@@ -365,6 +406,30 @@ namespace gInk
                 tabPage3.Controls.Add(lbHotkeyPens[p]);
                 tabPage3.Controls.Add(hiPens[p]);
             }
+        }
+
+        // --- Auto-save différée pour onglet Jeu de go ---
+        private Timer _goDeferredSaveTimer;
+        private void ScheduleConfigSave()
+        {
+            if (Root == null) return;
+            if (_goDeferredSaveTimer == null)
+            {
+                _goDeferredSaveTimer = new Timer();
+                _goDeferredSaveTimer.Interval = 500; // ms
+                _goDeferredSaveTimer.Tick += (s, e) =>
+                {
+                    _goDeferredSaveTimer.Stop();
+                    TrySaveGoConfig();
+                };
+            }
+            _goDeferredSaveTimer.Stop();
+            _goDeferredSaveTimer.Start();
+        }
+        private void TrySaveGoConfig()
+        {
+            try { Root.SaveOptions(Program.RunningFolder + "config.ini"); }
+            catch { /* silencieux */ }
         }
 
         private void FormOptions_Load(object sender, EventArgs e)
@@ -1004,6 +1069,8 @@ namespace gInk
             if (e.CloseReason == CloseReason.UserClosing)
             {
                 e.Cancel = true;
+
+                try { TrySaveGoConfig(); } catch { }
                 Hide();
             }
             GC.Collect();
