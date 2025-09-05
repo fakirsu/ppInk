@@ -349,27 +349,860 @@ namespace gInk
         //}
         // Nouvelle surcharge : création de la pastille (DISABLED) + texte centré, taille explicitement fournie en pixels (diamètre)
         // NOTE: le disque jaune est volontairement supprimé (opacité 0%) — on retourne uniquement la stroke texte si elle est créée.
+        //private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx)
+        //{
+        //    // clamp minimal
+        //    int diameter = Math.Max(6, diameterPx);
+
+        //    Stroke stTxt = null;
+
+        //    if (!string.IsNullOrEmpty(txt))
+        //    {
+        //        // Crée uniquement la stroke de texte (pas de disque jaune)
+        //        stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //        if (stTxt != null)
+        //        {
+        //            try
+        //            {
+        //                // Couleur du texte (noir) — inchangé
+        //                stTxt.DrawingAttributes.Color = Color.Black;
+        //                // Marque la stroke comme tag
+        //                stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+
+        //                // Calcul de la taille du glyph identique à NumberTag / ancienne implémentation
+        //                double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+        //                double fontSize;
+        //                if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+        //                    fontSize = Math.Max(6.0, diameter * 0.54 * (sizePct / 100.0));
+        //                else
+        //                    fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0));
+
+        //                double maxFromCircle = Math.Max(6.0, diameter * 0.75);
+        //                if (fontSize > maxFromCircle) fontSize = maxFromCircle;
+
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+        //                System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
+        //                if (TagBold) style |= System.Drawing.FontStyle.Bold;
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
+
+        //                stTxt.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
+        //                stTxt.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
+
+        //                ComputeTextBoxSize(ref stTxt);
+        //            }
+        //            catch { }
+        //        }
+        //    }
+
+        //    // Retourne la stroke texte si créée, sinon null (pas de disque)
+        //    return stTxt;
+        //}
+
+        //private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx)
+        //{
+        //    // clamp minimal
+        //    int diameter = Math.Max(6, diameterPx);
+        //    int half = Math.Max(1, diameter / 2);
+
+        //    // largeur de trait adaptée à la taille du tag (en pixels -> convertie par PixelToInkSpace si nécessaire)
+        //    float penWidthPx = Math.Max(1f, diameter / 6f);
+
+        //    // Helper pour convertir une taille pixel -> encre si nécessaire pour largeur (on applique directement sur DrawingAttributes.Width,
+        //    // qui est en HiMetric pour Ink; en pratique la plupart des usages ici gardent la valeur en pixels approximative).
+        //    // Utilisation simple : appliquer penWidthPx directement sur DrawingAttributes.Width (cohérent avec usage ailleurs).
+
+        //    // Lettre : conserver le texte (lettre) comme avant
+        //    if (Root.ToolSelected == Tools.LetterTag)
+        //    {
+        //        Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //        if (stTxt != null)
+        //        {
+        //            try
+        //            {
+        //                stTxt.DrawingAttributes.Color = Color.Black;
+        //                stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                ComputeTextBoxSize(ref stTxt);
+        //            }
+        //            catch { }
+        //        }
+        //        return stTxt;
+        //    }
+
+        //    // Pour les formes fixes, dessiner des contours vectoriels
+        //    try
+        //    {
+        //        switch (Root.ToolSelected)
+        //        {
+        //            case Tools.SquareTag:
+        //                {
+        //                    int left = xCenter - half;
+        //                    int top = yCenter - half;
+        //                    int right = xCenter + half;
+        //                    int bottom = yCenter + half;
+
+        //                    Stroke rect = AddRectStroke(left, top, right, bottom, Filling.Empty);
+        //                    if (rect != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            rect.DrawingAttributes.Width = penWidthPx;
+        //                            rect.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return rect;
+        //                }
+
+        //            case Tools.CircleTag:
+        //                {
+        //                    int left = xCenter - half;
+        //                    int top = yCenter - half;
+        //                    int right = xCenter + half;
+        //                    int bottom = yCenter + half;
+
+        //                    Stroke circ = AddEllipseStroke(left, top, right, bottom, Filling.Empty);
+        //                    if (circ != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            circ.DrawingAttributes.Width = penWidthPx;
+        //                            circ.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return circ;
+        //                }
+
+        //            case Tools.TriangleTag:
+        //                {
+        //                    // triangle équilatéral approximé (pointe en haut)
+        //                    Point pTop = new Point(xCenter, yCenter - half);
+        //                    Point pBL = new Point(xCenter - half, yCenter + half);
+        //                    Point pBR = new Point(xCenter + half, yCenter + half);
+        //                    Point[] pts = new Point[] { pTop, pBR, pBL, pTop };
+
+        //                    // conversion pixel -> inkspace (nécessaire avant CreateStroke)
+        //                    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+
+        //                    Stroke st = IC.Ink.CreateStroke(pts);
+        //                    st.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
+        //                    st.DrawingAttributes.AntiAliased = true;
+        //                    st.DrawingAttributes.FitToCurve = false;
+        //                    st.DrawingAttributes.Width = penWidthPx;
+        //                    setStrokeProperties(ref st, Filling.Empty);
+        //                    try { st.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
+        //                    IC.Ink.Strokes.Add(st);
+        //                    if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st);
+        //                    return st;
+        //                }
+
+        //            case Tools.CrossTag:
+        //                {
+        //                    // deux lignes formant une croix (X)
+        //                    int x0 = xCenter - half;
+        //                    int y0 = yCenter - half;
+        //                    int x1 = xCenter + half;
+        //                    int y1 = yCenter + half;
+
+        //                    Stroke s1 = AddLineStroke(x0, y0, x1, y1);
+        //                    Stroke s2 = AddLineStroke(x0, y1, x1, y0);
+        //                    if (s1 != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            s1.DrawingAttributes.Width = penWidthPx;
+        //                            setStrokeProperties(ref s1, Filling.Empty);
+        //                            s1.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    if (s2 != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            s2.DrawingAttributes.Width = penWidthPx;
+        //                            setStrokeProperties(ref s2, Filling.Empty);
+        //                            s2.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    // Retourner la première stroke comme référence (comportement antérieur attendait un seul Stroke)
+        //                    return s1 ?? s2;
+        //                }
+
+        //            default:
+        //                {
+        //                    // fallback : créer texte si détection échoue
+        //                    Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //                    if (stTxt != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            stTxt.DrawingAttributes.Color = Color.Black;
+        //                            stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                            ComputeTextBoxSize(ref stTxt);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return stTxt;
+        //                }
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        // en cas d'erreur, retomber sur texte pour éviter plantage
+        //        try
+        //        {
+        //            Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //            if (stTxt != null)
+        //            {
+        //                stTxt.DrawingAttributes.Color = Color.Black;
+        //                stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                ComputeTextBoxSize(ref stTxt);
+        //            }
+        //            return stTxt;
+        //        }
+        //        catch { return null; }
+        //    }
+        //}
+
+        //private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx)
+        //{
+        //    // clamp minimal
+        //    int diameter = Math.Max(6, diameterPx);
+        //    int half = Math.Max(1, diameter / 2);
+
+        //    // largeur de trait augmentée pour meilleure lisibilité (DPI-aware approximée)
+        //    float penWidthPx = Math.Max(1.0f, diameter / 4f); // augmenté depuis diameter/6
+
+        //    // Lettre : texte centré et réduit de 40%
+        //    if (Root.ToolSelected == Tools.LetterTag)
+        //    {
+        //        // créer le texte puis ajuster ses propriétés (taille + centrage)
+        //        Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //        if (stTxt != null)
+        //        {
+        //            try
+        //            {
+        //                // calculer une taille de police proportionnelle au diamètre puis réduire de 40%
+        //                double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+        //                double fontSize;
+        //                if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+        //                    fontSize = Math.Max(6.0, diameter * 0.54 * (sizePct / 100.0));
+        //                else
+        //                    fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0));
+
+        //                double maxFromCircle = Math.Max(6.0, diameter * 0.75);
+        //                if (fontSize > maxFromCircle) fontSize = maxFromCircle;
+
+        //                fontSize = fontSize * 0.60; // réduire de 40%
+
+        //                // repositionner / recentrer le texte en encre (AddTextStroke a déjà stocké TEXTX/Y en InkSpace)
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+        //                System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
+        //                if (TagBold) style |= System.Drawing.FontStyle.Bold;
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
+
+        //                // centrage réel du glyph
+        //                stTxt.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
+        //                stTxt.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
+
+        //                // marque / couleur
+        //                stTxt.DrawingAttributes.Color = Color.Black;
+        //                try { stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
+
+        //                ComputeTextBoxSize(ref stTxt);
+        //            }
+        //            catch { }
+        //        }
+        //        return stTxt;
+        //    }
+
+        //    // Pour les formes fixes, dessiner des contours vectoriels
+        //    try
+        //    {
+        //        switch (Root.ToolSelected)
+        //        {
+        //            case Tools.SquareTag:
+        //                {
+        //                    // rectangle centré
+        //                    int left = xCenter - half;
+        //                    int top = yCenter - half;
+        //                    int right = xCenter + half;
+        //                    int bottom = yCenter + half;
+
+        //                    Stroke rect = AddRectStroke(left, top, right, bottom, Filling.Empty);
+        //                    if (rect != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            rect.DrawingAttributes.Width = penWidthPx;
+        //                            setStrokeProperties(ref rect, Filling.Empty);
+        //                            rect.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return rect;
+        //                }
+
+        //            case Tools.CircleTag:
+        //                {
+        //                    // utiliser la signature d'AddEllipseStroke qui attend (centerX, centerY, centerX+rx, centerY+ry)
+        //                    Stroke circ = AddEllipseStroke(xCenter, yCenter, xCenter + half, yCenter + half, Filling.Empty);
+        //                    if (circ != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            circ.DrawingAttributes.Width = penWidthPx;
+        //                            setStrokeProperties(ref circ, Filling.Empty);
+        //                            circ.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return circ;
+        //                }
+
+        //            case Tools.TriangleTag:
+        //                {
+        //                    // triangle équilatéral approximé (pointe en haut)
+        //                    // Centrage : le centroïde d'un triangle pointe-en-haut était trop bas => on applique un décalage vertical pour centrer le centroïde
+        //                    int shift = (int)Math.Round((double)half / 3.0); // déplacement vers le haut = half/3 pour compenser le centroïde
+        //                    Point pTop = new Point(xCenter, yCenter - half - shift);
+        //                    Point pBL = new Point(xCenter - half, yCenter + half - shift);
+        //                    Point pBR = new Point(xCenter + half, yCenter + half - shift);
+        //                    Point[] pts = new Point[] { pTop, pBR, pBL, pTop };
+
+        //                    // conversion pixel -> inkspace (nécessaire avant CreateStroke)
+        //                    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+
+        //                    Stroke st = IC.Ink.CreateStroke(pts);
+        //                    st.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
+        //                    st.DrawingAttributes.AntiAliased = true;
+        //                    st.DrawingAttributes.FitToCurve = false;
+        //                    st.DrawingAttributes.Width = penWidthPx;
+        //                    setStrokeProperties(ref st, Filling.Empty);
+        //                    try { st.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
+        //                    IC.Ink.Strokes.Add(st);
+        //                    if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st);
+        //                    return st;
+        //                }
+
+        //            case Tools.CrossTag:
+        //                {
+        //                    // deux lignes formant une croix (X) : réduire la taille de 10%
+        //                    double scale = 0.90;
+        //                    int halfCross = Math.Max(1, (int)Math.Round(half * scale));
+
+        //                    int x0 = xCenter - halfCross;
+        //                    int y0 = yCenter - halfCross;
+        //                    int x1 = xCenter + halfCross;
+        //                    int y1 = yCenter + halfCross;
+
+        //                    Stroke s1 = AddLineStroke(x0, y0, x1, y1);
+        //                    Stroke s2 = AddLineStroke(x0, y1, x1, y0);
+        //                    if (s1 != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            s1.DrawingAttributes.Width = penWidthPx;
+        //                            setStrokeProperties(ref s1, Filling.Empty);
+        //                            s1.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    if (s2 != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            s2.DrawingAttributes.Width = penWidthPx;
+        //                            setStrokeProperties(ref s2, Filling.Empty);
+        //                            s2.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    // Retourner la première stroke comme référence (comportement antérieur attendait un seul Stroke)
+        //                    return s1 ?? s2;
+        //                }
+
+        //            default:
+        //                {
+        //                    // fallback : créer texte si détection échoue
+        //                    Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //                    if (stTxt != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            stTxt.DrawingAttributes.Color = Color.Black;
+        //                            stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                            // recentrage vertical et réduction par défaut pour fallback
+        //                            double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+        //                            double fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0)) * 0.60;
+        //                            stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+        //                            stTxt.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
+        //                            stTxt.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
+        //                            ComputeTextBoxSize(ref stTxt);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return stTxt;
+        //                }
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        // en cas d'erreur, retomber sur texte pour éviter plantage
+        //        try
+        //        {
+        //            Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //            if (stTxt != null)
+        //            {
+        //                stTxt.DrawingAttributes.Color = Color.Black;
+        //                stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                ComputeTextBoxSize(ref stTxt);
+        //            }
+        //            return stTxt;
+        //        }
+        //        catch { return null; }
+        //    }
+        //}
+
+        //private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx)
+        //{
+        //    // clamp minimal
+        //    int diameter = Math.Max(6, diameterPx);
+        //    int half = Math.Max(1, diameter / 2);
+
+        //    // largeur de trait de base augmentée (DPI-aware approximée) puis épaissie x3
+        //    float basePenWidthPx = Math.Max(1.0f, diameter / 4f); // précédemment diameter/4
+        //    float penWidthPx = basePenWidthPx * 3.0f; // épaissir x3 comme demandé
+
+        //    // facteur de réduction des formes : réduire la taille de 40% => garder 60%
+        //    const double shapeScale = 0.60;
+
+        //    // Lettre : texte centré et agrandi (double de la taille précédente)
+        //    if (Root.ToolSelected == Tools.LetterTag)
+        //    {
+        //        Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //        if (stTxt != null)
+        //        {
+        //            try
+        //            {
+        //                // calculer une taille de police proportionnelle au diamètre puis appliquer le facteur demandé
+        //                double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+        //                double fontSize;
+        //                if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+        //                    fontSize = Math.Max(6.0, diameter * 0.54 * (sizePct / 100.0));
+        //                else
+        //                    fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0));
+
+        //                double maxFromCircle = Math.Max(6.0, diameter * 0.75);
+        //                if (fontSize > maxFromCircle) fontSize = maxFromCircle;
+
+        //                // auparavant on faisait *0.60 (réduction), l'utilisateur veut maintenant doubler la taille actuelle :
+        //                // final = previousFactor * 2 => équivalent à multiplier par 1.20 sur la taille de base
+        //                fontSize = fontSize * 1.20; // augmente la taille (≈ 2x par rapport à l'ancienne 0.60)
+
+        //                // repositionner / recentrer le texte en encre
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+        //                System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
+        //                if (TagBold) style |= System.Drawing.FontStyle.Bold;
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
+
+        //                // centrage réel du glyph
+        //                stTxt.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
+        //                stTxt.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
+
+        //                // couleur / marque
+        //                stTxt.DrawingAttributes.Color = Color.Black;
+        //                try { stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
+
+        //                ComputeTextBoxSize(ref stTxt);
+        //            }
+        //            catch { }
+        //        }
+        //        return stTxt;
+        //    }
+
+        //    // Pour les formes fixes, dessiner des contours vectoriels (taille réduite de 40%)
+        //    try
+        //    {
+        //        switch (Root.ToolSelected)
+        //        {
+        //            case Tools.SquareTag:
+        //                {
+        //                    int eHalf = Math.Max(1, (int)Math.Round(half * shapeScale));
+        //                    int left = xCenter - eHalf;
+        //                    int top = yCenter - eHalf;
+        //                    int right = xCenter + eHalf;
+        //                    int bottom = yCenter + eHalf;
+
+        //                    Stroke rect = AddRectStroke(left, top, right, bottom, Filling.Empty);
+        //                    if (rect != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            rect.DrawingAttributes.Width = penWidthPx;
+        //                            setStrokeProperties(ref rect, Filling.Empty);
+        //                            rect.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return rect;
+        //                }
+
+        //            case Tools.CircleTag:
+        //                {
+        //                    int eHalf = Math.Max(1, (int)Math.Round(half * shapeScale));
+        //                    Stroke circ = AddEllipseStroke(xCenter, yCenter, xCenter + eHalf, yCenter + eHalf, Filling.Empty);
+        //                    if (circ != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            circ.DrawingAttributes.Width = penWidthPx;
+        //                            setStrokeProperties(ref circ, Filling.Empty);
+        //                            circ.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return circ;
+        //                }
+
+        //            case Tools.TriangleTag:
+        //                {
+        //                    // triangle équilatéral approximé (pointe en haut), taille réduite et recentré
+        //                    int eHalf = Math.Max(1, (int)Math.Round(half * shapeScale));
+        //                    int shift = (int)Math.Round((double)eHalf / 3.0); // ajustement du centroïde comme précédemment, adapté à eHalf
+        //                    Point pTop = new Point(xCenter, yCenter - eHalf - shift);
+        //                    Point pBL = new Point(xCenter - eHalf, yCenter + eHalf - shift);
+        //                    Point pBR = new Point(xCenter + eHalf, yCenter + eHalf - shift);
+        //                    Point[] pts = new Point[] { pTop, pBR, pBL, pTop };
+
+        //                    // conversion pixel -> inkspace
+        //                    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+
+        //                    Stroke st = IC.Ink.CreateStroke(pts);
+        //                    st.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
+        //                    st.DrawingAttributes.AntiAliased = true;
+        //                    st.DrawingAttributes.FitToCurve = false;
+        //                    st.DrawingAttributes.Width = penWidthPx;
+        //                    setStrokeProperties(ref st, Filling.Empty);
+        //                    try { st.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
+        //                    IC.Ink.Strokes.Add(st);
+        //                    if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st);
+        //                    return st;
+        //                }
+
+        //            case Tools.CrossTag:
+        //                {
+        //                    // deux lignes formant une croix (X) : réduire la taille de 40%
+        //                    double scale = shapeScale;
+        //                    int halfCross = Math.Max(1, (int)Math.Round(half * scale));
+
+        //                    int x0 = xCenter - halfCross;
+        //                    int y0 = yCenter - halfCross;
+        //                    int x1 = xCenter + halfCross;
+        //                    int y1 = yCenter + halfCross;
+
+        //                    Stroke s1 = AddLineStroke(x0, y0, x1, y1);
+        //                    Stroke s2 = AddLineStroke(x0, y1, x1, y0);
+        //                    if (s1 != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            s1.DrawingAttributes.Width = penWidthPx;
+        //                            setStrokeProperties(ref s1, Filling.Empty);
+        //                            s1.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    if (s2 != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            s2.DrawingAttributes.Width = penWidthPx;
+        //                            setStrokeProperties(ref s2, Filling.Empty);
+        //                            s2.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    // Retourner la première stroke comme référence
+        //                    return s1 ?? s2;
+        //                }
+
+        //            default:
+        //                {
+        //                    // fallback : texte centré si cas inattendu
+        //                    Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //                    if (stTxt != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            stTxt.DrawingAttributes.Color = Color.Black;
+        //                            stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                            // appliquer la même logique de taille réduite/agrandie par défaut
+        //                            double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+        //                            double fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0)) * 1.20;
+        //                            stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+        //                            stTxt.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
+        //                            stTxt.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
+        //                            ComputeTextBoxSize(ref stTxt);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return stTxt;
+        //                }
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        // en cas d'erreur, retomber sur texte pour éviter plantage
+        //        try
+        //        {
+        //            Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //            if (stTxt != null)
+        //            {
+        //                stTxt.DrawingAttributes.Color = Color.Black;
+        //                stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                ComputeTextBoxSize(ref stTxt);
+        //            }
+        //            return stTxt;
+        //        }
+        //        catch { return null; }
+        //    }
+        //}
+
+
+        //private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx)
+        //{
+        //    // clamp minimal
+        //    int diameter = Math.Max(6, diameterPx);
+        //    int half = Math.Max(1, diameter / 2);
+
+        //    // largeur de trait de base (en px)
+        //    float basePenWidthPx = Math.Max(1.0f, diameter / 4f);
+
+        //    // facteur d'épaississement demandé pour LES FORMES (≈ x3)
+        //    const float ShapeStrokeMultiplier = 3.0f;
+
+        //    // largeur finale réservée aux formes
+        //    float shapePenWidthPx = basePenWidthPx * ShapeStrokeMultiplier;
+
+        //    // Lettre : texte centré et agrandi (double de la taille précédente)
+        //    if (Root.ToolSelected == Tools.LetterTag)
+        //    {
+        //        Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //        if (stTxt != null)
+        //        {
+        //            try
+        //            {
+        //                double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+        //                double fontSize;
+        //                if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+        //                    fontSize = Math.Max(6.0, diameter * 0.54 * (sizePct / 100.0));
+        //                else
+        //                    fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0));
+
+        //                double maxFromCircle = Math.Max(6.0, diameter * 0.75);
+        //                if (fontSize > maxFromCircle) fontSize = maxFromCircle;
+
+        //                // ajustement demandé précédemment : facteur 1.20 sur base
+        //                fontSize = fontSize * 1.20;
+
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+        //                System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
+        //                if (TagBold) style |= System.Drawing.FontStyle.Bold;
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
+
+        //                stTxt.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
+        //                stTxt.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
+
+        //                stTxt.DrawingAttributes.Color = Color.Black;
+        //                try { stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
+
+        //                ComputeTextBoxSize(ref stTxt);
+        //            }
+        //            catch { }
+        //        }
+        //        return stTxt;
+        //    }
+
+        //    // Pour les formes fixes, dessiner des contours vectoriels (taille réduite de 40% si demandé ailleurs)
+        //    try
+        //    {
+        //        switch (Root.ToolSelected)
+        //        {
+        //            case Tools.SquareTag:
+        //                {
+        //                    // taille calculée au caller (diameter) — ici centré
+        //                    int eHalf = Math.Max(1, (int)Math.Round(half * 0.60)); // garde 60% si réduction appliquée ailleurs
+        //                    int left = xCenter - eHalf;
+        //                    int top = yCenter - eHalf;
+        //                    int right = xCenter + eHalf;
+        //                    int bottom = yCenter + eHalf;
+
+        //                    Stroke rect = AddRectStroke(left, top, right, bottom, Filling.Empty);
+        //                    if (rect != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            rect.DrawingAttributes.Width = shapePenWidthPx; // épaisseur x3 pour formes
+        //                            setStrokeProperties(ref rect, Filling.Empty);
+        //                            rect.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return rect;
+        //                }
+
+        //            case Tools.CircleTag:
+        //                {
+        //                    int eHalf = Math.Max(1, (int)Math.Round(half * 0.60));
+        //                    Stroke circ = AddEllipseStroke(xCenter, yCenter, xCenter + eHalf, yCenter + eHalf, Filling.Empty);
+        //                    if (circ != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            circ.DrawingAttributes.Width = shapePenWidthPx; // épaisseur x3 pour formes
+        //                            setStrokeProperties(ref circ, Filling.Empty);
+        //                            circ.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return circ;
+        //                }
+
+        //            case Tools.TriangleTag:
+        //                {
+        //                    int eHalf = Math.Max(1, (int)Math.Round(half * 0.60));
+        //                    int shift = (int)Math.Round((double)eHalf / 3.0); // recentrage centroïde
+        //                    Point pTop = new Point(xCenter, yCenter - eHalf - shift);
+        //                    Point pBL = new Point(xCenter - eHalf, yCenter + eHalf - shift);
+        //                    Point pBR = new Point(xCenter + eHalf, yCenter + eHalf - shift);
+        //                    Point[] pts = new Point[] { pTop, pBR, pBL, pTop };
+
+        //                    // conversion pixel -> inkspace
+        //                    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+
+        //                    Stroke st = IC.Ink.CreateStroke(pts);
+        //                    st.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
+        //                    st.DrawingAttributes.AntiAliased = true;
+        //                    st.DrawingAttributes.FitToCurve = false;
+        //                    st.DrawingAttributes.Width = shapePenWidthPx; // épaisseur x3 pour formes
+        //                    setStrokeProperties(ref st, Filling.Empty);
+        //                    try { st.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
+        //                    IC.Ink.Strokes.Add(st);
+        //                    if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st);
+        //                    return st;
+        //                }
+
+        //            case Tools.CrossTag:
+        //                {
+        //                    double scale = 0.60; // réduction appliquée si nécessaire
+        //                    int halfCross = Math.Max(1, (int)Math.Round(half * scale));
+
+        //                    int x0 = xCenter - halfCross;
+        //                    int y0 = yCenter - halfCross;
+        //                    int x1 = xCenter + halfCross;
+        //                    int y1 = yCenter + halfCross;
+
+        //                    Stroke s1 = AddLineStroke(x0, y0, x1, y1);
+        //                    Stroke s2 = AddLineStroke(x0, y1, x1, y0);
+        //                    if (s1 != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            s1.DrawingAttributes.Width = shapePenWidthPx; // épaisseur x3 pour formes
+        //                            setStrokeProperties(ref s1, Filling.Empty);
+        //                            s1.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    if (s2 != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            s2.DrawingAttributes.Width = shapePenWidthPx; // épaisseur x3 pour formes
+        //                            setStrokeProperties(ref s2, Filling.Empty);
+        //                            s2.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return s1 ?? s2;
+        //                }
+
+        //            default:
+        //                {
+        //                    Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //                    if (stTxt != null)
+        //                    {
+        //                        try
+        //                        {
+        //                            stTxt.DrawingAttributes.Color = Color.Black;
+        //                            stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                            double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+        //                            double fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0)) * 1.20;
+        //                            stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+        //                            stTxt.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
+        //                            stTxt.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
+        //                            ComputeTextBoxSize(ref stTxt);
+        //                        }
+        //                        catch { }
+        //                    }
+        //                    return stTxt;
+        //                }
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        try
+        //        {
+        //            Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //            if (stTxt != null)
+        //            {
+        //                stTxt.DrawingAttributes.Color = Color.Black;
+        //                stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                ComputeTextBoxSize(ref stTxt);
+        //            }
+        //            return stTxt;
+        //        }
+        //        catch { return null; }
+        //    }
+        //}
+
+
         private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx)
         {
-            // clamp minimal
             int diameter = Math.Max(6, diameterPx);
+            int half = Math.Max(1, diameter / 2);
 
-            Stroke stTxt = null;
+            // largeur de trait exprimée en pixels (logique UI)
+            float basePenWidthPx = Math.Max(1.0f, diameter / 4f);
+            const float ShapeStrokeMultiplier = 3.0f;
+            float shapePenWidthPx = basePenWidthPx * ShapeStrokeMultiplier;
 
-            if (!string.IsNullOrEmpty(txt))
+            // Conversion pixels -> HiMetric (DrawingAttributes.Width attend HiMetric)
+            float shapePenWidthHiMetric;
+            try
             {
-                // Crée uniquement la stroke de texte (pas de disque jaune)
-                stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+                shapePenWidthHiMetric = Root.PixelToHiMetric(shapePenWidthPx) / 9f;
+            }
+            catch
+            {
+                // fallback constant (1 hiMetric ≈ 0.03779528 px)
+                shapePenWidthHiMetric = (float)(shapePenWidthPx / 0.037795280352161f) / 9f;
+            }
+
+            if (Root.ToolSelected == Tools.LetterTag)
+            {
+                Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
                 if (stTxt != null)
                 {
                     try
                     {
-                        // Couleur du texte (noir) — inchangé
-                        stTxt.DrawingAttributes.Color = Color.Black;
-                        // Marque la stroke comme tag
-                        stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
-
-                        // Calcul de la taille du glyph identique à NumberTag / ancienne implémentation
                         double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
                         double fontSize;
                         if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
@@ -379,25 +1212,150 @@ namespace gInk
 
                         double maxFromCircle = Math.Max(6.0, diameter * 0.75);
                         if (fontSize > maxFromCircle) fontSize = maxFromCircle;
+                        fontSize *= 1.20;
 
                         stTxt.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
                         stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
-                        System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
-                        if (TagBold) style |= System.Drawing.FontStyle.Bold;
+                        FontStyle style = TagItalic ? FontStyle.Italic : FontStyle.Regular;
+                        if (TagBold) style |= FontStyle.Bold;
                         stTxt.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
-
                         stTxt.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
                         stTxt.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
-
+                        stTxt.DrawingAttributes.Color = Color.Black;
+                        try { stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
                         ComputeTextBoxSize(ref stTxt);
                     }
                     catch { }
                 }
+                return stTxt;
             }
 
-            // Retourne la stroke texte si créée, sinon null (pas de disque)
-            return stTxt;
+            try
+            {
+                switch (Root.ToolSelected)
+                {
+                    case Tools.SquareTag:
+                        {
+                            int eHalf = Math.Max(1, (int)Math.Round(half * 0.60));
+                            Stroke rect = AddRectStroke(xCenter - eHalf, yCenter - eHalf, xCenter + eHalf, yCenter + eHalf, Filling.Empty);
+                            if (rect != null)
+                            {
+                                try
+                                {
+                                    rect.DrawingAttributes.Width = shapePenWidthHiMetric;
+                                    setStrokeProperties(ref rect, Filling.Empty);
+                                    rect.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                }
+                                catch { }
+                            }
+                            return rect;
+                        }
+                    case Tools.CircleTag:
+                        {
+                            int eHalf = Math.Max(1, (int)Math.Round(half * 0.60));
+                            Stroke circ = AddEllipseStroke(xCenter, yCenter, xCenter + eHalf, yCenter + eHalf, Filling.Empty);
+                            if (circ != null)
+                            {
+                                try
+                                {
+                                    circ.DrawingAttributes.Width = shapePenWidthHiMetric;
+                                    setStrokeProperties(ref circ, Filling.Empty);
+                                    circ.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                }
+                                catch { }
+                            }
+                            return circ;
+                        }
+                    case Tools.TriangleTag:
+                        {
+                            int eHalf = Math.Max(1, (int)Math.Round(half * 0.60));
+                            int shift = (int)Math.Round(eHalf / 3.0);
+                            Point pTop = new Point(xCenter, yCenter - eHalf - shift);
+                            Point pBL = new Point(xCenter - eHalf, yCenter + eHalf - shift);
+                            Point pBR = new Point(xCenter + eHalf, yCenter + eHalf - shift);
+                            Point[] pts = { pTop, pBR, pBL, pTop };
+                            IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+                            Stroke st = IC.Ink.CreateStroke(pts);
+                            st.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
+                            st.DrawingAttributes.AntiAliased = true;
+                            st.DrawingAttributes.FitToCurve = false;
+                            st.DrawingAttributes.Width = shapePenWidthHiMetric;
+                            setStrokeProperties(ref st, Filling.Empty);
+                            try { st.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
+                            IC.Ink.Strokes.Add(st);
+                            if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st);
+                            return st;
+                        }
+                    case Tools.CrossTag:
+                        {
+                            double scale = 0.60;
+                            int halfCross = Math.Max(1, (int)Math.Round(half * scale));
+                            int x0 = xCenter - halfCross;
+                            int y0 = yCenter - halfCross;
+                            int x1 = xCenter + halfCross;
+                            int y1 = yCenter + halfCross;
+                            Stroke s1 = AddLineStroke(x0, y0, x1, y1);
+                            Stroke s2 = AddLineStroke(x0, y1, x1, y0);
+                            if (s1 != null)
+                                try
+                                {
+                                    s1.DrawingAttributes.Width = shapePenWidthHiMetric;
+                                    setStrokeProperties(ref s1, Filling.Empty);
+                                    s1.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                }
+                                catch { }
+                            if (s2 != null)
+                                try
+                                {
+                                    s2.DrawingAttributes.Width = shapePenWidthHiMetric;
+                                    setStrokeProperties(ref s2, Filling.Empty);
+                                    s2.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                }
+                                catch { }
+                            return s1 ?? s2;
+                        }
+                    default:
+                        {
+                            Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+                            if (stTxt != null)
+                            {
+                                try
+                                {
+                                    stTxt.DrawingAttributes.Color = Color.Black;
+                                    stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                    double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+                                    double fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0)) * 1.20;
+                                    stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+                                    stTxt.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
+                                    stTxt.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
+                                    ComputeTextBoxSize(ref stTxt);
+                                }
+                                catch { }
+                            }
+                            return stTxt;
+                        }
+                }
+            }
+            catch
+            {
+                try
+                {
+                    Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+                    if (stTxt != null)
+                    {
+                        stTxt.DrawingAttributes.Color = Color.Black;
+                        stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                        ComputeTextBoxSize(ref stTxt);
+                    }
+                    return stTxt;
+                }
+                catch { return null; }
+            }
         }
+
+
+
+
 
         // Gestion du clic sur les nouveaux boutons
         private void NewTagTool_Click(object sender, EventArgs e)
