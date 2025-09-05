@@ -47,7 +47,17 @@ namespace gInk
         private HotkeyInputBox hiHK_HideWhite;
         private HotkeyInputBox hiHK_HideBlack;
 
-
+        // Ajout : champs Hotkeys pour les nouveaux tags GO
+        private Label lblHK_LetterTag;
+        private Label lblHK_SquareTag;
+        private Label lblHK_TriangleTag;
+        private Label lblHK_CircleTag;
+        private Label lblHK_CrossTag;
+        private HotkeyInputBox hiHK_LetterTag;
+        private HotkeyInputBox hiHK_SquareTag;
+        private HotkeyInputBox hiHK_TriangleTag;
+        private HotkeyInputBox hiHK_CircleTag;
+        private HotkeyInputBox hiHK_CrossTag;
 
 
         private Label lblTagCirclePerc;
@@ -72,6 +82,16 @@ namespace gInk
         private NumericUpDown nudGoStrokeOpacity;
         private Label lblGoStrokeWidth;
         private NumericUpDown nudGoStrokeWidth;
+
+        private Label lblGoStrokeThickness;
+        private ComboBox cbGoStrokeThickness;
+
+        // en haut de FormOptions (déclarations)
+        private Button btnGoColor_Letter;
+        private Button btnGoColor_Square;
+        private Button btnGoColor_Triangle;
+        private Button btnGoColor_Circle;
+        private Button btnGoColor_Cross;
 
 
 
@@ -117,6 +137,10 @@ namespace gInk
             lblHK_HandBlack = new Label { Left = baseLeft, Top = yExtra, AutoSize = true, Text = "Main — Rempli noir (hotkey)" };
             hiHK_HandBlack = new HotkeyInputBox { Left = col2, Top = yExtra - 3, Width = 180 };
 
+
+
+
+
             hiHK_HandWhite.OnHotkeyChanged += (s, e) =>
             {
                 try { Root.Hotkey_HandFilledWhite = hiHK_HandWhite.Hotkey; } catch { }
@@ -132,6 +156,53 @@ namespace gInk
                 try { Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { }
                 hi_OnHotkeyChanged(s, e);
             };
+
+
+
+            // --- Création contrôles Hotkey nouveaux tags Go (à insérer dans le constructeur, après hiHK_HandBlack)
+            int y = lblHK_HandBlack.Bottom + 12;
+            int col = 260;
+            int lh = 28;
+
+            lblHK_LetterTag = new Label { Left = 12, Top = y, AutoSize = true, Text = "Tag Lettre" };
+            hiHK_LetterTag = new HotkeyInputBox { Left = col, Top = y - 3, Width = 180 };
+            y += lh;
+
+            lblHK_SquareTag = new Label { Left = 12, Top = y, AutoSize = true, Text = "Tag Carré" };
+            hiHK_SquareTag = new HotkeyInputBox { Left = col, Top = y - 3, Width = 180 };
+            y += lh;
+
+            lblHK_TriangleTag = new Label { Left = 12, Top = y, AutoSize = true, Text = "Tag Triangle" };
+            hiHK_TriangleTag = new HotkeyInputBox { Left = col, Top = y - 3, Width = 180 };
+            y += lh;
+
+            lblHK_CircleTag = new Label { Left = 12, Top = y, AutoSize = true, Text = "Tag Cercle" };
+            hiHK_CircleTag = new HotkeyInputBox { Left = col, Top = y - 3, Width = 180 };
+            y += lh;
+
+            lblHK_CrossTag = new Label { Left = 12, Top = y, AutoSize = true, Text = "Tag Croix" };
+            hiHK_CrossTag = new HotkeyInputBox { Left = col, Top = y - 3, Width = 180 };
+            y += lh;
+
+            // hookup events
+            hiHK_LetterTag.OnHotkeyChanged += (s, e) => { try { Root.Hotkey_LetterTag = hiHK_LetterTag.Hotkey; Root.SetHotkey(); Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { } hi_OnHotkeyChanged(s, e); };
+            hiHK_SquareTag.OnHotkeyChanged += (s, e) => { try { Root.Hotkey_SquareTag = hiHK_SquareTag.Hotkey; Root.SetHotkey(); Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { } hi_OnHotkeyChanged(s, e); };
+            hiHK_TriangleTag.OnHotkeyChanged += (s, e) => { try { Root.Hotkey_TriangleTag = hiHK_TriangleTag.Hotkey; Root.SetHotkey(); Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { } hi_OnHotkeyChanged(s, e); };
+            hiHK_CircleTag.OnHotkeyChanged += (s, e) => { try { Root.Hotkey_CircleTag = hiHK_CircleTag.Hotkey; Root.SetHotkey(); Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { } hi_OnHotkeyChanged(s, e); };
+            hiHK_CrossTag.OnHotkeyChanged += (s, e) => { try { Root.Hotkey_CrossTag = hiHK_CrossTag.Hotkey; Root.SetHotkey(); Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { } hi_OnHotkeyChanged(s, e); };
+
+            // add to tab
+            tabPageGoHotkeys.Controls.AddRange(new Control[]
+            {
+    lblHK_LetterTag, hiHK_LetterTag,
+    lblHK_SquareTag, hiHK_SquareTag,
+    lblHK_TriangleTag, hiHK_TriangleTag,
+    lblHK_CircleTag, hiHK_CircleTag,
+    lblHK_CrossTag, hiHK_CrossTag
+            });
+
+
+
 
             // après avoir créé tous les HotkeyInputBox (hiHK_ShowWhite, hiHK_ShowBlack, hiHK_HideWhite, hiHK_HideBlack, hiHK_HandWhite, hiHK_HandBlack)
             tabPageGoHotkeys.Controls.AddRange(new Control[]
@@ -345,6 +416,53 @@ namespace gInk
                 try { Root.SaveOptions(Program.RunningFolder + "config.ini"); } catch { }
             };
 
+            //lblGoStrokeThickness = new Label { Text = "Épaisseur contour :", AutoSize = true, Left = 12, Top = lblGoStrokeWidth.Bottom + 18 };
+            //cbGoStrokeThickness = new ComboBox { Left = 220, Top = lblGoStrokeThickness.Top - 3, Width = 120, DropDownStyle = ComboBoxStyle.DropDownList };
+            //cbGoStrokeThickness.Items.AddRange(new object[] { "Fin", "Moyen", "Épais" });
+            //cbGoStrokeThickness.SelectedIndex = Math.Min(Math.Max(0, Root.GoStrokeThickness), 2);
+            //cbGoStrokeThickness.SelectedIndexChanged += (s, e) =>
+            //{
+            //    Root.GoStrokeThickness = cbGoStrokeThickness.SelectedIndex;
+            //    ScheduleConfigSave();
+            //};
+            //tabPageGridTags.Controls.Add(lblGoStrokeThickness);
+            //tabPageGridTags.Controls.Add(cbGoStrokeThickness);
+
+            lblGoStrokeThickness = new Label { Text = Root.Local.OptionsGoStrokeThickness ?? "Épaisseur contour :", AutoSize = true, Left = 12, Top = lblGoStrokeWidth.Bottom + 18 };
+            cbGoStrokeThickness = new ComboBox { Left = 220, Top = lblGoStrokeThickness.Top - 3, Width = 120, DropDownStyle = ComboBoxStyle.DropDownList };
+            cbGoStrokeThickness.Items.AddRange(new object[] { Root.Local.OptionsPensThin ?? "Thin", Root.Local.OptionsPensNormal ?? "Normal", Root.Local.OptionsPensThick ?? "Thick" });
+            cbGoStrokeThickness.SelectedIndex = Math.Min(Math.Max(0, Root.GoStrokeThickness), 2);
+            cbGoStrokeThickness.SelectedIndexChanged += (s, e) =>
+            {
+                Root.GoStrokeThickness = cbGoStrokeThickness.SelectedIndex;
+                ScheduleConfigSave();
+            };
+            tabPageGridTags.Controls.Add(lblGoStrokeThickness);
+            tabPageGridTags.Controls.Add(cbGoStrokeThickness);
+
+
+
+            // création boutons couleurs tags (petits carrés cliquables)
+            int colorBtnLeft = cbGoStrokeThickness.Left + cbGoStrokeThickness.Width + 16;
+            int colorTop = lblGoStrokeThickness.Top - 3;
+
+            btnGoColor_Letter = new Button { Left = colorBtnLeft, Top = colorTop, Width = 24, Height = 24, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(Root.GoTool_Letter_Color[0], Root.GoTool_Letter_Color[1], Root.GoTool_Letter_Color[2], Root.GoTool_Letter_Color[3]) };
+            btnGoColor_Square = new Button { Left = colorBtnLeft + 28, Top = colorTop, Width = 24, Height = 24, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(Root.GoTool_Square_Color[0], Root.GoTool_Square_Color[1], Root.GoTool_Square_Color[2], Root.GoTool_Square_Color[3]) };
+            btnGoColor_Triangle = new Button { Left = colorBtnLeft + 56, Top = colorTop, Width = 24, Height = 24, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(Root.GoTool_Triangle_Color[0], Root.GoTool_Triangle_Color[1], Root.GoTool_Triangle_Color[2], Root.GoTool_Triangle_Color[3]) };
+            btnGoColor_Circle = new Button { Left = colorBtnLeft + 84, Top = colorTop, Width = 24, Height = 24, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(Root.GoTool_Circle_Color[0], Root.GoTool_Circle_Color[1], Root.GoTool_Circle_Color[2], Root.GoTool_Circle_Color[3]) };
+            btnGoColor_Cross = new Button { Left = colorBtnLeft + 112, Top = colorTop, Width = 24, Height = 24, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(Root.GoTool_Cross_Color[0], Root.GoTool_Cross_Color[1], Root.GoTool_Cross_Color[2], Root.GoTool_Cross_Color[3]) };
+
+            // handlers (réutilise PenModifyDlg pour choisir couleur + transparence)
+            btnGoColor_Letter.Click += (s, e) => EditGoTagColor("Letter", btnGoColor_Letter, Root.GoTool_Letter_Color);
+            btnGoColor_Square.Click += (s, e) => EditGoTagColor("Square", btnGoColor_Square, Root.GoTool_Square_Color);
+            btnGoColor_Triangle.Click += (s, e) => EditGoTagColor("Triangle", btnGoColor_Triangle, Root.GoTool_Triangle_Color);
+            btnGoColor_Circle.Click += (s, e) => EditGoTagColor("Circle", btnGoColor_Circle, Root.GoTool_Circle_Color);
+            btnGoColor_Cross.Click += (s, e) => EditGoTagColor("Cross", btnGoColor_Cross, Root.GoTool_Cross_Color);
+
+            tabPageGridTags.Controls.AddRange(new Control[] { btnGoColor_Letter, btnGoColor_Square, btnGoColor_Triangle, btnGoColor_Circle, btnGoColor_Cross });
+
+
+
             tabPageGridTags.Controls.Add(lblGoFillOpacity);
             tabPageGridTags.Controls.Add(nudGoFillOpacity);
             tabPageGridTags.Controls.Add(lblGoStrokeOpacity);
@@ -444,6 +562,8 @@ namespace gInk
                 foreach (ListViewItem it in Root.FormCollection.ClipartsDlg.ImageListViewer.Items)
                     Root.StampFileNames.Add(it.ImageKey);
             }
+
+
 
             InitClipArtButtons();
 
@@ -553,6 +673,12 @@ namespace gInk
             }
 
             FormOptions_LocalReload();
+
+
+
+            // <-- AJOUTER CETTE LIGNE ICI (initialise les boutons couleurs des tags)
+            InitGoTagButtons();
+
 
             // Synchronisation après reload (contrôles go)
             try
@@ -710,6 +836,13 @@ namespace gInk
             hiHK_HandWhite.Hotkey = Root.Hotkey_HandFilledWhite;
             hiHK_HandBlack.Hotkey = Root.Hotkey_HandFilledBlack;
 
+            // ajouter dans AssignHotkeys()
+            hiHK_LetterTag.Hotkey = Root.Hotkey_LetterTag;
+            hiHK_SquareTag.Hotkey = Root.Hotkey_SquareTag;
+            hiHK_TriangleTag.Hotkey = Root.Hotkey_TriangleTag;
+            hiHK_CircleTag.Hotkey = Root.Hotkey_CircleTag;
+            hiHK_CrossTag.Hotkey = Root.Hotkey_CrossTag;
+
             HiToolText.Hotkey = Root.Hotkey_Text;
             hiToolEdit.Hotkey = Root.Hotkey_Edit;
             hiToolMagnet.Hotkey = Root.Hotkey_Magnet;
@@ -775,6 +908,13 @@ namespace gInk
             lblGoFillOpacity.Text = Root.Local.OptionsGoFillOpacity ?? lblGoFillOpacity.Text;
             lblGoStrokeOpacity.Text = Root.Local.OptionsGoStrokeOpacity ?? lblGoStrokeOpacity.Text;
             lblGoStrokeWidth.Text = Root.Local.OptionsGoStrokeWidth ?? lblGoStrokeWidth.Text;
+
+            // Ajouter dans FormOptions_LocalReload() pour afficher les labels localisés
+            lblHK_LetterTag.Text = Root.Local.ButtonNameLetterTag ?? lblHK_LetterTag.Text;
+            lblHK_SquareTag.Text = Root.Local.ButtonNameSquareTag ?? lblHK_SquareTag.Text;
+            lblHK_TriangleTag.Text = Root.Local.ButtonNameTriangleTag ?? lblHK_TriangleTag.Text;
+            lblHK_CircleTag.Text = Root.Local.ButtonNameCircleTag ?? lblHK_CircleTag.Text;
+            lblHK_CrossTag.Text = Root.Local.ButtonNameCrossTag ?? lblHK_CrossTag.Text;
 
 
             this.Text = Root.Local.MenuEntryOptions + " - ppInk";
@@ -988,7 +1128,18 @@ namespace gInk
             string currentLn = Root.Local.GetLanguagenameByFilename(Root.Local.CurrentLanguageFile);
             if (comboLanguage.Items.Contains(currentLn))
                 comboLanguage.SelectedIndex = comboLanguage.Items.IndexOf(currentLn);
+
+
+
+            // <-- AJOUTER CETTE LIGNE ICI (réinitialise l'affichage des boutons de couleur après rechargement local)
+            InitGoTagButtons();
+           
+        
+        
         }
+
+
+
 
         private void comboPensAlpha_TextChanged(object sender, EventArgs e)
         {
@@ -1296,6 +1447,80 @@ namespace gInk
             dlg.Dispose();
         }
 
+        private void EditGoTagColor(string name, Button btn, int[] colorArr)
+        {
+            try
+            {
+                // Prépare les attributs initiaux en réutilisant la convention existante :
+                // colorArr = { A, R, G, B } ; DrawingAttributes.Transparency = 255 - A
+                PenModifyDlg dlg = new PenModifyDlg(Root);
+                Microsoft.Ink.DrawingAttributes at = new Microsoft.Ink.DrawingAttributes
+                {
+                    Transparency = (byte)(255 - (colorArr.Length > 0 ? colorArr[0] : 255)),
+                    Color = Color.FromArgb(
+                        (colorArr.Length > 0 ? colorArr[0] : 255),
+                        (colorArr.Length > 1 ? colorArr[1] : 0),
+                        (colorArr.Length > 2 ? colorArr[2] : 0),
+                        (colorArr.Length > 3 ? colorArr[3] : 0)
+                    ),
+                    Width = 0
+                };
+
+                if (dlg.ModifyPen(ref at))
+                {
+                    // Stocke la couleur choisie dans le tableau (A,R,G,B)
+                    if (colorArr.Length >= 4)
+                    {
+                        colorArr[0] = 255 - at.Transparency;
+                        colorArr[1] = at.Color.R;
+                        colorArr[2] = at.Color.G;
+                        colorArr[3] = at.Color.B;
+                    }
+
+                    // Mise à jour visuelle (aperçu — BackColor ignore l'alpha)
+                    try
+                    {
+                        btn.BackColor = Color.FromArgb(
+                            (colorArr.Length > 0 ? colorArr[0] : 255),
+                            (colorArr.Length > 1 ? colorArr[1] : 0),
+                            (colorArr.Length > 2 ? colorArr[2] : 0),
+                            (colorArr.Length > 3 ? colorArr[3] : 0)
+                        );
+                    }
+                    catch { }
+
+                    // Sauvegarde différée
+                    ScheduleConfigSave();
+                }
+                dlg.Dispose();
+            }
+            catch { }
+        }
+
+
+        private void InitGoTagButtons()
+        {
+            try
+            {
+                Action<Button, int[]> initBtn = (btn, arr) =>
+                {
+                    try
+                    {
+                        if (btn == null || arr == null || arr.Length < 4) return;
+                        // BackColor n'affiche pas l'alpha, mais donne un aperçu de la couleur
+                        btn.BackColor = Color.FromArgb(arr[0], arr[1], arr[2], arr[3]);
+                    }
+                    catch { }
+                };
+
+                initBtn(btnGoColor_Letter, Root?.GoTool_Letter_Color);
+                initBtn(btnGoColor_Square, Root?.GoTool_Square_Color);
+                initBtn(btnGoColor_Triangle, Root?.GoTool_Triangle_Color);
+                initBtn(btnGoColor_Circle, Root?.GoTool_Circle_Color);
+                initBtn(btnGoColor_Cross, Root?.GoTool_Cross_Color);
+            }
+            catch { }
+        }
         private void WsUrlTxt_TextChanged(object sender, EventArgs e) => Root.ObsUrl = WsUrlTxt.Text;
         private void WsPwdTxt_TextChanged(object sender, EventArgs e) => Root.ObsPwd = WsPwdTxt.Text;
         private void FfmpegCmdTxt_TextChanged(object sender, EventArgs e) => Root.FFMpegCmd = FfmpegCmdTxt.Text;

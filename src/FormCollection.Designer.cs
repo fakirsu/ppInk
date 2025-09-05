@@ -1,4 +1,4 @@
-namespace gInk
+﻿namespace gInk
 {
 	partial class FormCollection
 	{
@@ -56,6 +56,34 @@ namespace gInk
             this.btOval = new System.Windows.Forms.Button();
             this.btArrow = new System.Windows.Forms.Button();
             this.btNumb = new System.Windows.Forms.Button();
+
+            this.btLetter = new System.Windows.Forms.Button();
+            this.btSquare = new System.Windows.Forms.Button();
+            this.btTriangle = new System.Windows.Forms.Button();
+            this.btCircle = new System.Windows.Forms.Button();
+            this.btCross = new System.Windows.Forms.Button();
+
+            // Propriétés communes rapides (tu peux affiner après)
+            System.Windows.Forms.Button[] _newTagBtns = { btLetter, btSquare, btTriangle, btCircle, btCross };
+            foreach (var b in _newTagBtns)
+            {
+                b.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+                b.FlatAppearance.BorderSize = 0;
+                b.BackColor = System.Drawing.Color.Transparent;
+                b.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+                b.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+                b.Visible = false; // elles seront positionnées plus tard dans Initialize()
+                this.gpButtons.Controls.Add(b);
+            }
+
+            // Textes initiaux
+            btLetter.Text = "A";
+            btSquare.Text = "■";
+            btTriangle.Text = "▲";
+            btCircle.Text = "●";
+            btCross.Text = "✖";
+
+
             this.btText = new System.Windows.Forms.Button();
             this.btEdit = new System.Windows.Forms.Button();
             this.btEraser = new System.Windows.Forms.Button();
@@ -151,6 +179,11 @@ namespace gInk
             this.btPageNext.UseVisualStyleBackColor = true;
             this.btPageNext.Click += new System.EventHandler(this.btPageNext_Click);
             // 
+
+
+
+
+
             // btPagePrev
             // 
             this.btPagePrev.BackColor = System.Drawing.Color.Transparent;
@@ -417,6 +450,27 @@ namespace gInk
             this.btStop.MouseMove += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseMove);
             this.btStop.MouseUp += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseUp);
             // 
+
+
+            // Click handlers (ajoutés après avoir défini btAllButtons_MouseDown/Up si déjà existants)
+            btLetter.Click += new System.EventHandler(this.NewTagTool_Click);
+            btSquare.Click += new System.EventHandler(this.NewTagTool_Click);
+            btTriangle.Click += new System.EventHandler(this.NewTagTool_Click);
+            btCircle.Click += new System.EventHandler(this.NewTagTool_Click);
+            btCross.Click += new System.EventHandler(this.NewTagTool_Click);
+
+            btLetter.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
+            btSquare.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
+            btTriangle.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
+            btCircle.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
+            btCross.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
+
+            btLetter.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
+            btSquare.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
+            btTriangle.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
+            btCircle.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
+            btCross.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
+
             // btVideo
             // 
             this.btVideo.BackColor = System.Drawing.Color.Transparent;
@@ -1163,6 +1217,12 @@ namespace gInk
         // ajout des boutons de couleur
         public System.Windows.Forms.Button btHandWhite;
         public System.Windows.Forms.Button btHandBlack;
+
+        public System.Windows.Forms.Button btLetter;
+        public System.Windows.Forms.Button btSquare;
+        public System.Windows.Forms.Button btTriangle;
+        public System.Windows.Forms.Button btCircle;
+        public System.Windows.Forms.Button btCross;
 
         public System.Windows.Forms.Button btHand;
         public System.Windows.Forms.Button btLine;

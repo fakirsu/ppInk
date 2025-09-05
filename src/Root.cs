@@ -1,20 +1,21 @@
-using System;
-using System.Globalization;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
-using System.IO;
-using System.Drawing;
-using System.Threading;
-using System.Runtime.InteropServices;
-using Microsoft.Ink;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using System.Net.WebSockets;
-using System.Text.RegularExpressions;
-using System.Collections.Specialized;
-using System.Drawing.Drawing2D;
 using gInk.Apng;
+using Microsoft.Ink;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net.WebSockets;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace gInk
 {
@@ -47,9 +48,15 @@ namespace gInk
         public const int HandFilledWhite = 14;
         public const int HandFilledBlack = 15;
         public const int Poly = 21; public const int ClipArt = 22; public const int PatternLine = 23;
-        public static readonly int[] All = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 21, 22, 23 };
+        public const int LetterTag = 24;     // choisir valeurs libres
+        public const int SquareTag = 25;
+        public const int TriangleTag = 26;
+        public const int CircleTag = 27;
+        public const int CrossTag = 28;
+        // Optionnel : étendre les tableaux Names / All si nécessaires à d’autres fonctionnalités
+        public static readonly int[] All = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 21, 22, 23, 24, 25, 26, 27, 28}; 
         public static readonly string[] Names = { "Hand", "Line", "Rect", "Oval", "StartArrow", "EndArrow", "Numbering", "Edit", "Text Left Aligned", "Text Right Aligned",
-                                                  "Move", "Copy", "Resize", "Rotate", "Hand Filled White", "Hand Filled Black", "PolyLine", "ClipArt", "PatternOnStroke"};
+                                                  "Move", "Copy", "Resize", "Rotate", "Hand Filled White", "Hand Filled Black", "PolyLine", "ClipArt", "PatternOnStroke", "Letter", "Square", "Triangle", "Circle", "Cross"};
     }
 
     public class Filling {
@@ -164,6 +171,15 @@ namespace gInk
         public int GoFillOpacityPercent = 50;      // 0-100 (% visible) => Transparency = 255 - %
         public int GoStrokeOpacityPercent = 50;     // 0-100 (% visible)
         public float GoStrokeWidth = 3.0f;         // largeur finale (HiMetric)
+                                                   // 0 = fin (/12), 1 = moyen (/9), 2 = épais (/6)
+        public int GoStrokeThickness = 1;
+        // Couleurs spécifiques aux 5 tags (A,R,G,B) ; ordre : Letter, Square, Triangle, Circle, Cross
+        // Format identique à Toolbar_Color (A,R,G,B)
+        public int[] GoTool_Letter_Color = new int[] { 255, 0, 0, 0 };   // défaut : noir opaque
+        public int[] GoTool_Square_Color = new int[] { 255, 0, 0, 0 };
+        public int[] GoTool_Triangle_Color = new int[] { 255, 0, 0, 0 };
+        public int[] GoTool_Circle_Color = new int[] { 255, 0, 0, 0 };
+        public int[] GoTool_Cross_Color = new int[] { 255, 0, 0, 0 };
 
         public Hotkey Hotkey_HandFilledWhite = new Hotkey();
         public Hotkey Hotkey_HandFilledBlack = new Hotkey();
@@ -321,6 +337,12 @@ namespace gInk
         public Hotkey Hotkey_NTag_ShowBlack = new Hotkey();
         public Hotkey Hotkey_NTag_HideWhite = new Hotkey();
         public Hotkey Hotkey_NTag_HideBlack = new Hotkey();
+
+        public Hotkey Hotkey_LetterTag = new Hotkey();
+        public Hotkey Hotkey_SquareTag = new Hotkey();
+        public Hotkey Hotkey_TriangleTag = new Hotkey();
+        public Hotkey Hotkey_CircleTag = new Hotkey();
+        public Hotkey Hotkey_CrossTag = new Hotkey();
 
 
         public Hotkey Hotkey_Text = new Hotkey();
@@ -1294,8 +1316,77 @@ namespace gInk
                         case "HOTKEY_NTAG_HIDEWHITE":
                             Hotkey_NTag_HideWhite.Parse(sPara);
                             break;
+                    
+
                         case "HOTKEY_NTAG_HIDEBLACK":
                             Hotkey_NTag_HideBlack.Parse(sPara);
+                            break;
+
+                        // ----- Ajout : hotkeys pour shape tags -----
+                        case "HOTKEY_LETTERTAG":
+                            Hotkey_LetterTag.Parse(sPara);
+                            break;
+                        case "HOTKEY_SQUARETAG":
+                            Hotkey_SquareTag.Parse(sPara);
+                            break;
+                        case "HOTKEY_TRIANGLETAG":
+                            Hotkey_TriangleTag.Parse(sPara);
+                            break;
+                        case "HOTKEY_CIRCLETAG":
+                            Hotkey_CircleTag.Parse(sPara);
+                            break;
+                        case "HOTKEY_CROSSTAG":
+                            Hotkey_CrossTag.Parse(sPara);
+                            break;
+                        case "GOTOOL_LETTER_COLOR":
+                            {
+                                var parts = sPara.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray();
+                                if (parts.Length >= 4)
+                                {
+                                    try { GoTool_Letter_Color = new int[] { int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]), int.Parse(parts[3]) }; }
+                                    catch { }
+                                }
+                            }
+                            break;
+                        case "GOTOOL_SQUARE_COLOR":
+                            {
+                                var parts = sPara.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray();
+                                if (parts.Length >= 4)
+                                {
+                                    try { GoTool_Square_Color = new int[] { int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]), int.Parse(parts[3]) }; }
+                                    catch { }
+                                }
+                            }
+                            break;
+                        case "GOTOOL_TRIANGLE_COLOR":
+                            {
+                                var parts = sPara.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray();
+                                if (parts.Length >= 4)
+                                {
+                                    try { GoTool_Triangle_Color = new int[] { int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]), int.Parse(parts[3]) }; }
+                                    catch { }
+                                }
+                            }
+                            break;
+                        case "GOTOOL_CIRCLE_COLOR":
+                            {
+                                var parts = sPara.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray();
+                                if (parts.Length >= 4)
+                                {
+                                    try { GoTool_Circle_Color = new int[] { int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]), int.Parse(parts[3]) }; }
+                                    catch { }
+                                }
+                            }
+                            break;
+                        case "GOTOOL_CROSS_COLOR":
+                            {
+                                var parts = sPara.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray();
+                                if (parts.Length >= 4)
+                                {
+                                    try { GoTool_Cross_Color = new int[] { int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]), int.Parse(parts[3]) }; }
+                                    catch { }
+                                }
+                            }
                             break;
 
 
@@ -1397,7 +1488,20 @@ namespace gInk
                                 GoStrokeWidth = Math.Max(0f, Math.Min(100f, gsw));
                             break;
 
-
+                        case "GOSTROKE_THICKNESS":
+                            // accepte 0/1/2 ou Thin/Normal/Thick (insensible à la casse)
+                            {
+                                string up = sPara.Trim().ToUpperInvariant();
+                                if (int.TryParse(sPara, out tempi) && tempi >= 0 && tempi <= 2)
+                                    GoStrokeThickness = tempi;
+                                else if (up.StartsWith("THIN"))
+                                    GoStrokeThickness = 0;
+                                else if (up.StartsWith("THICK"))
+                                    GoStrokeThickness = 2;
+                                else
+                                    GoStrokeThickness = 1;
+                            }
+                            break;
 
 
 
@@ -2416,6 +2520,23 @@ namespace gInk
                             sPara = Hotkey_NTag_HideBlack.ToStringInvariant();
                             break;
 
+                        // ----- Ajout : hotkeys pour shape tags -----
+                        case "HOTKEY_LETTERTAG":
+                            sPara = Hotkey_LetterTag.ToStringInvariant();
+                            break;
+                        case "HOTKEY_SQUARETAG":
+                            sPara = Hotkey_SquareTag.ToStringInvariant();
+                            break;
+                        case "HOTKEY_TRIANGLETAG":
+                            sPara = Hotkey_TriangleTag.ToStringInvariant();
+                            break;
+                        case "HOTKEY_CIRCLETAG":
+                            sPara = Hotkey_CircleTag.ToStringInvariant();
+                            break;
+                        case "HOTKEY_CROSSTAG":
+                            sPara = Hotkey_CrossTag.ToStringInvariant();
+                            break;
+
                         case "HOTKEY_EDIT":
                             sPara = Hotkey_Edit.ToStringInvariant();
                             break;
@@ -3061,6 +3182,7 @@ namespace gInk
                 SetOrReplace(writelines, "GOFILLOPACITY", GoFillOpacityPercent.ToString());
                 SetOrReplace(writelines, "GOSTROKEOPACITY", GoStrokeOpacityPercent.ToString());
                 SetOrReplace(writelines, "GOSTROKEWIDTH", GoStrokeWidth.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                SetOrReplace(writelines, "GOSTROKE_THICKNESS", (GoStrokeThickness == 0) ? "Thin" : (GoStrokeThickness == 2) ? "Thick" : "Normal");
 
                 // Tags / goInk specific (force la persistance)
                 SetOrReplace(writelines, "TAGSIZE_PERCENT", TagSizePercent.ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -3071,6 +3193,22 @@ namespace gInk
                 // hotkeys go
                 SetOrReplace(writelines, "HOTKEY_HANDFILLEDWHITE", Hotkey_HandFilledWhite.ToStringInvariant());
                 SetOrReplace(writelines, "HOTKEY_HANDFILLEDBLACK", Hotkey_HandFilledBlack.ToStringInvariant());
+
+
+                // ----- Ajout : persistance explicite des hotkeys des shape tags -----
+                SetOrReplace(writelines, "HOTKEY_LETTERTAG", Hotkey_LetterTag.ToStringInvariant());
+                SetOrReplace(writelines, "HOTKEY_SQUARETAG", Hotkey_SquareTag.ToStringInvariant());
+                SetOrReplace(writelines, "HOTKEY_TRIANGLETAG", Hotkey_TriangleTag.ToStringInvariant());
+                SetOrReplace(writelines, "HOTKEY_CIRCLETAG", Hotkey_CircleTag.ToStringInvariant());
+                SetOrReplace(writelines, "HOTKEY_CROSSTAG", Hotkey_CrossTag.ToStringInvariant());
+
+                SetOrReplace(writelines, "GOTOOL_LETTER_COLOR", $"{GoTool_Letter_Color[0]},{GoTool_Letter_Color[1]},{GoTool_Letter_Color[2]},{GoTool_Letter_Color[3]}");
+                SetOrReplace(writelines, "GOTOOL_SQUARE_COLOR", $"{GoTool_Square_Color[0]},{GoTool_Square_Color[1]},{GoTool_Square_Color[2]},{GoTool_Square_Color[3]}");
+                SetOrReplace(writelines, "GOTOOL_TRIANGLE_COLOR", $"{GoTool_Triangle_Color[0]},{GoTool_Triangle_Color[1]},{GoTool_Triangle_Color[2]},{GoTool_Triangle_Color[3]}");
+                SetOrReplace(writelines, "GOTOOL_CIRCLE_COLOR", $"{GoTool_Circle_Color[0]},{GoTool_Circle_Color[1]},{GoTool_Circle_Color[2]},{GoTool_Circle_Color[3]}");
+                SetOrReplace(writelines, "GOTOOL_CROSS_COLOR", $"{GoTool_Cross_Color[0]},{GoTool_Cross_Color[1]},{GoTool_Cross_Color[2]},{GoTool_Cross_Color[3]}");
+                SetOrReplace(writelines, "GOSTROKE_THICKNESS", (GoStrokeThickness == 0) ? "Thin" : (GoStrokeThickness == 2) ? "Thick" : "Normal");
+
             }
 
 

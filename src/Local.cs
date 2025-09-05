@@ -54,6 +54,12 @@ namespace gInk
 
         public string QuestionClipArtUpdate;
         public string ButtonActivateDebug;
+        public string ButtonNameLetterTag;
+        public string ButtonNameSquareTag;
+        public string ButtonNameTriangleTag;
+        public string ButtonNameCircleTag;
+        public string ButtonNameCrossTag;
+
 
         public string ButtonNameHandWhite;
         public string ButtonNameHandBlack;
@@ -155,6 +161,9 @@ namespace gInk
         public string OptionsTabPens;
         public string OptionsTabHotkeys;
 
+
+        // nouveau : libellé pour l'épaisseur des contours (onglet Jeu de go)
+        public string OptionsGoStrokeThickness;
 
         //// 
         //public string OptionsTabGoHotkeys;
@@ -301,6 +310,12 @@ namespace gInk
             OptionsGoHotkeys_HandWhite = "White filled freehand";
             OptionsGoHotkeys_HandBlack = "Black filled freehand";
 
+            ButtonNameLetterTag = "Letter";
+            ButtonNameSquareTag = "Square";
+            ButtonNameTriangleTag = "Triangle";
+            ButtonNameCircleTag = "Circle";
+            ButtonNameCrossTag = "Cross";
+
             // libellés pour les options Go (valeurs par défaut)
             GoOptionsHandWhiteAlpha = "White filled opacity (%)";
             GoOptionsHandStrokeAlpha = "Outline opacity of areas (%)";
@@ -316,6 +331,15 @@ namespace gInk
             OptionsTagCirclePerc = "Stone diameter (%) :";
             OptionsTagSizePerc = "Number size (%) :";
             OptionsTagNumberOpacityPerc = "Number opacity (%) :";
+
+            // libellés pour les options Go (valeurs par défaut)
+            OptionsTagOpacityPerc = "Stone opacity (%) :";
+            OptionsTagCirclePerc = "Stone diameter (%) :";
+            OptionsTagSizePerc = "Number size (%) :";
+            OptionsTagNumberOpacityPerc = "Number opacity (%) :";
+
+            // nouveau : valeur par défaut pour l'étiquette d'épaisseur des contours
+            OptionsGoStrokeThickness = "Stroke thickness :";
 
 
             LoadKeyNames();
