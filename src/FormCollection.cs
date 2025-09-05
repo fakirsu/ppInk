@@ -198,12 +198,31 @@ namespace gInk
         {
             switch (tool)
             {
-                case Tools.SquareTag: return '■';
-                case Tools.TriangleTag: return '▲';
-                //case Tools.CircleTag: return '●';
-                case Tools.CircleTag: return '⬤'; //U + 2B24 BLACK LARGE CIRCLE) au lieu de '●'; visuellement plus grand.
-                //case Tools.CrossTag: return '✖';
-                case Tools.CrossTag: return '✕'; //(U + 2715) ou '⨯'(U + 2A2F); mais rendu dépend du font système.
+                //case Tools.SquareTag: return '■';
+                //case Tools.TriangleTag: return '▲';
+                ////case Tools.CircleTag: return '●';
+                //case Tools.CircleTag: return '⬤'; //U + 2B24 BLACK LARGE CIRCLE) au lieu de '●'; visuellement plus grand.
+                ////case Tools.CrossTag: return '✖';
+                //case Tools.CrossTag: return '✕'; //(U + 2715) ou '⨯'(U + 2A2F); mais rendu dépend du font système.
+
+                //case Tools.SquareTag: return '□';     // U+25A1 WHITE SQUARE (vide)
+                //case Tools.SquareTag: return '⬜'; // U+2B1C WHITE LARGE SQUARE (plus grand que U+25A1)
+
+                //case Tools.TriangleTag: return '△';   // U+25B3 WHITE UP-POINTING TRIANGLE (vide)
+                //case Tools.CircleTag: return '○';     // U+25CB WHITE CIRCLE (vide)
+                ////case Tools.CrossTag: return '✕';      // U+2715 MULTIPLICATI
+                //case Tools.CrossTag: return '✖'; // U+2716 HEAVY MULTIPLICATION X (généralement visible)
+
+
+                // utiliser des glyphes "large" là où possible pour un rendu plus visible
+                case Tools.SquareTag: return '⬜'; // U+2B1C WHITE LARGE SQUARE (plus grand que U+25A1)
+                case Tools.TriangleTag: return '△'; // U+25B3 WHITE UP-POINTING TRIANGLE (creux)
+                case Tools.CircleTag: return '⚪'; // U+26AA MEDIUM WHITE CIRCLE (souvent plus lisible que U+25CB)
+                // la croix : plusieurs options, le rendu dépend des polices installées -> peut varier d'un poste à l'autre
+                case Tools.CrossTag: return '✖'; // U+2716 HEAVY MULTIPLICATION X (généralement visible)
+
+
+
                 default: return '?';
             }
         }

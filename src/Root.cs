@@ -1306,9 +1306,29 @@ namespace gInk
                         case "HOTKEY_NTAG_HIDEWHITE":
                             Hotkey_NTag_HideWhite.Parse(sPara);
                             break;
+                    
+
                         case "HOTKEY_NTAG_HIDEBLACK":
                             Hotkey_NTag_HideBlack.Parse(sPara);
                             break;
+
+                        // ----- Ajout : hotkeys pour shape tags -----
+                        case "HOTKEY_LETTERTAG":
+                            Hotkey_LetterTag.Parse(sPara);
+                            break;
+                        case "HOTKEY_SQUARETAG":
+                            Hotkey_SquareTag.Parse(sPara);
+                            break;
+                        case "HOTKEY_TRIANGLETAG":
+                            Hotkey_TriangleTag.Parse(sPara);
+                            break;
+                        case "HOTKEY_CIRCLETAG":
+                            Hotkey_CircleTag.Parse(sPara);
+                            break;
+                        case "HOTKEY_CROSSTAG":
+                            Hotkey_CrossTag.Parse(sPara);
+                            break;
+
 
 
                         case "HOTKEY_EDIT":
@@ -2428,6 +2448,23 @@ namespace gInk
                             sPara = Hotkey_NTag_HideBlack.ToStringInvariant();
                             break;
 
+                        // ----- Ajout : hotkeys pour shape tags -----
+                        case "HOTKEY_LETTERTAG":
+                            sPara = Hotkey_LetterTag.ToStringInvariant();
+                            break;
+                        case "HOTKEY_SQUARETAG":
+                            sPara = Hotkey_SquareTag.ToStringInvariant();
+                            break;
+                        case "HOTKEY_TRIANGLETAG":
+                            sPara = Hotkey_TriangleTag.ToStringInvariant();
+                            break;
+                        case "HOTKEY_CIRCLETAG":
+                            sPara = Hotkey_CircleTag.ToStringInvariant();
+                            break;
+                        case "HOTKEY_CROSSTAG":
+                            sPara = Hotkey_CrossTag.ToStringInvariant();
+                            break;
+
                         case "HOTKEY_EDIT":
                             sPara = Hotkey_Edit.ToStringInvariant();
                             break;
@@ -3083,6 +3120,15 @@ namespace gInk
                 // hotkeys go
                 SetOrReplace(writelines, "HOTKEY_HANDFILLEDWHITE", Hotkey_HandFilledWhite.ToStringInvariant());
                 SetOrReplace(writelines, "HOTKEY_HANDFILLEDBLACK", Hotkey_HandFilledBlack.ToStringInvariant());
+
+
+                // ----- Ajout : persistance explicite des hotkeys des shape tags -----
+                SetOrReplace(writelines, "HOTKEY_LETTERTAG", Hotkey_LetterTag.ToStringInvariant());
+                SetOrReplace(writelines, "HOTKEY_SQUARETAG", Hotkey_SquareTag.ToStringInvariant());
+                SetOrReplace(writelines, "HOTKEY_TRIANGLETAG", Hotkey_TriangleTag.ToStringInvariant());
+                SetOrReplace(writelines, "HOTKEY_CIRCLETAG", Hotkey_CircleTag.ToStringInvariant());
+                SetOrReplace(writelines, "HOTKEY_CROSSTAG", Hotkey_CrossTag.ToStringInvariant());
+
             }
 
 
