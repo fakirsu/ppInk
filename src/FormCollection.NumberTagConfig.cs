@@ -235,6 +235,61 @@ namespace gInk
         //    Root.UponButtonsUpdate |= 0x2;
         //}
 
+        //private void NumberTagBtn_Click(object sender, EventArgs e)
+        //{
+        //    var b = sender as Button;
+        //    if (b == null) return;
+        //    var tup = b.Tag as Tuple<bool, bool>;
+        //    if (tup == null) return;
+
+        //    // Délègue l'action à un helper centralisé (utilisable par UI et hotkeys)
+        //    ApplyNumberTagVariant(tup.Item1, tup.Item2);
+        //}
+
+        // helper utilisé à la fois par les boutons et par les hotkeys
+        //public void ApplyNumberTagVariant(bool showNumbers, bool firstIsWhite)
+        //{
+        //    // Nettoyage encre (comportement précédent conservé)
+        //    try { btClear_Click(null, null); } catch { }
+
+        //    NumberTag_ShowNumber = showNumbers;
+        //    NumberTag_FirstIsWhite = firstIsWhite;
+        //    NumberTag_Reset();
+        //    Root.FilledSelected = NumberTag_FirstIsWhite ? Filling.WhiteFilled : Filling.BlackFilled;
+
+        //    SelectTool(Tools.NumberTag, Root.FilledSelected);
+        //    UpdateNumberTagButtonBorders();
+        //    InvalidateNumberTagButtons();
+        //    Root.UponButtonsUpdate |= 0x2;
+        //}
+
+        // helper utilisé à la fois par les boutons et par les hotkeys
+        // clearExisting = true => on force l'effacement (ex: hotkey spécifique ou Ctrl enfoncé)
+        public void ApplyNumberTagVariant(bool showNumbers, bool firstIsWhite, bool clearExisting = false)
+        {
+            // Ancien comportement (effacement systématique) SUPPRIMÉ.
+            // On ne nettoie que si demandé explicitement.
+            if (clearExisting)
+            {
+                try { btClear_Click(null, null); } catch { }
+            }
+
+            NumberTag_ShowNumber = showNumbers;
+            NumberTag_FirstIsWhite = firstIsWhite;
+            NumberTag_Reset();
+
+            Root.FilledSelected = NumberTag_FirstIsWhite ? Filling.WhiteFilled : Filling.BlackFilled;
+
+            SelectTool(Tools.NumberTag, Root.FilledSelected);
+
+            UpdateNumberTagButtonBorders();
+            InvalidateNumberTagButtons();
+
+            // Rafraîchissement interface / dessin
+            Root.UponButtonsUpdate |= 0x2;
+            Root.UponAllDrawingUpdate = true;
+        }
+
         private void NumberTagBtn_Click(object sender, EventArgs e)
         {
             var b = sender as Button;
@@ -242,27 +297,10 @@ namespace gInk
             var tup = b.Tag as Tuple<bool, bool>;
             if (tup == null) return;
 
-            // Délègue l'action à un helper centralisé (utilisable par UI et hotkeys)
-            ApplyNumberTagVariant(tup.Item1, tup.Item2);
+            // Exemple : si l’utilisateur maintient Ctrl en cliquant, on force le reset complet
+            bool forceClear = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+            ApplyNumberTagVariant(tup.Item1, tup.Item2, forceClear);
         }
-
-        // helper utilisé à la fois par les boutons et par les hotkeys
-        public void ApplyNumberTagVariant(bool showNumbers, bool firstIsWhite)
-        {
-            // Nettoyage encre (comportement précédent conservé)
-            try { btClear_Click(null, null); } catch { }
-
-            NumberTag_ShowNumber = showNumbers;
-            NumberTag_FirstIsWhite = firstIsWhite;
-            NumberTag_Reset();
-            Root.FilledSelected = NumberTag_FirstIsWhite ? Filling.WhiteFilled : Filling.BlackFilled;
-
-            SelectTool(Tools.NumberTag, Root.FilledSelected);
-            UpdateNumberTagButtonBorders();
-            InvalidateNumberTagButtons();
-            Root.UponButtonsUpdate |= 0x2;
-        }
-
 
         private void ClearNumberTagButtonBorders()
         {

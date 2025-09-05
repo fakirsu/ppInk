@@ -9602,14 +9602,27 @@ namespace gInk
                 }
                 LastArrowStatus = pressed;
 
+                //pressed = (GetKeyState(Root.Hotkey_Numb.Key) & 0x8000) == 0x8000;
+                //if (pressed && !LastNumbStatus && Root.Hotkey_Numb.ModifierMatch(control, alt, shift, win))
+                //{
+                //    MouseTimeDown = DateTime.Now;
+                //    btTool_Click(btNumb, null);
+                //    FromHandToLineOnShift = false;
+                //}
+                //LastNumbStatus = pressed;
+
+                // Hotkey NUMB : ne lance plus CLEAR, seulement sélection de l'outil NumberTag
                 pressed = (GetKeyState(Root.Hotkey_Numb.Key) & 0x8000) == 0x8000;
-                if (pressed && !LastNumbStatus && Root.Hotkey_Numb.ModifierMatch(control, alt, shift, win))
+                if (pressed && Root.Hotkey_Numb.ModifierMatch(control, alt, shift, win))
                 {
-                    MouseTimeDown = DateTime.Now;
-                    btTool_Click(btNumb, null);
-                    FromHandToLineOnShift = false;
+                    // Front montant géré ailleurs si nécessaire ; ici on sélectionne simplement l'outil
+                    SelectTool(Tools.NumberTag);
                 }
                 LastNumbStatus = pressed;
+
+
+
+
 
                 // --- NEW : gestion hotkeys spécifiques NumberTag (4 variantes)
                 pressed = (GetKeyState(Root.Hotkey_NTag_ShowWhite.Key) & 0x8000) == 0x8000;
@@ -10766,6 +10779,36 @@ namespace gInk
             //    else
             //        i = Tools.NumberTag;
             //}
+            //else if (((Button)sender).Name.Contains("Numb"))
+            //{
+            //    CustomizeAndOpenSubTools(-1, "SubToolsNumb", new string[] { "tool_numb_fillW", "tool_numb_fillB" }, Root.Local.OvalSubToolsHints,
+            //         new Func<int, bool>[] {
+            //                                                 ii => { SelectTool(Tools.NumberTag,Filling.WhiteFilled); return true; },
+            //                                                 ii => { SelectTool(Tools.NumberTag,Filling.BlackFilled ); return true; } });
+
+            //    if (sender != null && tsp.TotalSeconds > Root.LongClickTime)
+            //    {
+            //        TagFontBtn_Modify();
+            //        return;
+            //    }
+            //    else
+            //    {
+            //        // A) Effacer l'écran comme le bouton ERASE
+            //        // appel direct à la routine de clear (comportement non long-click)
+            //        //btClear_Click(null, null);
+
+            //        // B) Remise à l'initial du compteur de numéro
+            //        //Root.TagNumbering = 1;
+            //        NumberTag_Reset();
+
+            //        // C) Repositionner le remplissage sur blanc pour que la 1ère pastille soit blanche
+            //        //Root.FilledSelected = Filling.WhiteFilled;
+            //        Root.FilledSelected = NumberTag_FirstIsWhite ? Filling.WhiteFilled : Filling.BlackFilled;
+
+            //        i = Tools.NumberTag;
+            //    }
+            //}
+
             else if (((Button)sender).Name.Contains("Numb"))
             {
                 CustomizeAndOpenSubTools(-1, "SubToolsNumb", new string[] { "tool_numb_fillW", "tool_numb_fillB" }, Root.Local.OvalSubToolsHints,
@@ -10780,21 +10823,16 @@ namespace gInk
                 }
                 else
                 {
-                    // A) Effacer l'écran comme le bouton ERASE
-                    // appel direct à la routine de clear (comportement non long-click)
-                    btClear_Click(null, null);
-
-                    // B) Remise à l'initial du compteur de numéro
-                    //Root.TagNumbering = 1;
+                    // Ne plus exécuter CLEAR ici ; on se contente de préparer l'outil NumberTag.
+                    // Réinitialiser le compteur et positionner le remplissage initial (white/black)
                     NumberTag_Reset();
 
-                    // C) Repositionner le remplissage sur blanc pour que la 1ère pastille soit blanche
-                    //Root.FilledSelected = Filling.WhiteFilled;
                     Root.FilledSelected = NumberTag_FirstIsWhite ? Filling.WhiteFilled : Filling.BlackFilled;
 
                     i = Tools.NumberTag;
                 }
             }
+
 
             // ######################## goInk START #########################
 
