@@ -8994,9 +8994,21 @@ namespace gInk
             bool shift = ((short)(GetKeyState(VK_LSHIFT) | GetKeyState(VK_RSHIFT)) & 0x8000) == 0x8000;
             bool win = ((short)(GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000) == 0x8000;
 
+            //pressed = (GetKeyState(Root.Hotkey_LetterTag.Key) & 0x8000) == 0x8000;
+            //if (pressed && Root.Hotkey_LetterTag.ModifierMatch(control, alt, shift, win))
+            //    SelectTool(Tools.LetterTag);
+
+            // Hotkey LETTER : reset du compteur au front montant puis sélection de l'outil
             pressed = (GetKeyState(Root.Hotkey_LetterTag.Key) & 0x8000) == 0x8000;
             if (pressed && Root.Hotkey_LetterTag.ModifierMatch(control, alt, shift, win))
+            {
+                // reset au front montant pour repartir à "A" une seule fois par appui
+                if (!LastLetterStatus)
+                    LetterTag_Counter = 0;
+
                 SelectTool(Tools.LetterTag);
+            }
+            LastLetterStatus = pressed;
 
             pressed = (GetKeyState(Root.Hotkey_SquareTag.Key) & 0x8000) == 0x8000;
             if (pressed && Root.Hotkey_SquareTag.ModifierMatch(control, alt, shift, win))
