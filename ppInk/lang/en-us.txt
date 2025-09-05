@@ -24,6 +24,11 @@ GoOptionsHandStrokeWidth = "Area outline thickness"
 OptionsGoFillOpacity = "Fill opacity (%) :"
 OptionsGoStrokeOpacity = "Stroke opacity (%) :"
 OptionsGoStrokeWidth = "Stroke width (HiMetric) :"
+ButtonNameLetterTag = "Letter"
+ButtonNameSquareTag = "Square"
+ButtonNameTriangleTag = "Triangle"
+ButtonNameCircleTag = "Circle"
+ButtonNameCrossTag = "Cross"
 # -> End of entries for Go game
 
 ButtonNamePen0 = "Pen 0"

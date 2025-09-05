@@ -47,9 +47,15 @@ namespace gInk
         public const int HandFilledWhite = 14;
         public const int HandFilledBlack = 15;
         public const int Poly = 21; public const int ClipArt = 22; public const int PatternLine = 23;
-        public static readonly int[] All = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 21, 22, 23 };
+        public const int LetterTag = 24;     // choisir valeurs libres
+        public const int SquareTag = 25;
+        public const int TriangleTag = 26;
+        public const int CircleTag = 27;
+        public const int CrossTag = 28;
+        // Optionnel : étendre les tableaux Names / All si nécessaires à d’autres fonctionnalités
+        public static readonly int[] All = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 21, 22, 23, 24, 25, 26, 27, 28}; 
         public static readonly string[] Names = { "Hand", "Line", "Rect", "Oval", "StartArrow", "EndArrow", "Numbering", "Edit", "Text Left Aligned", "Text Right Aligned",
-                                                  "Move", "Copy", "Resize", "Rotate", "Hand Filled White", "Hand Filled Black", "PolyLine", "ClipArt", "PatternOnStroke"};
+                                                  "Move", "Copy", "Resize", "Rotate", "Hand Filled White", "Hand Filled Black", "PolyLine", "ClipArt", "PatternOnStroke", "Letter", "Square", "Triangle", "Circle", "Cross"};
     }
 
     public class Filling {
@@ -321,6 +327,12 @@ namespace gInk
         public Hotkey Hotkey_NTag_ShowBlack = new Hotkey();
         public Hotkey Hotkey_NTag_HideWhite = new Hotkey();
         public Hotkey Hotkey_NTag_HideBlack = new Hotkey();
+
+        public Hotkey Hotkey_LetterTag = new Hotkey();
+        public Hotkey Hotkey_SquareTag = new Hotkey();
+        public Hotkey Hotkey_TriangleTag = new Hotkey();
+        public Hotkey Hotkey_CircleTag = new Hotkey();
+        public Hotkey Hotkey_CrossTag = new Hotkey();
 
 
         public Hotkey Hotkey_Text = new Hotkey();

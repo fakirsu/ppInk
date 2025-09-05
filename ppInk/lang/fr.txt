@@ -24,6 +24,11 @@ GoOptionsHandStrokeWidth = "Épaisseur contour des zones"
 OptionsGoFillOpacity = "Opacité remplissage (%) :"
 OptionsGoStrokeOpacity = "Opacité contour (%) :"
 OptionsGoStrokeWidth = "Épaisseur contour (HiMetric) :"
+ButtonNameLetterTag = "Lettre"
+ButtonNameSquareTag = "Carré"
+ButtonNameTriangleTag = "Triangle"
+ButtonNameCircleTag = "Cercle"
+ButtonNameCrossTag = "Croix"
 # -> Fin des entrées pour jeu de go ###
 
 ButtonNamePen0 = "Stylo 0"

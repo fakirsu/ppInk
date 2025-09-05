@@ -1,22 +1,23 @@
+using Microsoft.Ink;
 using System;
-using System.Linq;
-using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Runtime.InteropServices;
-using System.Threading;
-using Microsoft.Ink;
-using System.Net.WebSockets;
-using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Text;
-using System.Security.Cryptography;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Globalization;
-using System.Drawing.Drawing2D;
+using System.IO;
+using System.Linq;
+using System.Net.WebSockets;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+//using System.Windows.Controls;
+using System.Windows.Forms;
 
 namespace gInk
 {
@@ -119,6 +120,11 @@ namespace gInk
 
         public bool SnapWithoutClosing = false;
 
+
+
+
+
+
         // we have local variables for font to have an session limited default font characteristics
         public int TextSize = 25;
         public string TextFont = "Arial";
@@ -169,6 +175,96 @@ namespace gInk
         public int PageMax = 0;
 
         public static double Measure2Scale = Root.Measure2Scale;
+
+        // === NOUVEAUX OUTILS TAGS ===
+
+        // Compteur de lettres (A,B,...Z,AA,AB...)
+        private int LetterTag_Counter = 0;
+
+        private string GetNextLetterTag()
+        {
+            int n = LetterTag_Counter++;
+            string s = "";
+            do
+            {
+                int r = n % 26;
+                s = (char)('A' + r) + s;
+                n = n / 26 - 1;
+            } while (n >= 0);
+            return s;
+        }
+
+        private char ShapeGlyphForTool(int tool)
+        {
+            switch (tool)
+            {
+                case Tools.SquareTag: return '■';
+                case Tools.TriangleTag: return '▲';
+                case Tools.CircleTag: return '●';
+                case Tools.CrossTag: return '✖';
+                default: return '?';
+            }
+        }
+
+        private bool IsFixedShapeTool(int tool)
+        {
+            return tool == Tools.SquareTag ||
+                   tool == Tools.TriangleTag ||
+                   tool == Tools.CircleTag ||
+                   tool == Tools.CrossTag;
+        }
+
+        private bool IsNewTagTool(int tool)
+        {
+            return tool == Tools.LetterTag || IsFixedShapeTool(tool);
+        }
+
+        // Création stroke : disque jaune + texte
+        private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt)
+        {
+            // Taille : réutilise TagSize (sinon valeur fixe)
+            int radius = Math.Max(10, (int)Math.Round(TagSize * 0.8));
+            int x0 = xCenter - radius / 2;
+            int y0 = yCenter - radius / 2;
+            int x1 = xCenter + radius / 2;
+            int y1 = yCenter + radius / 2;
+
+            // 1) Disque jaune semi-transparent
+            Stroke disc = AddEllipseStroke(x0, y0, x1, y1, Filling.PenColorFilled);
+            if (disc != null)
+            {
+                disc.DrawingAttributes.Color = System.Drawing.Color.FromArgb(128, 255, 255, 0); // jaune 50%
+                disc.DrawingAttributes.Transparency = 255 - 128; // (optionnel: déjà 128 dans ARGB)
+                try { setStrokeProperties(ref disc, Filling.PenColorFilled); } catch { }
+            }
+
+            // 2) Texte noir centré
+            if (!string.IsNullOrEmpty(txt))
+            {
+                Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+                if (stTxt != null)
+                {
+                    stTxt.DrawingAttributes.Color = System.Drawing.Color.Black;
+                    try
+                    {
+                        stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                        ComputeTextBoxSize(ref stTxt);
+                    }
+                    catch { }
+                }
+            }
+            return disc;
+        }
+
+        // Gestion du clic sur les nouveaux boutons
+        private void NewTagTool_Click(object sender, EventArgs e)
+        {
+            if (sender == btLetter) SelectTool(Tools.LetterTag);
+            else if (sender == btSquare) SelectTool(Tools.SquareTag);
+            else if (sender == btTriangle) SelectTool(Tools.TriangleTag);
+            else if (sender == btCircle) SelectTool(Tools.CircleTag);
+            else if (sender == btCross) SelectTool(Tools.CrossTag);
+        }
 
 
 
@@ -1209,6 +1305,15 @@ namespace gInk
                 prev = btHandWhite;
 
 
+                this.toolTip.SetToolTip(this.btLetter, Root.Local.ButtonNameLetterTag);
+                this.toolTip.SetToolTip(this.btSquare, Root.Local.ButtonNameSquareTag);
+                this.toolTip.SetToolTip(this.btTriangle, Root.Local.ButtonNameTriangleTag);
+                this.toolTip.SetToolTip(this.btCircle, Root.Local.ButtonNameCircleTag);
+                this.toolTip.SetToolTip(this.btCross, Root.Local.ButtonNameCrossTag);
+
+
+
+
                 btLine.Height = dim1s;
                 btLine.Width = dim1s;
                 btLine.Visible = true;
@@ -1332,6 +1437,73 @@ namespace gInk
 
                     btText.Top = maxBottom + dim3;
                 }
+
+
+                // --- POSITION DES NOUVEAUX OUTILS TAGS ---
+                btLetter.Width = dim1s; btLetter.Height = dim1s; btLetter.Visible = true;
+                SetButtonPosition(btText, btLetter, dim3);
+
+                btSquare.Width = dim1s; btSquare.Height = dim1s; btSquare.Visible = true;
+                SetSmallButtonNext(btLetter, btSquare, dim2s);
+
+                btTriangle.Width = dim1s; btTriangle.Height = dim1s; btTriangle.Visible = true;
+                SetButtonPosition(btLetter, btTriangle, dim3);
+
+                btCircle.Width = dim1s; btCircle.Height = dim1s; btCircle.Visible = true;
+                SetSmallButtonNext(btTriangle, btCircle, dim2s);
+
+                btCross.Width = dim1s; btCross.Height = dim1s; btCross.Visible = true;
+                SetButtonPosition(btTriangle, btCross, dim3);
+                // --- FIN NOUVEAUX OUTILS ---
+
+
+                // --- Début : positionnement des nouveaux outils Go (lettre/carré/triangle/cercle/croix)
+                // Coller juste après le positionnement de btNumb / btText dans Initialize()
+                try
+                {
+                    int spacing = 6; // ajuster si nécessaire
+                    int bw = (btNumb != null) ? btNumb.Width : 46;
+                    int bh = (btNumb != null) ? btNumb.Height : 46;
+                    int top = (btNumb != null) ? btNumb.Top : 3;
+                    int left = (btNumb != null) ? btNumb.Right + spacing : (btText != null ? btText.Left - (bw + spacing) : 580);
+
+                    // Lettre
+                    btLetter.Size = new Size(bw, bh);
+                    btLetter.Left = left;
+                    btLetter.Top = top;
+                    btLetter.Visible = true;
+                    toolTip.SetToolTip(btLetter, Root.Local?.ButtonNameLetterTag ?? "Letter");
+
+                    // Carré
+                    btSquare.Size = new Size(bw, bh);
+                    btSquare.Left = btLetter.Right + spacing;
+                    btSquare.Top = top;
+                    btSquare.Visible = true;
+                    toolTip.SetToolTip(btSquare, Root.Local?.ButtonNameSquareTag ?? "Square");
+
+                    // Triangle
+                    btTriangle.Size = new Size(bw, bh);
+                    btTriangle.Left = btSquare.Right + spacing;
+                    btTriangle.Top = top;
+                    btTriangle.Visible = true;
+                    toolTip.SetToolTip(btTriangle, Root.Local?.ButtonNameTriangleTag ?? "Triangle");
+
+                    // Cercle
+                    btCircle.Size = new Size(bw, bh);
+                    btCircle.Left = btTriangle.Right + spacing;
+                    btCircle.Top = top;
+                    btCircle.Visible = true;
+                    toolTip.SetToolTip(btCircle, Root.Local?.ButtonNameCircleTag ?? "Circle");
+
+                    // Croix
+                    btCross.Size = new Size(bw, bh);
+                    btCross.Left = btCircle.Right + spacing;
+                    btCross.Top = top;
+                    btCross.Visible = true;
+                    toolTip.SetToolTip(btCross, Root.Local?.ButtonNameCrossTag ?? "Cross");
+                }
+                catch { }
+                // --- Fin : positionnement des nouveaux outils Go ---
 
 
 
@@ -4070,7 +4242,19 @@ namespace gInk
 
 
 
+                else if (IsNewTagTool(Root.ToolSelected))
+                {
+                    // Démarre sur relâchement (même logique que NumberTag)
+                    // Coordonnées : Root.CursorX / Root.CursorY
+                    string txt;
+                    if (Root.ToolSelected == Tools.LetterTag)
+                        txt = GetNextLetterTag();
+                    else
+                        txt = ShapeGlyphForTool(Root.ToolSelected).ToString();
 
+                    AddShapeTagStroke(Root.CursorX, Root.CursorY, txt);
+                    SaveUndoStrokes();
+                }
 
 
 
@@ -5681,6 +5865,12 @@ namespace gInk
                 NumberTag_Reset(); // reclique sur l'outil => recommence à 1
             
 
+
+
+
+
+
+
             // Si la valeur Outside a été utilisée, conserver le comportement initial (fallback -> White)
             if (Root.FilledSelected == Filling.Outside)
                     Root.FilledSelected = Filling.WhiteFilled;
@@ -5701,6 +5891,22 @@ namespace gInk
             }
 
             // ############# goInk END ##############
+
+            // Outils spéciaux (fond jaune, pas d’alternance)
+            if (IsNewTagTool(tool))
+            {
+                Root.ToolSelected = tool;
+                // on force FilledSelected sur Empty (non utilisé ici)
+                Root.FilledSelected = Filling.Empty;
+                // retour visuel simple (bordure)
+                btLetter.FlatAppearance.BorderSize = (tool == Tools.LetterTag) ? 2 : 0;
+                btSquare.FlatAppearance.BorderSize = (tool == Tools.SquareTag) ? 2 : 0;
+                btTriangle.FlatAppearance.BorderSize = (tool == Tools.TriangleTag) ? 2 : 0;
+                btCircle.FlatAppearance.BorderSize = (tool == Tools.CircleTag) ? 2 : 0;
+                btCross.FlatAppearance.BorderSize = (tool == Tools.CrossTag) ? 2 : 0;
+                Root.UponButtonsUpdate |= 0x2;
+                return;
+            }
 
 
             else if (tool == Tools.Edit)
@@ -6521,6 +6727,13 @@ namespace gInk
         bool LastHandStatus = false;
         bool LastHandFilledWhiteStatus = false;
         bool LastHandFilledBlackStatus = false;
+
+        bool LastLetterStatus = false;
+        bool LastSquareStatus = false;
+        bool LastTriangleStatus = false;
+        bool LastCircleStatus = false;
+        bool LastCrossStatus = false;
+
         bool LastLineStatus = false;
         bool LastRectStatus = false;
         bool LastOvalStatus = false;
@@ -7105,7 +7318,59 @@ namespace gInk
             if (Root.gpPenWidthVisible != gpPenWidth.Visible)
                 gpPenWidth.Visible = Root.gpPenWidthVisible;
 
+            //            //bool pressed;
+            //            // Nouveaux hotkeys Tag formes / lettres
+            //            bool pressed;
+
+            //// Insérer juste avant le bloc qui teste Root.Hotkey_LetterTag / Root.Hotkey_SquareTag etc.
+            //// (Ce code calcule control/alt/shift/win localement pour que ModifierMatch() puisse être appelé)
+            //bool control = ((short)(GetKeyState(VK_LCONTROL) | GetKeyState(VK_RCONTROL)) & 0x8000) == 0x8000;
+            //            int alt = Root.AltAsOneCommand == 2 ? -1 : (AltKeyPressed() ? 1 : 0);
+            //            bool shift = ((short)(GetKeyState(VK_LSHIFT) | GetKeyState(VK_RSHIFT)) & 0x8000) == 0x8000;
+            //            bool win = ((short)(GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000) == 0x8000;
+
+            //// Nouveaux hotkeys Tag formes / lettres
+            //bool pressed;
+
+            //// Calcul local des modificateurs pour ModifierMatch(control, alt, shift, win)
+            //bool control = ((short)(GetKeyState(VK_LCONTROL) | GetKeyState(VK_RCONTROL)) & 0x8000) == 0x8000;
+            //int alt = Root.AltAsOneCommand == 2 ? -1 : (AltKeyPressed() ? 1 : 0);
+            //bool shift = ((short)(GetKeyState(VK_LSHIFT) | GetKeyState(VK_RSHIFT)) & 0x8000) == 0x8000;
+            //bool win = ((short)(GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000) == 0x8000;
+            // Reuse modifiers (control, alt, shift, win) previously computed at the top of tiSlide_Tick
+
+            // Nouveaux hotkeys Tag formes / lettres
+            // Déclaration des modificateurs et de la variable 'pressed' AVANT leur usage
             bool pressed;
+            bool control = ((short)(GetKeyState(VK_LCONTROL) | GetKeyState(VK_RCONTROL)) & 0x8000) == 0x8000;
+            int alt = Root.AltAsOneCommand == 2 ? -1 : (AltKeyPressed() ? 1 : 0);
+            bool shift = ((short)(GetKeyState(VK_LSHIFT) | GetKeyState(VK_RSHIFT)) & 0x8000) == 0x8000;
+            bool win = ((short)(GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000) == 0x8000;
+
+            pressed = (GetKeyState(Root.Hotkey_LetterTag.Key) & 0x8000) == 0x8000;
+            if (pressed && Root.Hotkey_LetterTag.ModifierMatch(control, alt, shift, win))
+                SelectTool(Tools.LetterTag);
+
+            pressed = (GetKeyState(Root.Hotkey_SquareTag.Key) & 0x8000) == 0x8000;
+            if (pressed && Root.Hotkey_SquareTag.ModifierMatch(control, alt, shift, win))
+                SelectTool(Tools.SquareTag);
+
+            pressed = (GetKeyState(Root.Hotkey_TriangleTag.Key) & 0x8000) == 0x8000;
+            if (pressed && Root.Hotkey_TriangleTag.ModifierMatch(control, alt, shift, win))
+                SelectTool(Tools.TriangleTag);
+
+            pressed = (GetKeyState(Root.Hotkey_CircleTag.Key) & 0x8000) == 0x8000;
+            if (pressed && Root.Hotkey_CircleTag.ModifierMatch(control, alt, shift, win))
+                SelectTool(Tools.CircleTag);
+
+            pressed = (GetKeyState(Root.Hotkey_CrossTag.Key) & 0x8000) == 0x8000;
+            if (pressed && Root.Hotkey_CrossTag.ModifierMatch(control, alt, shift, win))
+                SelectTool(Tools.CrossTag);
+
+
+
+
+
 
             if (!Root.PointerMode)
             {
@@ -7302,30 +7567,124 @@ namespace gInk
                 }
             */
 
+            //if (!Root.FingerInAction)
+            //{
+            //    bool control = ((short)(GetKeyState(VK_LCONTROL) | GetKeyState(VK_RCONTROL)) & 0x8000) == 0x8000;
+            //    //bool alt = (((short)(GetKeyState(VK_LMENU) | GetKeyState(VK_RMENU)) & 0x8000) == 0x8000);
+            //    int alt = Root.AltAsOneCommand == 2 ? -1 : (AltKeyPressed() ? 1 : 0);
+            //    bool shift = ((short)(GetKeyState(VK_LSHIFT) | GetKeyState(VK_RSHIFT)) & 0x8000) == 0x8000;
+            //    bool win = ((short)(GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000) == 0x8000;
+
+            //    bool recomputePens;
+
+            //    if (Root.PensExtraSet && ((shift || control) != oldShiftPensExtra))
+            //    {
+            //        recomputePens = true;
+            //        //Console.Write("!!!!! {0} {1} {2} ", (shift || control), FirstPenDisplayed != 0, ((shift || control) ^ (FirstPenDisplayed = 0)));
+            //        if(oldShiftPensExtra != null)
+            //            FirstPenDisplayed = (FirstPenDisplayed == 0)? Root.MaxDisplayedPens : 0;
+            //            while (!Root.PenEnabled[FirstPenDisplayed])
+            //                FirstPenDisplayed++;
+            //        //Console.WriteLine(" !! {0}", FirstPenDisplayed);
+            //    }
+            //    else
+            //        recomputePens = false;
+            //    oldShiftPensExtra = (shift || control);
+
+
+            //    if (recomputePens)
+            //        recomputePensSet(FirstPenDisplayed, Root.CurrentPen);
+
+            //    if (Root.Hotkey_Pens[0].ConflictWith(Root.Hotkey_Pens[1]))
+            //    { // same hotkey for pen 0 and pen 1 : we have to rotate through pens
+            //        pressed = ((GetKeyState(Root.Hotkey_Pens[0].Key) & 0x8000) == 0x8000) && Root.Hotkey_Pens[0].ModifierMatch(control, alt, shift, win);
+            //        if (pressed && !LastPenStatus[0])
+            //        {
+            //            int p = LastPenSelected + 1;
+            //            if (p >= Root.MaxPenCount)
+            //                p = 0;
+            //            while (!Root.PenEnabled[p])
+            //            {
+            //                p += 1;
+            //                if (p >= Root.MaxPenCount)
+            //                    p = 0;
+            //            }
+            //            //SelectPen(p);
+            //            MouseTimeDown = DateTime.Now;
+            //            LongHkPress = DateTime.Now.AddSeconds(Root.LongHKPressDelay);
+            //            btColor_Click(btPen[p], null);
+            //        }
+            //        if (LastPenStatus[0] && !pressed)
+            //            LongHkPress = DateTime.Now.AddYears(1);
+            //        if (LastPenStatus[0] && pressed && DateTime.Now.CompareTo(LongHkPress) > 0)
+            //        {
+            //            LongHkPress = DateTime.Now.AddYears(1);
+            //            btColor_LongClick(btPen[Root.CurrentPen]);
+            //        }
+            //        LastPenStatus[0] = pressed;
+            //    }
+            //    else
+            //    { // standard behavior
+            //        for (int p = 0; p < Root.MaxDisplayedPens; p++)
+            //        {
+            //            pressed = ((GetKeyState(Root.Hotkey_Pens[p].Key) & 0x8000) == 0x8000) && Root.Hotkey_Pens[p].ModifierMatch(control && !Root.PensExtraSet, alt, shift && !Root.PensExtraSet, win);
+            //            if (pressed && !LastPenStatus[p])
+            //            {
+            //                //SelectPen(p);
+            //                MouseTimeDown = DateTime.Now;
+            //                LongHkPress = DateTime.Now.AddSeconds(Root.LongHKPressDelay);
+            //                btColor_Click(btPen[p], null); // behavior with ctrl or shift will be performed through FirstPenDisplayed in btColor
+            //            }
+            //            if (LastPenStatus[p] && !pressed)
+            //                LongHkPress = DateTime.Now.AddYears(1);
+            //            if (LastPenStatus[p] && pressed && DateTime.Now.CompareTo(LongHkPress) > 0)
+            //            {
+            //                LongHkPress = DateTime.Now.AddYears(1);
+            //                btColor_LongClick(btPen[p]);
+            //            }
+            //            LastPenStatus[p] = pressed;
+            //        }
+            //    }
+
+            //    pressed = (GetKeyState(Root.Hotkey_FadingToggle.Key) & 0x8000) == 0x8000;
+            //    if (pressed && !LastFadingToggle && Root.Hotkey_FadingToggle.ModifierMatch(control, alt, shift, win))
+            //    {
+            //        FadingToggle(Root.CurrentPen);
+            //    }
+            //    LastFadingToggle = pressed;
+
+            //    pressed = (GetKeyState(Root.Hotkey_Eraser.Key) & 0x8000) == 0x8000;
+            //    if (pressed && !LastEraserStatus && Root.Hotkey_Eraser.ModifierMatch(control, alt, shift, win))
+            //    {
+            //        SelectPen(-1);
+            //        FromHandToLineOnShift = false;
+            //    }
+            //    LastEraserStatus = pressed;
             if (!Root.FingerInAction)
             {
-                bool control = ((short)(GetKeyState(VK_LCONTROL) | GetKeyState(VK_RCONTROL)) & 0x8000) == 0x8000;
-                //bool alt = (((short)(GetKeyState(VK_LMENU) | GetKeyState(VK_RMENU)) & 0x8000) == 0x8000);
-                int alt = Root.AltAsOneCommand == 2 ? -1 : (AltKeyPressed() ? 1 : 0);
-                bool shift = ((short)(GetKeyState(VK_LSHIFT) | GetKeyState(VK_RSHIFT)) & 0x8000) == 0x8000;
-                bool win = ((short)(GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000) == 0x8000;
+                // Réutiliser les variables de modificateurs déjà déclarées plus haut dans tiSlide_Tick.
+                // On n'effectue plus une nouvelle déclaration (évite CS0136).
+                control = ((short)(GetKeyState(VK_LCONTROL) | GetKeyState(VK_RCONTROL)) & 0x8000) == 0x8000;
+                alt = Root.AltAsOneCommand == 2 ? -1 : (AltKeyPressed() ? 1 : 0);
+                shift = ((short)(GetKeyState(VK_LSHIFT) | GetKeyState(VK_RSHIFT)) & 0x8000) == 0x8000;
+                win = ((short)(GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000) == 0x8000;
 
                 bool recomputePens;
-                
+
                 if (Root.PensExtraSet && ((shift || control) != oldShiftPensExtra))
                 {
                     recomputePens = true;
                     //Console.Write("!!!!! {0} {1} {2} ", (shift || control), FirstPenDisplayed != 0, ((shift || control) ^ (FirstPenDisplayed = 0)));
-                    if(oldShiftPensExtra != null)
-                        FirstPenDisplayed = (FirstPenDisplayed == 0)? Root.MaxDisplayedPens : 0;
-                        while (!Root.PenEnabled[FirstPenDisplayed])
-                            FirstPenDisplayed++;
+                    if (oldShiftPensExtra != null)
+                        FirstPenDisplayed = (FirstPenDisplayed == 0) ? Root.MaxDisplayedPens : 0;
+                    while (!Root.PenEnabled[FirstPenDisplayed])
+                        FirstPenDisplayed++;
                     //Console.WriteLine(" !! {0}", FirstPenDisplayed);
                 }
                 else
                     recomputePens = false;
                 oldShiftPensExtra = (shift || control);
-            
+
 
                 if (recomputePens)
                     recomputePensSet(FirstPenDisplayed, Root.CurrentPen);
@@ -7395,6 +7754,8 @@ namespace gInk
                     FromHandToLineOnShift = false;
                 }
                 LastEraserStatus = pressed;
+
+                // ... suite inchangée ...
 
                 pressed = (GetKeyState(Root.Hotkey_InkVisible.Key) & 0x8000) == 0x8000;
                 if (pressed && !LastVisibleStatus && Root.Hotkey_InkVisible.ModifierMatch(control, alt, shift, win))
@@ -7829,6 +8190,8 @@ namespace gInk
 
                 //Console.WriteLine("LongHkPress" + LongHkPress.ToBinary().ToString());
             }
+
+
 
             if (Root.Snapping < 0)
                 Root.Snapping++;

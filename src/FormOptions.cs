@@ -47,7 +47,17 @@ namespace gInk
         private HotkeyInputBox hiHK_HideWhite;
         private HotkeyInputBox hiHK_HideBlack;
 
-
+        // Ajout : champs Hotkeys pour les nouveaux tags GO
+        private Label lblHK_LetterTag;
+        private Label lblHK_SquareTag;
+        private Label lblHK_TriangleTag;
+        private Label lblHK_CircleTag;
+        private Label lblHK_CrossTag;
+        private HotkeyInputBox hiHK_LetterTag;
+        private HotkeyInputBox hiHK_SquareTag;
+        private HotkeyInputBox hiHK_TriangleTag;
+        private HotkeyInputBox hiHK_CircleTag;
+        private HotkeyInputBox hiHK_CrossTag;
 
 
         private Label lblTagCirclePerc;
@@ -117,6 +127,10 @@ namespace gInk
             lblHK_HandBlack = new Label { Left = baseLeft, Top = yExtra, AutoSize = true, Text = "Main — Rempli noir (hotkey)" };
             hiHK_HandBlack = new HotkeyInputBox { Left = col2, Top = yExtra - 3, Width = 180 };
 
+
+
+
+
             hiHK_HandWhite.OnHotkeyChanged += (s, e) =>
             {
                 try { Root.Hotkey_HandFilledWhite = hiHK_HandWhite.Hotkey; } catch { }
@@ -132,6 +146,53 @@ namespace gInk
                 try { Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { }
                 hi_OnHotkeyChanged(s, e);
             };
+
+
+
+            // --- Création contrôles Hotkey nouveaux tags Go (à insérer dans le constructeur, après hiHK_HandBlack)
+            int y = lblHK_HandBlack.Bottom + 12;
+            int col = 260;
+            int lh = 28;
+
+            lblHK_LetterTag = new Label { Left = 12, Top = y, AutoSize = true, Text = "Tag Lettre" };
+            hiHK_LetterTag = new HotkeyInputBox { Left = col, Top = y - 3, Width = 180 };
+            y += lh;
+
+            lblHK_SquareTag = new Label { Left = 12, Top = y, AutoSize = true, Text = "Tag Carré" };
+            hiHK_SquareTag = new HotkeyInputBox { Left = col, Top = y - 3, Width = 180 };
+            y += lh;
+
+            lblHK_TriangleTag = new Label { Left = 12, Top = y, AutoSize = true, Text = "Tag Triangle" };
+            hiHK_TriangleTag = new HotkeyInputBox { Left = col, Top = y - 3, Width = 180 };
+            y += lh;
+
+            lblHK_CircleTag = new Label { Left = 12, Top = y, AutoSize = true, Text = "Tag Cercle" };
+            hiHK_CircleTag = new HotkeyInputBox { Left = col, Top = y - 3, Width = 180 };
+            y += lh;
+
+            lblHK_CrossTag = new Label { Left = 12, Top = y, AutoSize = true, Text = "Tag Croix" };
+            hiHK_CrossTag = new HotkeyInputBox { Left = col, Top = y - 3, Width = 180 };
+            y += lh;
+
+            // hookup events
+            hiHK_LetterTag.OnHotkeyChanged += (s, e) => { try { Root.Hotkey_LetterTag = hiHK_LetterTag.Hotkey; Root.SetHotkey(); Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { } hi_OnHotkeyChanged(s, e); };
+            hiHK_SquareTag.OnHotkeyChanged += (s, e) => { try { Root.Hotkey_SquareTag = hiHK_SquareTag.Hotkey; Root.SetHotkey(); Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { } hi_OnHotkeyChanged(s, e); };
+            hiHK_TriangleTag.OnHotkeyChanged += (s, e) => { try { Root.Hotkey_TriangleTag = hiHK_TriangleTag.Hotkey; Root.SetHotkey(); Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { } hi_OnHotkeyChanged(s, e); };
+            hiHK_CircleTag.OnHotkeyChanged += (s, e) => { try { Root.Hotkey_CircleTag = hiHK_CircleTag.Hotkey; Root.SetHotkey(); Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { } hi_OnHotkeyChanged(s, e); };
+            hiHK_CrossTag.OnHotkeyChanged += (s, e) => { try { Root.Hotkey_CrossTag = hiHK_CrossTag.Hotkey; Root.SetHotkey(); Root.SaveOptions(Program.RunningFolder + "hotkeys.ini"); } catch { } hi_OnHotkeyChanged(s, e); };
+
+            // add to tab
+            tabPageGoHotkeys.Controls.AddRange(new Control[]
+            {
+    lblHK_LetterTag, hiHK_LetterTag,
+    lblHK_SquareTag, hiHK_SquareTag,
+    lblHK_TriangleTag, hiHK_TriangleTag,
+    lblHK_CircleTag, hiHK_CircleTag,
+    lblHK_CrossTag, hiHK_CrossTag
+            });
+
+
+
 
             // après avoir créé tous les HotkeyInputBox (hiHK_ShowWhite, hiHK_ShowBlack, hiHK_HideWhite, hiHK_HideBlack, hiHK_HandWhite, hiHK_HandBlack)
             tabPageGoHotkeys.Controls.AddRange(new Control[]
@@ -710,6 +771,13 @@ namespace gInk
             hiHK_HandWhite.Hotkey = Root.Hotkey_HandFilledWhite;
             hiHK_HandBlack.Hotkey = Root.Hotkey_HandFilledBlack;
 
+            // ajouter dans AssignHotkeys()
+            hiHK_LetterTag.Hotkey = Root.Hotkey_LetterTag;
+            hiHK_SquareTag.Hotkey = Root.Hotkey_SquareTag;
+            hiHK_TriangleTag.Hotkey = Root.Hotkey_TriangleTag;
+            hiHK_CircleTag.Hotkey = Root.Hotkey_CircleTag;
+            hiHK_CrossTag.Hotkey = Root.Hotkey_CrossTag;
+
             HiToolText.Hotkey = Root.Hotkey_Text;
             hiToolEdit.Hotkey = Root.Hotkey_Edit;
             hiToolMagnet.Hotkey = Root.Hotkey_Magnet;
@@ -775,6 +843,13 @@ namespace gInk
             lblGoFillOpacity.Text = Root.Local.OptionsGoFillOpacity ?? lblGoFillOpacity.Text;
             lblGoStrokeOpacity.Text = Root.Local.OptionsGoStrokeOpacity ?? lblGoStrokeOpacity.Text;
             lblGoStrokeWidth.Text = Root.Local.OptionsGoStrokeWidth ?? lblGoStrokeWidth.Text;
+
+            // Ajouter dans FormOptions_LocalReload() pour afficher les labels localisés
+            lblHK_LetterTag.Text = Root.Local.ButtonNameLetterTag ?? lblHK_LetterTag.Text;
+            lblHK_SquareTag.Text = Root.Local.ButtonNameSquareTag ?? lblHK_SquareTag.Text;
+            lblHK_TriangleTag.Text = Root.Local.ButtonNameTriangleTag ?? lblHK_TriangleTag.Text;
+            lblHK_CircleTag.Text = Root.Local.ButtonNameCircleTag ?? lblHK_CircleTag.Text;
+            lblHK_CrossTag.Text = Root.Local.ButtonNameCrossTag ?? lblHK_CrossTag.Text;
 
 
             this.Text = Root.Local.MenuEntryOptions + " - ppInk";

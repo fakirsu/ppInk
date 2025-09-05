@@ -54,6 +54,12 @@ namespace gInk
 
         public string QuestionClipArtUpdate;
         public string ButtonActivateDebug;
+        public string ButtonNameLetterTag;
+        public string ButtonNameSquareTag;
+        public string ButtonNameTriangleTag;
+        public string ButtonNameCircleTag;
+        public string ButtonNameCrossTag;
+
 
         public string ButtonNameHandWhite;
         public string ButtonNameHandBlack;
@@ -300,6 +306,12 @@ namespace gInk
             ButtonNameHandBlack = "Black Filled Freehand";
             OptionsGoHotkeys_HandWhite = "White filled freehand";
             OptionsGoHotkeys_HandBlack = "Black filled freehand";
+
+            ButtonNameLetterTag = "Letter";
+            ButtonNameSquareTag = "Square";
+            ButtonNameTriangleTag = "Triangle";
+            ButtonNameCircleTag = "Circle";
+            ButtonNameCrossTag = "Cross";
 
             // libellés pour les options Go (valeurs par défaut)
             GoOptionsHandWhiteAlpha = "White filled opacity (%)";
