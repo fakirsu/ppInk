@@ -220,41 +220,113 @@ namespace gInk
         }
 
         // Création stroke : disque jaune + texte
+        //private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt)
+        //{
+        //    // Taille : réutilise TagSize (sinon valeur fixe)
+        //    int radius = Math.Max(10, (int)Math.Round(TagSize * 0.8));
+        //    int x0 = xCenter - radius / 2;
+        //    int y0 = yCenter - radius / 2;
+        //    int x1 = xCenter + radius / 2;
+        //    int y1 = yCenter + radius / 2;
+
+        //    // 1) Disque jaune semi-transparent
+        //    Stroke disc = AddEllipseStroke(x0, y0, x1, y1, Filling.PenColorFilled);
+        //    if (disc != null)
+        //    {
+        //        disc.DrawingAttributes.Color = System.Drawing.Color.FromArgb(128, 255, 255, 0); // jaune 50%
+        //        disc.DrawingAttributes.Transparency = 255 - 128; // (optionnel: déjà 128 dans ARGB)
+        //        try { setStrokeProperties(ref disc, Filling.PenColorFilled); } catch { }
+        //    }
+
+        //    // 2) Texte noir centré
+        //    if (!string.IsNullOrEmpty(txt))
+        //    {
+        //        Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //        if (stTxt != null)
+        //        {
+        //            stTxt.DrawingAttributes.Color = System.Drawing.Color.Black;
+        //            try
+        //            {
+        //                stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //                ComputeTextBoxSize(ref stTxt);
+        //            }
+        //            catch { }
+        //        }
+        //    }
+        //    return disc;
+        //}
+        // Création stroke : disque jaune + texte (ancienne signature -> délègue à la surcharge)
         private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt)
         {
-            // Taille : réutilise TagSize (sinon valeur fixe)
-            int radius = Math.Max(10, (int)Math.Round(TagSize * 0.8));
-            int x0 = xCenter - radius / 2;
-            int y0 = yCenter - radius / 2;
-            int x1 = xCenter + radius / 2;
-            int y1 = yCenter + radius / 2;
+            // comportement historique : conserve l'ancienne taille basée sur TagSize
+            int diameter = Math.Max(10, (int)Math.Round(TagSize * 0.8));
+            return AddShapeTagStroke(xCenter, yCenter, txt, diameter);
+        }
 
-            // 1) Disque jaune semi-transparent
-            Stroke disc = AddEllipseStroke(x0, y0, x1, y1, Filling.PenColorFilled);
+        // Nouvelle surcharge : création de la pastille (disque) + texte centré, taille explicitement fournie en pixels (diamètre)
+        private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx)
+        {
+            // clamp minimal
+            int diameter = Math.Max(6, diameterPx);
+            int half = Math.Max(1, diameter / 2);
+            int left = xCenter - half;
+            int top = yCenter - half;
+            int right = xCenter + half;
+            int bottom = yCenter + half;
+
+            int filling = Filling.PenColorFilled; // couleur de remplissage par défaut (comportement historique)
+            Stroke disc = AddEllipseStroke(left, top, right, bottom, filling);
             if (disc != null)
             {
-                disc.DrawingAttributes.Color = System.Drawing.Color.FromArgb(128, 255, 255, 0); // jaune 50%
-                disc.DrawingAttributes.Transparency = 255 - 128; // (optionnel: déjà 128 dans ARGB)
+                // couleur semi‑transparente similaire au tag original
+                try
+                {
+                    disc.DrawingAttributes.Color = Color.FromArgb(128, 255, 255, 0);
+                    disc.DrawingAttributes.Transparency = (byte)(255 - 128);
+                }
+                catch { }
                 try { setStrokeProperties(ref disc, Filling.PenColorFilled); } catch { }
             }
 
-            // 2) Texte noir centré
             if (!string.IsNullOrEmpty(txt))
             {
+                // Ajouter le texte centré (on stocke la fonte/size dans les ExtendedProperties comme NumberTag)
                 Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
                 if (stTxt != null)
                 {
-                    stTxt.DrawingAttributes.Color = System.Drawing.Color.Black;
                     try
                     {
+                        stTxt.DrawingAttributes.Color = Color.Black;
                         stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+
+                        double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+                        double fontSize;
+                        if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+                            fontSize = Math.Max(6.0, diameter * 0.54 * (sizePct / 100.0));
+                        else
+                            fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0));
+
+                        double maxFromCircle = Math.Max(6.0, diameter * 0.75);
+                        if (fontSize > maxFromCircle) fontSize = maxFromCircle;
+
+                        stTxt.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
+                        stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+                        System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
+                        if (TagBold) style |= System.Drawing.FontStyle.Bold;
+                        stTxt.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
+
+                        stTxt.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
+                        stTxt.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
+
                         ComputeTextBoxSize(ref stTxt);
                     }
                     catch { }
                 }
             }
+
             return disc;
         }
+
 
         // Gestion du clic sur les nouveaux boutons
         private void NewTagTool_Click(object sender, EventArgs e)
@@ -4242,20 +4314,97 @@ namespace gInk
 
 
 
+                //else if (IsNewTagTool(Root.ToolSelected))
+                //{
+                //    // Démarre sur relâchement (même logique que NumberTag)
+                //    // Coordonnées : Root.CursorX / Root.CursorY
+                //    string txt;
+                //    if (Root.ToolSelected == Tools.LetterTag)
+                //        txt = GetNextLetterTag();
+                //    else
+                //        txt = ShapeGlyphForTool(Root.ToolSelected).ToString();
+
+                //    AddShapeTagStroke(Root.CursorX, Root.CursorY, txt);
+                //    SaveUndoStrokes();
+                //}
                 else if (IsNewTagTool(Root.ToolSelected))
                 {
                     // Démarre sur relâchement (même logique que NumberTag)
-                    // Coordonnées : Root.CursorX / Root.CursorY
                     string txt;
                     if (Root.ToolSelected == Tools.LetterTag)
                         txt = GetNextLetterTag();
                     else
                         txt = ShapeGlyphForTool(Root.ToolSelected).ToString();
 
-                    AddShapeTagStroke(Root.CursorX, Root.CursorY, txt);
-                    SaveUndoStrokes();
-                }
+                    // Position client -> écran
+                    Point clientPt = new Point(Root.CursorX, Root.CursorY);
+                    Point screenPt = Root.FormDisplay.PointToScreen(clientPt);
 
+                    // Snap (réutilise la fonction existante utilisée par NumberTag)
+                    Point snapScreen = GridSnap.SnapNumberTagPoint(this.Root, screenPt.X, screenPt.Y, this.Root.GridRows, this.Root.GridCols);
+
+                    // vérifier la distance par rapport au snap ; si trop éloigné -> ignorer le clic
+                    bool ignoreClick = false;
+                    if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+                    {
+                        int rows = 19, cols = 19;
+                        try
+                        {
+                            rows = Math.Max(2, this.Root.GridRows);
+                            cols = Math.Max(2, this.Root.GridCols);
+                        }
+                        catch { }
+
+                        double stepX = (double)this.GridRect.Width / (cols - 1);
+                        double stepY = (double)this.GridRect.Height / (rows - 1);
+                        double cellStep = Math.Min(stepX, stepY);
+                        double allowedDist = 0.75 * cellStep; // même seuil que NumberTag
+
+                        double dx = screenPt.X - snapScreen.X;
+                        double dy = screenPt.Y - snapScreen.Y;
+                        double dist = Math.Sqrt(dx * dx + dy * dy);
+
+                        if (dist > allowedDist) ignoreClick = true;
+                    }
+
+                    if (!ignoreClick)
+                    {
+                        Point snapClient = Root.FormDisplay.PointToClient(snapScreen);
+
+                        // calculer le diamètre comme pour NumberTag
+                        int baseDiameter;
+                        if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+                        {
+                            int rows = Math.Max(2, Root.GridRows);
+                            int cols = Math.Max(2, Root.GridCols);
+
+                            double stepX = (double)this.GridRect.Width / (cols - 1);
+                            double stepY = (double)this.GridRect.Height / (rows - 1);
+                            double cellStep = Math.Min(stepX, stepY);
+
+                            const double fillFactor = 0.85;
+                            const int paddingPx = 2;
+                            int cand = Math.Max(10, (int)Math.Round(cellStep * fillFactor) - paddingPx);
+                            int increased = (int)Math.Round(cand * 1.10);
+                            int maxAllowed = Math.Max(10, (int)Math.Round(cellStep) - paddingPx);
+                            baseDiameter = Math.Min(increased, maxAllowed);
+                            baseDiameter = Math.Max(baseDiameter, 10);
+                        }
+                        else
+                        {
+                            baseDiameter = (int)Math.Round(TagSize * 1.2);
+                            baseDiameter = Math.Max(baseDiameter, 10);
+                        }
+
+                        double circlePct = (Root.TagCirclePercent <= 0.0) ? 100.0 : Root.TagCirclePercent;
+                        int diameterPx = Math.Max(6, (int)Math.Round(baseDiameter * (circlePct / 100.0)));
+
+                        // Création de la pastille centée sur la cellule snap
+                        AddShapeTagStroke(snapClient.X, snapClient.Y, txt, diameterPx);
+                        SaveUndoStrokes();
+                    }
+                    // sinon : clic ignoré (comme NumberTag)
+                }
 
 
 
