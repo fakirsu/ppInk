@@ -86,6 +86,13 @@ namespace gInk
         private Label lblGoStrokeThickness;
         private ComboBox cbGoStrokeThickness;
 
+        // en haut de FormOptions (déclarations)
+        private Button btnGoColor_Letter;
+        private Button btnGoColor_Square;
+        private Button btnGoColor_Triangle;
+        private Button btnGoColor_Circle;
+        private Button btnGoColor_Cross;
+
 
 
         private NumericUpDown nudTagNumberOpacityPerc;
@@ -435,6 +442,26 @@ namespace gInk
 
 
 
+            // création boutons couleurs tags (petits carrés cliquables)
+            int colorBtnLeft = cbGoStrokeThickness.Left + cbGoStrokeThickness.Width + 16;
+            int colorTop = lblGoStrokeThickness.Top - 3;
+
+            btnGoColor_Letter = new Button { Left = colorBtnLeft, Top = colorTop, Width = 24, Height = 24, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(Root.GoTool_Letter_Color[0], Root.GoTool_Letter_Color[1], Root.GoTool_Letter_Color[2], Root.GoTool_Letter_Color[3]) };
+            btnGoColor_Square = new Button { Left = colorBtnLeft + 28, Top = colorTop, Width = 24, Height = 24, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(Root.GoTool_Square_Color[0], Root.GoTool_Square_Color[1], Root.GoTool_Square_Color[2], Root.GoTool_Square_Color[3]) };
+            btnGoColor_Triangle = new Button { Left = colorBtnLeft + 56, Top = colorTop, Width = 24, Height = 24, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(Root.GoTool_Triangle_Color[0], Root.GoTool_Triangle_Color[1], Root.GoTool_Triangle_Color[2], Root.GoTool_Triangle_Color[3]) };
+            btnGoColor_Circle = new Button { Left = colorBtnLeft + 84, Top = colorTop, Width = 24, Height = 24, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(Root.GoTool_Circle_Color[0], Root.GoTool_Circle_Color[1], Root.GoTool_Circle_Color[2], Root.GoTool_Circle_Color[3]) };
+            btnGoColor_Cross = new Button { Left = colorBtnLeft + 112, Top = colorTop, Width = 24, Height = 24, FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(Root.GoTool_Cross_Color[0], Root.GoTool_Cross_Color[1], Root.GoTool_Cross_Color[2], Root.GoTool_Cross_Color[3]) };
+
+            // handlers (réutilise PenModifyDlg pour choisir couleur + transparence)
+            btnGoColor_Letter.Click += (s, e) => EditGoTagColor("Letter", btnGoColor_Letter, Root.GoTool_Letter_Color);
+            btnGoColor_Square.Click += (s, e) => EditGoTagColor("Square", btnGoColor_Square, Root.GoTool_Square_Color);
+            btnGoColor_Triangle.Click += (s, e) => EditGoTagColor("Triangle", btnGoColor_Triangle, Root.GoTool_Triangle_Color);
+            btnGoColor_Circle.Click += (s, e) => EditGoTagColor("Circle", btnGoColor_Circle, Root.GoTool_Circle_Color);
+            btnGoColor_Cross.Click += (s, e) => EditGoTagColor("Cross", btnGoColor_Cross, Root.GoTool_Cross_Color);
+
+            tabPageGridTags.Controls.AddRange(new Control[] { btnGoColor_Letter, btnGoColor_Square, btnGoColor_Triangle, btnGoColor_Circle, btnGoColor_Cross });
+
+
 
             tabPageGridTags.Controls.Add(lblGoFillOpacity);
             tabPageGridTags.Controls.Add(nudGoFillOpacity);
@@ -535,6 +562,8 @@ namespace gInk
                 foreach (ListViewItem it in Root.FormCollection.ClipartsDlg.ImageListViewer.Items)
                     Root.StampFileNames.Add(it.ImageKey);
             }
+
+
 
             InitClipArtButtons();
 
@@ -644,6 +673,12 @@ namespace gInk
             }
 
             FormOptions_LocalReload();
+
+
+
+            // <-- AJOUTER CETTE LIGNE ICI (initialise les boutons couleurs des tags)
+            InitGoTagButtons();
+
 
             // Synchronisation après reload (contrôles go)
             try
@@ -1093,7 +1128,18 @@ namespace gInk
             string currentLn = Root.Local.GetLanguagenameByFilename(Root.Local.CurrentLanguageFile);
             if (comboLanguage.Items.Contains(currentLn))
                 comboLanguage.SelectedIndex = comboLanguage.Items.IndexOf(currentLn);
+
+
+
+            // <-- AJOUTER CETTE LIGNE ICI (réinitialise l'affichage des boutons de couleur après rechargement local)
+            InitGoTagButtons();
+           
+        
+        
         }
+
+
+
 
         private void comboPensAlpha_TextChanged(object sender, EventArgs e)
         {
@@ -1401,6 +1447,80 @@ namespace gInk
             dlg.Dispose();
         }
 
+        private void EditGoTagColor(string name, Button btn, int[] colorArr)
+        {
+            try
+            {
+                // Prépare les attributs initiaux en réutilisant la convention existante :
+                // colorArr = { A, R, G, B } ; DrawingAttributes.Transparency = 255 - A
+                PenModifyDlg dlg = new PenModifyDlg(Root);
+                Microsoft.Ink.DrawingAttributes at = new Microsoft.Ink.DrawingAttributes
+                {
+                    Transparency = (byte)(255 - (colorArr.Length > 0 ? colorArr[0] : 255)),
+                    Color = Color.FromArgb(
+                        (colorArr.Length > 0 ? colorArr[0] : 255),
+                        (colorArr.Length > 1 ? colorArr[1] : 0),
+                        (colorArr.Length > 2 ? colorArr[2] : 0),
+                        (colorArr.Length > 3 ? colorArr[3] : 0)
+                    ),
+                    Width = 0
+                };
+
+                if (dlg.ModifyPen(ref at))
+                {
+                    // Stocke la couleur choisie dans le tableau (A,R,G,B)
+                    if (colorArr.Length >= 4)
+                    {
+                        colorArr[0] = 255 - at.Transparency;
+                        colorArr[1] = at.Color.R;
+                        colorArr[2] = at.Color.G;
+                        colorArr[3] = at.Color.B;
+                    }
+
+                    // Mise à jour visuelle (aperçu — BackColor ignore l'alpha)
+                    try
+                    {
+                        btn.BackColor = Color.FromArgb(
+                            (colorArr.Length > 0 ? colorArr[0] : 255),
+                            (colorArr.Length > 1 ? colorArr[1] : 0),
+                            (colorArr.Length > 2 ? colorArr[2] : 0),
+                            (colorArr.Length > 3 ? colorArr[3] : 0)
+                        );
+                    }
+                    catch { }
+
+                    // Sauvegarde différée
+                    ScheduleConfigSave();
+                }
+                dlg.Dispose();
+            }
+            catch { }
+        }
+
+
+        private void InitGoTagButtons()
+        {
+            try
+            {
+                Action<Button, int[]> initBtn = (btn, arr) =>
+                {
+                    try
+                    {
+                        if (btn == null || arr == null || arr.Length < 4) return;
+                        // BackColor n'affiche pas l'alpha, mais donne un aperçu de la couleur
+                        btn.BackColor = Color.FromArgb(arr[0], arr[1], arr[2], arr[3]);
+                    }
+                    catch { }
+                };
+
+                initBtn(btnGoColor_Letter, Root?.GoTool_Letter_Color);
+                initBtn(btnGoColor_Square, Root?.GoTool_Square_Color);
+                initBtn(btnGoColor_Triangle, Root?.GoTool_Triangle_Color);
+                initBtn(btnGoColor_Circle, Root?.GoTool_Circle_Color);
+                initBtn(btnGoColor_Cross, Root?.GoTool_Cross_Color);
+            }
+            catch { }
+        }
         private void WsUrlTxt_TextChanged(object sender, EventArgs e) => Root.ObsUrl = WsUrlTxt.Text;
         private void WsPwdTxt_TextChanged(object sender, EventArgs e) => Root.ObsPwd = WsPwdTxt.Text;
         private void FfmpegCmdTxt_TextChanged(object sender, EventArgs e) => Root.FFMpegCmd = FfmpegCmdTxt.Text;
