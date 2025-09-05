@@ -200,8 +200,10 @@ namespace gInk
             {
                 case Tools.SquareTag: return '■';
                 case Tools.TriangleTag: return '▲';
-                case Tools.CircleTag: return '●';
-                case Tools.CrossTag: return '✖';
+                //case Tools.CircleTag: return '●';
+                case Tools.CircleTag: return '⬤'; //U + 2B24 BLACK LARGE CIRCLE) au lieu de '●'; visuellement plus grand.
+                //case Tools.CrossTag: return '✖';
+                case Tools.CrossTag: return '✕'; //(U + 2715) ou '⨯'(U + 2A2F); mais rendu dépend du font système.
                 default: return '?';
             }
         }
