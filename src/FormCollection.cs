@@ -264,41 +264,91 @@ namespace gInk
         }
 
         // Nouvelle surcharge : création de la pastille (disque) + texte centré, taille explicitement fournie en pixels (diamètre)
+        //private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx)
+        //{
+        //    // clamp minimal
+        //    int diameter = Math.Max(6, diameterPx);
+        //    int half = Math.Max(1, diameter / 2);
+        //    int left = xCenter - half;
+        //    int top = yCenter - half;
+        //    int right = xCenter + half;
+        //    int bottom = yCenter + half;
+
+        //    int filling = Filling.PenColorFilled; // couleur de remplissage par défaut (comportement historique)
+        //    Stroke disc = AddEllipseStroke(left, top, right, bottom, filling);
+        //    if (disc != null)
+        //    {
+        //        // couleur semi‑transparente similaire au tag original
+        //        try
+        //        {
+        //            disc.DrawingAttributes.Color = Color.FromArgb(128, 255, 255, 0);
+        //            disc.DrawingAttributes.Transparency = (byte)(255 - 128);
+        //        }
+        //        catch { }
+        //        try { setStrokeProperties(ref disc, Filling.PenColorFilled); } catch { }
+        //    }
+
+        //    if (!string.IsNullOrEmpty(txt))
+        //    {
+        //        // Ajouter le texte centré (on stocke la fonte/size dans les ExtendedProperties comme NumberTag)
+        //        Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+        //        if (stTxt != null)
+        //        {
+        //            try
+        //            {
+        //                stTxt.DrawingAttributes.Color = Color.Black;
+        //                stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+
+        //                double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+        //                double fontSize;
+        //                if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+        //                    fontSize = Math.Max(6.0, diameter * 0.54 * (sizePct / 100.0));
+        //                else
+        //                    fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0));
+
+        //                double maxFromCircle = Math.Max(6.0, diameter * 0.75);
+        //                if (fontSize > maxFromCircle) fontSize = maxFromCircle;
+
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+        //                System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
+        //                if (TagBold) style |= System.Drawing.FontStyle.Bold;
+        //                stTxt.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
+
+        //                stTxt.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
+        //                stTxt.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
+
+        //                ComputeTextBoxSize(ref stTxt);
+        //            }
+        //            catch { }
+        //        }
+        //    }
+
+        //    return disc;
+        //}
+        // Nouvelle surcharge : création de la pastille (DISABLED) + texte centré, taille explicitement fournie en pixels (diamètre)
+        // NOTE: le disque jaune est volontairement supprimé (opacité 0%) — on retourne uniquement la stroke texte si elle est créée.
         private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx)
         {
             // clamp minimal
             int diameter = Math.Max(6, diameterPx);
-            int half = Math.Max(1, diameter / 2);
-            int left = xCenter - half;
-            int top = yCenter - half;
-            int right = xCenter + half;
-            int bottom = yCenter + half;
 
-            int filling = Filling.PenColorFilled; // couleur de remplissage par défaut (comportement historique)
-            Stroke disc = AddEllipseStroke(left, top, right, bottom, filling);
-            if (disc != null)
-            {
-                // couleur semi‑transparente similaire au tag original
-                try
-                {
-                    disc.DrawingAttributes.Color = Color.FromArgb(128, 255, 255, 0);
-                    disc.DrawingAttributes.Transparency = (byte)(255 - 128);
-                }
-                catch { }
-                try { setStrokeProperties(ref disc, Filling.PenColorFilled); } catch { }
-            }
+            Stroke stTxt = null;
 
             if (!string.IsNullOrEmpty(txt))
             {
-                // Ajouter le texte centré (on stocke la fonte/size dans les ExtendedProperties comme NumberTag)
-                Stroke stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
+                // Crée uniquement la stroke de texte (pas de disque jaune)
+                stTxt = AddTextStroke(xCenter, yCenter, xCenter, yCenter, txt, StringAlignment.Center, Filling.Empty);
                 if (stTxt != null)
                 {
                     try
                     {
+                        // Couleur du texte (noir) — inchangé
                         stTxt.DrawingAttributes.Color = Color.Black;
+                        // Marque la stroke comme tag
                         stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
 
+                        // Calcul de la taille du glyph identique à NumberTag / ancienne implémentation
                         double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
                         double fontSize;
                         if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
@@ -324,9 +374,9 @@ namespace gInk
                 }
             }
 
-            return disc;
+            // Retourne la stroke texte si créée, sinon null (pas de disque)
+            return stTxt;
         }
-
 
         // Gestion du clic sur les nouveaux boutons
         private void NewTagTool_Click(object sender, EventArgs e)
