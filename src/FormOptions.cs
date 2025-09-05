@@ -83,6 +83,9 @@ namespace gInk
         private Label lblGoStrokeWidth;
         private NumericUpDown nudGoStrokeWidth;
 
+        private Label lblGoStrokeThickness;
+        private ComboBox cbGoStrokeThickness;
+
 
 
         private NumericUpDown nudTagNumberOpacityPerc;
@@ -405,6 +408,33 @@ namespace gInk
                 Root.GoStrokeWidth = (float)nudGoStrokeWidth.Value;
                 try { Root.SaveOptions(Program.RunningFolder + "config.ini"); } catch { }
             };
+
+            //lblGoStrokeThickness = new Label { Text = "Épaisseur contour :", AutoSize = true, Left = 12, Top = lblGoStrokeWidth.Bottom + 18 };
+            //cbGoStrokeThickness = new ComboBox { Left = 220, Top = lblGoStrokeThickness.Top - 3, Width = 120, DropDownStyle = ComboBoxStyle.DropDownList };
+            //cbGoStrokeThickness.Items.AddRange(new object[] { "Fin", "Moyen", "Épais" });
+            //cbGoStrokeThickness.SelectedIndex = Math.Min(Math.Max(0, Root.GoStrokeThickness), 2);
+            //cbGoStrokeThickness.SelectedIndexChanged += (s, e) =>
+            //{
+            //    Root.GoStrokeThickness = cbGoStrokeThickness.SelectedIndex;
+            //    ScheduleConfigSave();
+            //};
+            //tabPageGridTags.Controls.Add(lblGoStrokeThickness);
+            //tabPageGridTags.Controls.Add(cbGoStrokeThickness);
+
+            lblGoStrokeThickness = new Label { Text = Root.Local.OptionsGoStrokeThickness ?? "Épaisseur contour :", AutoSize = true, Left = 12, Top = lblGoStrokeWidth.Bottom + 18 };
+            cbGoStrokeThickness = new ComboBox { Left = 220, Top = lblGoStrokeThickness.Top - 3, Width = 120, DropDownStyle = ComboBoxStyle.DropDownList };
+            cbGoStrokeThickness.Items.AddRange(new object[] { Root.Local.OptionsPensThin ?? "Thin", Root.Local.OptionsPensNormal ?? "Normal", Root.Local.OptionsPensThick ?? "Thick" });
+            cbGoStrokeThickness.SelectedIndex = Math.Min(Math.Max(0, Root.GoStrokeThickness), 2);
+            cbGoStrokeThickness.SelectedIndexChanged += (s, e) =>
+            {
+                Root.GoStrokeThickness = cbGoStrokeThickness.SelectedIndex;
+                ScheduleConfigSave();
+            };
+            tabPageGridTags.Controls.Add(lblGoStrokeThickness);
+            tabPageGridTags.Controls.Add(cbGoStrokeThickness);
+
+
+
 
             tabPageGridTags.Controls.Add(lblGoFillOpacity);
             tabPageGridTags.Controls.Add(nudGoFillOpacity);

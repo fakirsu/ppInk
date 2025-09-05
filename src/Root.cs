@@ -170,6 +170,8 @@ namespace gInk
         public int GoFillOpacityPercent = 50;      // 0-100 (% visible) => Transparency = 255 - %
         public int GoStrokeOpacityPercent = 50;     // 0-100 (% visible)
         public float GoStrokeWidth = 3.0f;         // largeur finale (HiMetric)
+                                                   // 0 = fin (/12), 1 = moyen (/9), 2 = épais (/6)
+        public int GoStrokeThickness = 1;
 
         public Hotkey Hotkey_HandFilledWhite = new Hotkey();
         public Hotkey Hotkey_HandFilledBlack = new Hotkey();
@@ -1429,7 +1431,20 @@ namespace gInk
                                 GoStrokeWidth = Math.Max(0f, Math.Min(100f, gsw));
                             break;
 
-
+                        case "GOSTROKE_THICKNESS":
+                            // accepte 0/1/2 ou Thin/Normal/Thick (insensible à la casse)
+                            {
+                                string up = sPara.Trim().ToUpperInvariant();
+                                if (int.TryParse(sPara, out tempi) && tempi >= 0 && tempi <= 2)
+                                    GoStrokeThickness = tempi;
+                                else if (up.StartsWith("THIN"))
+                                    GoStrokeThickness = 0;
+                                else if (up.StartsWith("THICK"))
+                                    GoStrokeThickness = 2;
+                                else
+                                    GoStrokeThickness = 1;
+                            }
+                            break;
 
 
 
@@ -3110,6 +3125,7 @@ namespace gInk
                 SetOrReplace(writelines, "GOFILLOPACITY", GoFillOpacityPercent.ToString());
                 SetOrReplace(writelines, "GOSTROKEOPACITY", GoStrokeOpacityPercent.ToString());
                 SetOrReplace(writelines, "GOSTROKEWIDTH", GoStrokeWidth.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                SetOrReplace(writelines, "GOSTROKE_THICKNESS", (GoStrokeThickness == 0) ? "Thin" : (GoStrokeThickness == 2) ? "Thick" : "Normal");
 
                 // Tags / goInk specific (force la persistance)
                 SetOrReplace(writelines, "TAGSIZE_PERCENT", TagSizePercent.ToString(System.Globalization.CultureInfo.InvariantCulture));

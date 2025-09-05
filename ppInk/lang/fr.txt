@@ -29,6 +29,7 @@ ButtonNameSquareTag = "Carré"
 ButtonNameTriangleTag = "Triangle"
 ButtonNameCircleTag = "Cercle"
 ButtonNameCrossTag = "Croix"
+OptionsGoStrokeThickness = "Épaisseur contour :"
 # -> Fin des entrées pour jeu de go ###
 
 ButtonNamePen0 = "Stylo 0"

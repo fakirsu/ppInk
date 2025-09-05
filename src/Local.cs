@@ -162,6 +162,9 @@ namespace gInk
         public string OptionsTabHotkeys;
 
 
+        // nouveau : libellé pour l'épaisseur des contours (onglet Jeu de go)
+        public string OptionsGoStrokeThickness;
+
         //// 
         //public string OptionsTabGoHotkeys;
         //public string OptionsGoHotkeys_ShowWhite;
@@ -328,6 +331,15 @@ namespace gInk
             OptionsTagCirclePerc = "Stone diameter (%) :";
             OptionsTagSizePerc = "Number size (%) :";
             OptionsTagNumberOpacityPerc = "Number opacity (%) :";
+
+            // libellés pour les options Go (valeurs par défaut)
+            OptionsTagOpacityPerc = "Stone opacity (%) :";
+            OptionsTagCirclePerc = "Stone diameter (%) :";
+            OptionsTagSizePerc = "Number size (%) :";
+            OptionsTagNumberOpacityPerc = "Number opacity (%) :";
+
+            // nouveau : valeur par défaut pour l'étiquette d'épaisseur des contours
+            OptionsGoStrokeThickness = "Stroke thickness :";
 
 
             LoadKeyNames();
