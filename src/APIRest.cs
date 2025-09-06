@@ -16,7 +16,7 @@ namespace gInk
     {
         public static HttpListener http;
         public static Root Root;
-        Task listenTask=null;
+        Task listenTask = null;
         public APIRest(Root root)
         {
             Root = root;
@@ -25,7 +25,7 @@ namespace gInk
 #else
             return;
 #endif
-            if(Root.APIRestUrl !="")
+            if (Root.APIRestUrl != "")
                 ChangeAddress(Root.APIRestUrl);
 
             //listenTask.GetAwaiter().GetResult();
@@ -48,7 +48,7 @@ namespace gInk
                 if (!a.EndsWith("/"))
                     a += "/";
                 http.Prefixes.Add(a);
-                return Start();                
+                return Start();
             }
             catch (Exception e)
             {
@@ -84,7 +84,7 @@ namespace gInk
                     listenTask?.Dispose();
                 }
                 catch { }
-                listenTask=HandleIncomingConnections();
+                listenTask = HandleIncomingConnections();
 
                 return true;
             }
@@ -99,11 +99,11 @@ namespace gInk
             try
             {
                 http.Stop();
-                if(!listenTask.Wait(1000))
+                if (!listenTask.Wait(1000))
                     throw new Exception("Can not kill listenTask");
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
@@ -111,16 +111,16 @@ namespace gInk
 
         public static async Task HandleIncomingConnections()
         {
-            Dictionary<string,string> ParseQuery(string query)
+            Dictionary<string, string> ParseQuery(string query)
             {
                 Dictionary<string, string> lst = new Dictionary<string, string>();
                 if (!query.StartsWith("?"))
                     return lst;
                 string[] r;
-                foreach(string s in query.Substring(1).Split('&'))
+                foreach (string s in query.Substring(1).Split('&'))
                 {
                     r = s.Split(new char[] { '=' }, 2);
-                    lst.Add(r[0], r.Length == 1?"":r[1]);
+                    lst.Add(r[0], r.Length == 1 ? "" : r[1]);
                 }
                 return lst;
             }
@@ -178,14 +178,14 @@ namespace gInk
                             }
                         }
                         if (resp.StatusCode == 200)
-                            ret = " { \"Started\" : " + ((Root.FormDisplay.Visible || Root.FormCollection.Visible)?"true":"false") + " }";
+                            ret = " { \"Started\" : " + ((Root.FormDisplay.Visible || Root.FormCollection.Visible) ? "true" : "false") + " }";
                     }
 
 
                     else if (req.Url.AbsolutePath == "/PenDef")
                     {
                         string s;
-                        int i=-1, r, g, b;
+                        int i = -1, r, g, b;
                         byte t;
                         float f;
                         string ff = "";
@@ -221,7 +221,7 @@ namespace gInk
                             }
                             if (query.ContainsKey("W"))
                             {
-                                if (query.TryGetValue("W", out s) && float.TryParse(s, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out f) && 0 <= f )
+                                if (query.TryGetValue("W", out s) && float.TryParse(s, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out f) && 0 <= f)
                                     Root.PenAttr[i].Width = f;
                                 else
                                     resp.StatusCode = 400;
@@ -265,7 +265,7 @@ namespace gInk
                             }
                             if (i == Root.CurrentPen)
                             {
-                                Root.SelectPen((i+1)%Root.MaxPenCount);
+                                Root.SelectPen((i + 1) % Root.MaxPenCount);
                                 Root.SelectPen(i);
                             }
                             Root.FormCollection.btPen[i].BackgroundImage = Root.FormCollection.buildPenIcon(Root.PenAttr[i].Color, Root.PenAttr[i].Transparency, i == Root.CurrentPen,
@@ -276,7 +276,7 @@ namespace gInk
                         {
                             resp.StatusCode = 400;
                         }
-                            if (resp.StatusCode == 200)
+                        if (resp.StatusCode == 200)
                         {
                             if (Root.PenAttr[i].ExtendedProperties.Contains(Root.FADING_PEN))
                             {
@@ -290,9 +290,9 @@ namespace gInk
                             }
                             else
                                 ff = "false";
-                            ret = string.Format(CultureInfo.InvariantCulture, "{{\"Pen\":{0},\n\"Red\":{1}, \"Green\":{2}, \"Blue\":{3}, \"Transparency\":{4},\n\"Width\":{5},\n\"Style\":\"{8}\",\n\"Fading\":{6},\n\"Enabled\":{7}\n}}", 
+                            ret = string.Format(CultureInfo.InvariantCulture, "{{\"Pen\":{0},\n\"Red\":{1}, \"Green\":{2}, \"Blue\":{3}, \"Transparency\":{4},\n\"Width\":{5},\n\"Style\":\"{8}\",\n\"Fading\":{6},\n\"Enabled\":{7}\n}}",
                                                 i, Root.PenAttr[i].Color.R, Root.PenAttr[i].Color.G, Root.PenAttr[i].Color.B, Root.PenAttr[i].Transparency,
-                                                Root.PenAttr[i].Width, ff, Root.PenEnabled[i]?"true":"false",Root.LineStyleToString(Root.PenAttr[i].ExtendedProperties));
+                                                Root.PenAttr[i].Width, ff, Root.PenEnabled[i] ? "true" : "false", Root.LineStyleToString(Root.PenAttr[i].ExtendedProperties));
                         }
                         else if (resp.StatusCode == 400)
                             ret = string.Format("!!!! Error in Query ({0}) - {1} ", req.HttpMethod, req.Url.AbsoluteUri);
@@ -302,7 +302,7 @@ namespace gInk
                     else if (req.Url.AbsolutePath == "/ToggleFading")
                     {
                         string s;
-                        int i=-1;
+                        int i = -1;
                         float f;
                         string ff = "";
 
@@ -318,7 +318,7 @@ namespace gInk
                             if (Root.PenAttr[i].ExtendedProperties.Contains(Root.FADING_PEN))
                                 Root.PenAttr[i].ExtendedProperties.Remove(Root.FADING_PEN);
                             else
-                                Root.PenAttr[i].ExtendedProperties.Add(Root.FADING_PEN,Root.TimeBeforeFading);
+                                Root.PenAttr[i].ExtendedProperties.Add(Root.FADING_PEN, Root.TimeBeforeFading);
                             if (i == Root.CurrentPen)
                             {
                                 Root.SelectPen(Root.CurrentPen);
@@ -390,7 +390,7 @@ namespace gInk
                             resp.StatusCode = 409;
                             ret = "!!!!! Not in Inking mode";
                         }
-                        else if (query.TryGetValue("P", out s) && int.TryParse(s, out i) && 0 <= i && i <= 9)
+                        else if (query.TryGetValue("P", out s) && int.TryParse(s, out i) && 0 <= i && 0 <= i && i <= 9)
                         {
                             Root.SelectPen(i);
                         }
@@ -401,7 +401,7 @@ namespace gInk
                         {
                             ret = string.Format("{{\"Pen\":{0} }}", i);
                         }
-                        else if(resp.StatusCode == 400)
+                        else if (resp.StatusCode == 400)
                             ret = string.Format("!!!! Error in Query ({0}) - {1} ", req.HttpMethod, req.Url.AbsoluteUri);
                     }
 
@@ -419,7 +419,7 @@ namespace gInk
                         }
                         else if (query.TryGetValue("T", out s) && int.TryParse(s, out i))
                         {
-                            if (i==-4 || i == -3 || i == -2 || i == -1)
+                            if (i == -4 || i == -3 || i == -2 || i == -1)
                                 Root.SelectPen(i);
                             if ((Root.ToolSelected == Tools.txtLeftAligned || Root.ToolSelected == Tools.txtRightAligned) &&
                                 (query.TryGetValue("F", out s) && int.TryParse(s, out f) && -1 <= f))
@@ -431,14 +431,14 @@ namespace gInk
                             }
                             else if (!query.ContainsKey("F"))
                                 f = Filling.NoFrame;
-                            else if (!(query.TryGetValue("F", out s) && int.TryParse(s, out f) && -1 <= f && f< Filling.Modulo))
-                                {
-                                    resp.StatusCode = 400;
-                                }
+                            else if (!(query.TryGetValue("F", out s) && int.TryParse(s, out f) && -1 <= f && f < Filling.Modulo))
+                            {
+                                resp.StatusCode = 400;
+                            }
                             if ((query.TryGetValue("A", out s) && int.TryParse(s, out a)))
                             {
                                 if (a >= 1 && a <= Root.ArrowHead.Count)
-                                    Root.CurrentArrow = a-1;
+                                    Root.CurrentArrow = a - 1;
                             }
                             if (!(query.TryGetValue("W", out s) && int.TryParse(s, out w)))
                                 w = -1;
@@ -446,7 +446,7 @@ namespace gInk
                                 h = -1;
                             if (!(query.TryGetValue("D", out s) && double.TryParse(s, out dist)))
                                 dist = -1;
-                            if (i == Tools.ClipArt || i==Tools.PatternLine)
+                            if (i == Tools.ClipArt || i == Tools.PatternLine)
                                 if (query.TryGetValue("I", out s))
                                 {
                                     if (s.Contains('\\'))
@@ -521,7 +521,7 @@ namespace gInk
                             }
                             else
                             {
-                                string st_i="";
+                                string st_i = "";
                                 string f_str = "";
                                 if (Root.ToolSelected == Tools.ClipArt || Root.ToolSelected == Tools.PatternLine)
                                     st_i = string.Format(",\n \"Image\":\"{0}\" ", Root.ImageStamp.ImageStamp);
@@ -532,11 +532,11 @@ namespace gInk
                                 }
                                 else
                                 {
-                                    f = (Root.ToolSelected == Tools.ClipArt || Root.ToolSelected == Tools.PatternLine )? Root.ImageStamp.Filling : Root.FilledSelected;
+                                    f = (Root.ToolSelected == Tools.ClipArt || Root.ToolSelected == Tools.PatternLine) ? Root.ImageStamp.Filling : Root.FilledSelected;
                                     f_str = Filling.Names[f + 1];
                                 }
                                 ret = string.Format("{{\"Tool\":{0},\"ToolInText\":\"{2}\", \"Filling\":{1}, \"FillingInText\":\"{3}\"{4} }}",
-                                                        Root.ToolSelected, f , Tools.Names[Array.IndexOf(Tools.All,Root.ToolSelected)], f_str, st_i);
+                                                        Root.ToolSelected, f, Tools.Names[Array.IndexOf(Tools.All, Root.ToolSelected)], f_str, st_i);
                             }
                             Console.WriteLine(Root.ImageStamp.X);
                         }
@@ -580,8 +580,8 @@ namespace gInk
                             Root.FormCollection.SetTagNumber(s);
                         }
                         if (resp.StatusCode == 200)
-                            ret = " { \"Tag\" : \"" + 
-                                String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(64 + Root.TagNumbering), (Char)(96 + Root.TagNumbering))  + 
+                            ret = " { \"Tag\" : \"" +
+                                String.Format(Root.TagFormatting, Root.TagNumbering, (Char)(64 + Root.TagNumbering), (Char)(96 + Root.TagNumbering)) +
                                 "\" }";
                     }
 
@@ -609,7 +609,7 @@ namespace gInk
                         }
                         if (resp.StatusCode == 200)
                         {
-                            ret = " { \"Magnet\" : " + (Root.MagneticRadius>0?"true":"false") + " }";
+                            ret = " { \"Magnet\" : " + (Root.MagneticRadius > 0 ? "true" : "false") + " }";
                         }
                     }
 
@@ -636,7 +636,7 @@ namespace gInk
                             }
                         }
                         if (resp.StatusCode == 200)
-                            ret = " { \"VisibleInk\" : " + (Root.InkVisible?"true":"false") + " }";
+                            ret = " { \"VisibleInk\" : " + (Root.InkVisible ? "true" : "false") + " }";
                     }
 
 
@@ -662,7 +662,7 @@ namespace gInk
                             }
                         }
                         if (resp.StatusCode == 200)
-                            ret = " { \"Folded\" : " + (Root.Docked?"true":"false") + " }";
+                            ret = " { \"Folded\" : " + (Root.Docked ? "true" : "false") + " }";
                     }
 
 
@@ -687,10 +687,10 @@ namespace gInk
                                 Root.FormCollection.LoadStrokes(s);
                                 ret = "{ \"OK\": true }";
                             }
-                            catch(Exception e)
+                            catch (Exception e)
                             {
                                 resp.StatusCode = 500;
-                                ret = string.Format("!!!! error : "+e.Message);
+                                ret = string.Format("!!!! error : " + e.Message);
                             }
                             Root.UponAllDrawingUpdate = true;
                         }
@@ -729,7 +729,7 @@ namespace gInk
                             resp.StatusCode = 400;
                             ret = string.Format("!!!! Error in Query ({0}) - {1} ", req.HttpMethod, req.Url.AbsoluteUri);
                         }
-                    }   
+                    }
 
 
                     else if (req.Url.AbsolutePath == "/ClearScreen")
@@ -766,7 +766,7 @@ namespace gInk
                             Root.FormCollection.btClear_Click(Root.FormCollection.btClear, null);
                             ret = "{ \"OK\": true }";
                         }
-                        else if(resp.StatusCode == 400)
+                        else if (resp.StatusCode == 400)
                             ret = string.Format("!!!! Error in Query ({0}) - {1} ", req.HttpMethod, req.Url.AbsoluteUri);
                     }
 
@@ -774,14 +774,14 @@ namespace gInk
                     else if (req.Url.AbsolutePath == "/Resize")
                     {
                         string s;
-                        double d=1.0;
+                        double d = 1.0;
                         //int i = 0;
                         if (!(Root.FormDisplay.Visible || Root.FormCollection.Visible))
                         {
                             resp.StatusCode = 409;
                             ret = "!!!!! Not in Inking mode";
                         }
-                        else if (query.TryGetValue("K", out s) && double.TryParse(s,out d))
+                        else if (query.TryGetValue("K", out s) && double.TryParse(s, out d))
                         {
                             Root.FormCollection.ModifyStrokesSelection(); // true, ref Root.FormCollection.InprogressSelection, Root.FormCollection.StrokesSelection);
                             if (Root.FormCollection.StrokesSelection.Count == 0 && Root.StrokeHovered == null)
@@ -809,7 +809,7 @@ namespace gInk
                                 Root.UponAllDrawingUpdate = false;
                                 ret = "{ \"Result\": \"OK\" }";
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
                                 resp.StatusCode = 500;
                                 ret = "!!! resizing failed : " + ex.Message;
@@ -906,7 +906,7 @@ namespace gInk
                                 s = "Spot";
                             else
                                 s = "No";
-                            ret = "{ \"Zoom\": \""+s+"\" }";
+                            ret = "{ \"Zoom\": \"" + s + "\" }";
                         }
                         else if (resp.StatusCode == 400)
                             ret = string.Format("!!!! Error in Query ({0}) - {1} ", req.HttpMethod, req.Url.AbsoluteUri);
@@ -915,7 +915,7 @@ namespace gInk
 
                     else if (req.Url.AbsolutePath == "/GetSelection")
                     {
-                        string s="";
+                        string s = "";
                         bool c = false;
                         bool l = false;
                         if (!(Root.FormDisplay.Visible || Root.FormCollection.Visible))
@@ -935,12 +935,12 @@ namespace gInk
                         if (resp.StatusCode == 200)
                         {
                             Root.FormCollection.ModifyStrokesSelection();
-                            if(Root.FormCollection.StrokesSelection.Count>0)
+                            if (Root.FormCollection.StrokesSelection.Count > 0)
                             {
                                 if (c)
-                                    s += "\"Count\" : " + Root.FormCollection.StrokesSelection.Count.ToString() + (l?", ":"");
+                                    s += "\"Count\" : " + Root.FormCollection.StrokesSelection.Count.ToString() + (l ? ", " : "");
                                 if (l)
-                                    s += "\"TotalLength\" : " + Root.FormCollection.MeasureAllStrokes(Root.FormCollection.StrokesSelection,null,null,true);
+                                    s += "\"TotalLength\" : " + Root.FormCollection.MeasureAllStrokes(Root.FormCollection.StrokesSelection, null, null, true);
                                 ret = "{\"Type\" : \"Selection\", " + s + " }";
                             }
                             else
@@ -948,7 +948,7 @@ namespace gInk
                                 if (c)
                                     s += "\"Count\" : " + (Root.StrokeHovered != null ? "1" : "0") + (l ? ", " : "");
                                 if (l)
-                                    s += "\"TotalLength\" : " + Root.FormCollection.MeasureAllStrokes(null, null,Root.StrokeHovered, true);
+                                    s += "\"TotalLength\" : " + Root.FormCollection.MeasureAllStrokes(null, null, Root.StrokeHovered, true);
                                 ret = "{\"Type\" : \"Hovered\", " + s + " }";
                             }
                         }
@@ -1043,10 +1043,89 @@ namespace gInk
                             }
                         }
                         if (resp.StatusCode == 200)
-                            ret = " { \"PickupMode\" : "+(Root.ColorPickerMode ? "true" : "false") + 
-                                  (!Root.ColorPickerMode?"}":string.Format(",\n\"Red\" : {0}, \"Green\" : {1}, \"Blue\" : {2}, \"Transparency\" : {3}  }}",
+                            ret = " { \"PickupMode\" : " + (Root.ColorPickerMode ? "true" : "false") +
+                                  (!Root.ColorPickerMode ? "}" : string.Format(",\n\"Red\" : {0}, \"Green\" : {1}, \"Blue\" : {2}, \"Transparency\" : {3}  }}",
                                                                            Root.PickupColor.R, Root.PickupColor.G, Root.PickupColor.B, Root.PickupTransparency));
                     }
+
+                    // --- NOUVEAUX ENDPOINTS AJOUTÉS ICI ---
+                    else if (req.Url.AbsolutePath == "/NTag_Show_White" ||
+                             req.Url.AbsolutePath == "/NTag_Show_Black" ||
+                             req.Url.AbsolutePath == "/NTag_Hide_White" ||
+                             req.Url.AbsolutePath == "/NTag_Hide_Black")
+                    {
+                        if (!(Root.FormDisplay.Visible || Root.FormCollection.Visible))
+                        {
+                            resp.StatusCode = 409;
+                            ret = "!!!!! Not in Inking mode";
+                        }
+                        else
+                        {
+                            bool show = req.Url.AbsolutePath.Contains("Show");
+                            bool firstWhite = req.Url.AbsolutePath.Contains("_White");
+                            bool clearExisting = false;
+                            string cs;
+                            if (query.TryGetValue("C", out cs))
+                                clearExisting = cs.ToLower() == "true";
+
+                            // délègue à l'helper centralisé (même logique que UI / hotkeys)
+                            Root.FormCollection.ApplyNumberTagVariant(show, firstWhite, clearExisting);
+                            ret = string.Format("{{ \"OK\": true, \"NumberTag\": {{ \"Show\": {0}, \"FirstIsWhite\": {1} }} }}",
+                                                show ? "true" : "false", firstWhite ? "true" : "false");
+                        }
+                    }
+
+                    else if (req.Url.AbsolutePath == "/HandFilledWhite" || req.Url.AbsolutePath == "/HandFilledBlack")
+                    {
+                        if (!(Root.FormDisplay.Visible || Root.FormCollection.Visible))
+                        {
+                            resp.StatusCode = 409;
+                            ret = "!!!!! Not in Inking mode";
+                        }
+                        else
+                        {
+                            bool white = req.Url.AbsolutePath.EndsWith("White");
+                            // utilise les constantes Tools et Filling
+                            int tool = white ? Tools.HandFilledWhite : Tools.HandFilledBlack;
+                            int filling = white ? Filling.WhiteFilled : Filling.BlackFilled;
+                            Root.FormCollection.SelectTool(tool, filling);
+                            Root.UponButtonsUpdate |= 0x2;
+                            Root.UponAllDrawingUpdate = true;
+                            ret = string.Format("{{ \"OK\": true, \"Tool\": \"{0}\", \"Filling\": \"{1}\" }}",
+                                                white ? "HandFilledWhite" : "HandFilledBlack",
+                                                white ? "White" : "Black");
+                        }
+                    }
+
+                    else if (req.Url.AbsolutePath == "/LetterTag" ||
+                             req.Url.AbsolutePath == "/SquareTag" ||
+                             req.Url.AbsolutePath == "/TriangleTag" ||
+                             req.Url.AbsolutePath == "/CircleTag" ||
+                             req.Url.AbsolutePath == "/CrossTag")
+                    {
+                        if (!(Root.FormDisplay.Visible || Root.FormCollection.Visible))
+                        {
+                            resp.StatusCode = 409;
+                            ret = "!!!!! Not in Inking mode";
+                        }
+                        else
+                        {
+                            int tool = Tools.Invalid;
+                            if (req.Url.AbsolutePath == "/LetterTag") tool = Tools.LetterTag;
+                            else if (req.Url.AbsolutePath == "/SquareTag") tool = Tools.SquareTag;
+                            else if (req.Url.AbsolutePath == "/TriangleTag") tool = Tools.TriangleTag;
+                            else if (req.Url.AbsolutePath == "/CircleTag") tool = Tools.CircleTag;
+                            else if (req.Url.AbsolutePath == "/CrossTag") tool = Tools.CrossTag;
+
+                            // on respecte la filling courante (Root.FilledSelected) pour consistance UI
+                            Root.FormCollection.SelectTool(tool, Root.FilledSelected);
+                            Root.UponButtonsUpdate |= 0x2;
+                            Root.UponAllDrawingUpdate = true;
+                            ret = string.Format("{{ \"OK\": true, \"Tool\": \"{0}\" }}", Tools.Names[Array.IndexOf(Tools.All, tool)]);
+                        }
+                    }
+                    // --- FIN nouveaux endpoints ---
+
                     else if (req.Url.AbsolutePath == "/ChangePage")
                     {
                         string s;
@@ -1066,9 +1145,9 @@ namespace gInk
                                     Root.FormCollection.btPageNext_Click(null, null);
                                 // else 0 : do nothing just to get current page number
                             }
-                            else if (query.Count==0)
+                            else if (query.Count == 0)
                             {
-                                delta_page=0;
+                                delta_page = 0;
                             }
                             else
                             {
@@ -1093,7 +1172,7 @@ namespace gInk
                     resp.StatusCode = 500;
                     ret = string.Format("!!!! Exception raised {0} ({1}) - {2} ", e.Message, req.HttpMethod, req.Url.AbsoluteUri);
                 }
-                if(resp.StatusCode==200)
+                if (resp.StatusCode == 200)
                     Root.AppGetFocus(); // force focus
 
                 // Write the response info

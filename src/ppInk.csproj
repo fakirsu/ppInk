@@ -247,6 +247,8 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="defaults.ini" />
+    <None Include="doc\readme_StreamDeck.md" />
+    <None Include="doc\readme_StreamDeck_EN.md" />
     <None Include="gInk.exe.manifest" />
     <None Include="packages.config" />
     <None Include="pensdef.ini" />
@@ -369,6 +371,7 @@
     <None Include="ExtraPens1.png" />
     <Content Include="images\outils.png" />
     <Content Include="images\outil_set_goban.png" />
+    <Content Include="images\rest_api.png" />
     <Content Include="images\taille_goban.png" />
     <Content Include="images\zones.png" />
     <Content Include="Magnetic.png" />
