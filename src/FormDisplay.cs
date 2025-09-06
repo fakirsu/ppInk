@@ -70,6 +70,31 @@ namespace gInk
         }
 
 
+        // Homothétie des flèches selon la GRID par rapport à la surface de dessin
+        private float GetArrowGridScale()
+        {
+            try
+            {
+                // Utilise la définition utilisateur de la GRID si elle existe
+                if (Root != null && Root.GridRectDefined && Root.GridRect.Width > 0 && Root.GridRect.Height > 0 && this.Width > 0 && this.Height > 0)
+                {
+                    double rx = Root.GridRect.Width / (double)this.Width;
+                    double ry = Root.GridRect.Height / (double)this.Height;
+                    double s = Math.Min(rx, ry);
+                    if (s <= 0.0 || double.IsNaN(s) || double.IsInfinity(s))
+                        return 1f;
+                    // ne pas agrandir au‑delà de la taille actuelle
+                    return (float)Math.Min(1.0, s);
+                }
+            }
+            catch { }
+            return 1f;
+        }
+
+        // Facteur global d'ajustement du gabarit des flèches (1.0 = inchangé)
+        private const float ArrowSizeMultiplier = 2.50f;
+
+
         // http://www.csharp411.com/hide-form-from-alttab/
         protected override CreateParams CreateParams
 		{
@@ -459,70 +484,6 @@ namespace gInk
                     }
                     if (st.ExtendedProperties.Contains(Root.ISHIDDEN_GUID))
                         continue;
-                    //else //Should not be drawn as a stroke : for the moment only filled values.
-                    //if (st.ExtendedProperties.Contains(Root.ISFILLEDOUTSIDE_GUID))
-                    //    //{
-                    //    //    SolidBrush bru = new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color));
-                    //    //    try
-                    //    //    {
-                    //    //        GraphicsPath gp = new GraphicsPath();
-                    //    //        gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
-                    //    //        Point[] pts = st.DrawingAttributes.FitToCurve ? st.GetFlattenedBezierPoints(0) : st.GetPoints();
-                    //    //        Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //    //        gp.AddPolygon(pts);
-                    //    //        g.FillPath(bru, gp);
-                    //    //    }
-                    //    //    catch { }
-                    //    //}
-                    //    // appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis le facteur d'opacité des pierres
-                        
-                    //    {
-                    //        // appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis appliquer le facteur d'opacité des pierres
-                    //        int baseAlpha = 255 - st.DrawingAttributes.Transparency;
-                    //    //    int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.TagStoneOpacityPercent / 100.0))));
-                    //    int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.GoFillOpacityPercent / 100.0))));
-
-                    //    Color baseColor = st.DrawingAttributes.Color;
-                    //        try
-                    //        {
-                    //            using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-                    //            {
-                    //                GraphicsPath gp = new GraphicsPath();
-                    //                gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
-                    //                Point[] pts = st.DrawingAttributes.FitToCurve ? st.GetFlattenedBezierPoints(0) : st.GetPoints();
-                    //                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //                gp.AddPolygon(pts);
-                    //                g.FillPath(bru, gp);
-                    //            }
-                    //        }
-                    //        catch { }
-                    //    }
-
-                    //if (st.ExtendedProperties.Contains(Root.ISFILLEDOUTSIDE_GUID))
-                    //{
-                    //    //int baseAlpha = 255 - st.DrawingAttributes.Transparency;
-                    //    //int alpha = Math.Max(0, Math.Min(255,
-                    //        (int)(baseAlpha * (Root.GoFillOpacityPercent / 100.0))));
-                    //    // nouvelle version :
-                    //    int fillAlpha = FillAlphaForStroke(st, st.ExtendedProperties.Contains(Root.ISTAG_GUID));
-
-                    //    Color baseColor = st.DrawingAttributes.Color;
-                    //    try
-                    //    {
-                    //        using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-                    //        {
-                    //            GraphicsPath gp = new GraphicsPath();
-                    //            gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
-                    //            Point[] pts = st.DrawingAttributes.FitToCurve
-                    //                ? st.GetFlattenedBezierPoints(0)
-                    //                : st.GetPoints();
-                    //            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //            gp.AddPolygon(pts);
-                    //            g.FillPath(bru, gp);
-                    //        }
-                    //    }
-                    //    catch { }
-                    //}
 
                     if (st.ExtendedProperties.Contains(Root.ISFILLEDOUTSIDE_GUID))
                     {
@@ -547,251 +508,6 @@ namespace gInk
                     }
 
                     /// ################ goInk - START ####################
-                    /// //else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID) )
-                    //{
-                    //    SolidBrush bru;
-                    //    if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
-                    //        bru = new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color));
-                    //    else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
-                    //        bru = new SolidBrush(Color.White);
-                    //    else if (st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
-                    //        bru = new SolidBrush(Color.Black);
-                    //    else
-                    //        continue;
-                    //        //bru = new SolidBrush(Color.Purple);
-                    //    if (st.DrawingAttributes.FitToCurve)
-                    //    {
-                    //        try
-                    //        {
-                    //            Point[] pts = st.GetFlattenedBezierPoints(0); // 0 to get a good fitting curve
-                    //            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //            g.FillClosedCurve(bru, pts);
-                    //        }
-                    //        catch { }
-                    //    }
-                    //    else
-                    //    {
-                    //        Point[] pts = st.GetPoints();
-                    //        Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //        g.FillPolygon(bru, pts);
-
-                    //    }
-
-                    //}
-
-                    //else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
-                    //    {
-                    //// appliquer la transparence du DrawingAttributes au remplissage
-                    ////int alpha = Math.Max(0, Math.Min(255, 255 - st.DrawingAttributes.Transparency));
-                    ////Color baseColor;
-                    ////if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
-                    ////    baseColor = st.DrawingAttributes.Color;
-                    ////else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
-                    ////    baseColor = Color.White;
-                    ////else // ISFILLEDBLACK
-                    ////    baseColor = Color.Black;
-
-                    ////using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-
-                    //// appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis appliquer le facteur d'opacité des pierres
-                    //int baseAlpha = 255 - st.DrawingAttributes.Transparency;
-                    //int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.TagStoneOpacityPercent / 100.0))));
-                    //Color baseColor;
-                    //if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
-                    //    baseColor = st.DrawingAttributes.Color;
-                    //else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
-                    //    baseColor = Color.White;
-                    //else // ISFILLEDBLACK
-                    //    baseColor = Color.Black;
-
-                    //using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-
-
-                    //{
-                    //            if (st.DrawingAttributes.FitToCurve)
-                    //            {
-                    //                try
-                    //                {
-                    //                    Point[] pts = st.GetFlattenedBezierPoints(0);
-                    //                    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //                    g.FillClosedCurve(bru, pts);
-                    //                }
-                    //                catch { }
-                    //            }
-                    //            else
-                    //            {
-                    //                Point[] pts = st.GetPoints();
-                    //                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //                g.FillPolygon(bru, pts);
-                    //            }
-                    //        }
-                    //    }
-
-                    //else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
-                    //{
-                    //    // appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis appliquer le facteur d'opacité des pierres
-                    //    int baseAlpha = 255 - st.DrawingAttributes.Transparency;
-                    //    int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.TagStoneOpacityPercent / 100.0))));
-                    //    Color baseColor;
-                    //    if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
-                    //        baseColor = st.DrawingAttributes.Color;
-                    //    else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
-                    //        baseColor = Color.White;
-                    //    else // ISFILLEDBLACK
-                    //        baseColor = Color.Black;
-
-                    //    using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-                    //    {
-                    //        try
-                    //        {
-                    //            // Si c'est une pastille numérotée, dessiner un vrai disque (ellipse) pour un arrondi propre
-                    //            if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
-                    //            {
-                    //                Rectangle rect = st.GetBoundingBox();
-                    //                Point p = rect.Location;
-                    //                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref p);
-                    //                rect.Location = p;
-                    //                p.X = rect.Width;
-                    //                p.Y = rect.Height;
-                    //                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref p);
-                    //                rect.Width = Math.Max(1, p.X);
-                    //                rect.Height = Math.Max(1, p.Y);
-
-                    //                // Ajustement pour alignement pixel et éviter crénelage
-                    //                RectangleF rf = new RectangleF(rect.X + 0.5f, rect.Y + 0.5f, Math.Max(0, rect.Width - 1f), Math.Max(0, rect.Height - 1f));
-                    //                Rectangle rfinal = Rectangle.Round(rf);
-
-                    //                var oldSmo = g.SmoothingMode;
-                    //                var oldPix = g.PixelOffsetMode;
-                    //                g.SmoothingMode = SmoothingMode.AntiAlias;
-                    //                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                    //                g.FillEllipse(bru, rfinal);
-                    //                g.SmoothingMode = oldSmo;
-                    //                g.PixelOffsetMode = oldPix;
-                    //            }
-                    //            else
-                    //            {
-                    //                // Cas générique : remplir la forme en conservant FitToCurve, mais avec anti‑aliasing
-                    //                var oldSmo = g.SmoothingMode;
-                    //                var oldPix = g.PixelOffsetMode;
-                    //                g.SmoothingMode = SmoothingMode.AntiAlias;
-                    //                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                    //                if (st.DrawingAttributes.FitToCurve)
-                    //                {
-                    //                    try
-                    //                    {
-                    //                        Point[] pts = st.GetFlattenedBezierPoints(0);
-                    //                        Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //                        g.FillClosedCurve(bru, pts);
-                    //                    }
-                    //                    catch { }
-                    //                }
-                    //                else
-                    //                {
-                    //                    Point[] pts = st.GetPoints();
-                    //                    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //                    g.FillPolygon(bru, pts);
-                    //                }
-
-                    //                g.SmoothingMode = oldSmo;
-                    //                g.PixelOffsetMode = oldPix;
-                    //            }
-                    //        }
-                    //        catch { }
-                    //    }
-                    //}
-
-                    //           else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) ||
-                    //st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) ||
-                    //st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
-                    //           {
-                    //               //// Contour forcé invisible : on ignore complètement GoStrokeOpacityPercent / GoStrokeWidth
-                    //               //int baseAlpha = 255 - st.DrawingAttributes.Transparency;
-
-                    //               //// Opacité du REMPLISSAGE seulement (on conserve le réglage utilisateur GoFillOpacityPercent)
-                    //               //int fillAlpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.GoFillOpacityPercent / 100.0))));
-
-
-                    //               int fillAlpha = Math.Max(0, Math.Min(255, (int)(255 * (Root.GoFillOpacityPercent / 100.0))));
-
-                    //               // Couleur de base
-                    //               Color baseColor;
-                    //               if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
-                    //                   baseColor = st.DrawingAttributes.Color;
-                    //               else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
-                    //                   baseColor = Color.White;
-                    //               else
-                    //                   baseColor = Color.Black;
-
-                    //               try
-                    //               {
-                    //                   if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
-                    //                   {
-                    //                       // Pastille numérotée => ellipse propre
-                    //                       Rectangle rect = st.GetBoundingBox();
-                    //                       Point p = rect.Location;
-                    //                       Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref p);
-                    //                       rect.Location = p;
-                    //                       p.X = rect.Width;
-                    //                       p.Y = rect.Height;
-                    //                       Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref p);
-                    //                       rect.Width = Math.Max(1, p.X);
-                    //                       rect.Height = Math.Max(1, p.Y);
-
-                    //                       RectangleF rf = new RectangleF(rect.X + 0.5f, rect.Y + 0.5f,
-                    //                                                      Math.Max(0, rect.Width - 1f),
-                    //                                                      Math.Max(0, rect.Height - 1f));
-                    //                       Rectangle rfinal = Rectangle.Round(rf);
-
-                    //                       var oldSmo = g.SmoothingMode;
-                    //                       var oldPix = g.PixelOffsetMode;
-                    //                       g.SmoothingMode = SmoothingMode.AntiAlias;
-                    //                       g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                    //                       if (fillAlpha > 0)
-                    //                       {
-                    //                           using (SolidBrush fillBrush = new SolidBrush(Color.FromArgb(fillAlpha, baseColor)))
-                    //                               g.FillEllipse(fillBrush, rfinal);
-                    //                       }
-
-                    //                       // PAS de contour (suppression volontaire)
-
-                    //                       g.SmoothingMode = oldSmo;
-                    //                       g.PixelOffsetMode = oldPix;
-                    //                   }
-                    //                   else
-                    //                   {
-                    //                       // Forme générique (polygone / closed curve)
-                    //                       var oldSmo = g.SmoothingMode;
-                    //                       var oldPix = g.PixelOffsetMode;
-                    //                       g.SmoothingMode = SmoothingMode.AntiAlias;
-                    //                       g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                    //                       Point[] pts = st.DrawingAttributes.FitToCurve
-                    //                           ? st.GetFlattenedBezierPoints(0)
-                    //                           : st.GetPoints();
-                    //                       Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-
-                    //                       if (fillAlpha > 0)
-                    //                       {
-                    //                           using (SolidBrush fillBrush = new SolidBrush(Color.FromArgb(fillAlpha, baseColor)))
-                    //                           {
-                    //                               if (st.DrawingAttributes.FitToCurve)
-                    //                                   g.FillClosedCurve(fillBrush, pts);
-                    //                               else
-                    //                                   g.FillPolygon(fillBrush, pts);
-                    //                           }
-                    //                       }
-
-                    //                       // PAS de contour (suppression volontaire)
-
-                    //                       g.SmoothingMode = oldSmo;
-                    //                       g.PixelOffsetMode = oldPix;
-                    //                   }
-                    //               }
-                    //               catch { }
-                    //           }
 
                     else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) ||
                             st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) ||
@@ -877,27 +593,138 @@ namespace gInk
                     }
 
 
-                    /// ################ goInk - START ####################
+                    // ... dans DrawStrokes(Graphics g), remplacez le bloc flèche existant par :
+                    if (st.ExtendedProperties.Contains(Root.ARROWEND_GUID) || st.ExtendedProperties.Contains(Root.ARROWSTART_GUID))
+                    {
+                        try
+                        {
+                            Point[] pts = st.GetPoints();
+                            if (pts == null || pts.Length < 2)
+                                goto AfterArrowHead;
+
+                            // InkSpace -> Pixels
+                            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
+                            PointF endA = pts[0];
+                            PointF endB = pts[pts.Length - 1];
+
+                            // Distance^2
+                            Func<PointF, PointF, double> d2 = (a, b) =>
+                            {
+                                double ddx = a.X - b.X, ddy = a.Y - b.Y;
+                                return ddx * ddx + ddy * ddy;
+                            };
+
+                            // Choix de la pointe et de la queue
+                            PointF start = endA;
+                            PointF tip = endB;
+                            bool chosen = false;
+
+                            // 1) Priorité à ARROWEND (pointe au relâchement)
+                            if (st.ExtendedProperties.Contains(Root.ARROWEND_X_GUID) &&
+                                st.ExtendedProperties.Contains(Root.ARROWEND_Y_GUID))
+                            {
+                                int ex = (int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data;
+                                int ey = (int)st.ExtendedProperties[Root.ARROWEND_Y_GUID].Data;
+                                if (ex != Int32.MinValue)
+                                {
+                                    PointF endProp = new PointF(ex, ey);
+                                    if (d2(endA, endProp) <= d2(endB, endProp))
+                                    {
+                                        tip = endA; start = endB;
+                                    }
+                                    else
+                                    {
+                                        tip = endB; start = endA;
+                                    }
+                                    chosen = true;
+                                }
+                            }
+
+                            // 2) Sinon ARROWSTART (pointe au départ)
+                            if (!chosen &&
+                                st.ExtendedProperties.Contains(Root.ARROWSTART_X_GUID) &&
+                                st.ExtendedProperties.Contains(Root.ARROWSTART_Y_GUID))
+                            {
+                                int sx = (int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data;
+                                int sy = (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data;
+                                if (sx != Int32.MinValue)
+                                {
+                                    PointF startProp = new PointF(sx, sy);
+                                    if (d2(endA, startProp) <= d2(endB, startProp))
+                                    {
+                                        tip = endA; start = endB;
+                                    }
+                                    else
+                                    {
+                                        tip = endB; start = endA;
+                                    }
+                                    chosen = true;
+                                }
+                            }
+
+                            // Géométrie
+                            double dirX = tip.X - start.X;
+                            double dirY = tip.Y - start.Y;
+                            double len = Math.Sqrt(dirX * dirX + dirY * dirY);
+                            if (len <= 2.0)
+                            {
+                                using (var brush0 = new SolidBrush(Root.GetArrowColor()))
+                                    g.FillEllipse(brush0, tip.X - 2, tip.Y - 2, 4, 4);
+                                continue;
+                            }
+
+                            double ux = dirX / len, uy = dirY / len;
+                            double vx = -uy, vy = ux;
+
+                            // FACTEUR GRID
+                            //float scale = GetArrowGridScale();
+                            float scale = GetArrowGridScale() * ArrowSizeMultiplier;
+
+                            // Largeur de hampe et longueur de tête avec homothétie
+                            float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()) * scale);
+                            float halfStem = widthPx * 0.5f;
+
+                            float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx() * scale);
+                            float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
+
+                            PointF headBase = new PointF(
+                                (float)(tip.X - ux * headLen),
+                                (float)(tip.Y - uy * headLen));
+
+                            // Pointe plus plate
+                            const float HeadBaseFactor = 2.2f;
+                            float headBaseHalf = halfStem * HeadBaseFactor;
+
+                            PointF p0 = new PointF((float)(start.X + vx * halfStem), (float)(start.Y + vy * halfStem));
+                            PointF p1 = new PointF((float)(headBase.X + vx * halfStem), (float)(headBase.Y + vy * halfStem));
+                            PointF p2 = new PointF((float)(headBase.X + vx * headBaseHalf), (float)(headBase.Y + vy * headBaseHalf));
+                            PointF p3 = tip;
+                            PointF p4 = new PointF((float)(headBase.X - vx * headBaseHalf), (float)(headBase.Y - vy * headBaseHalf));
+                            PointF p5 = new PointF((float)(headBase.X - vx * halfStem), (float)(headBase.Y - vy * halfStem));
+                            PointF p6 = new PointF((float)(start.X - vx * halfStem), (float)(start.Y - vy * halfStem));
+
+                            PointF[] arrowPoly = new[] { p0, p1, p2, p3, p4, p5, p6 };
+
+                            var oldSmo = g.SmoothingMode;
+                            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+                            using (var brush = new SolidBrush(Root.GetArrowColor()))
+                                g.FillPolygon(brush, arrowPoly);
+
+                            g.SmoothingMode = oldSmo;
+
+                            continue; // ne pas dessiner le trait initial
+                        }
+                        catch { }
+                    }
+
+                AfterArrowHead:;
 
 
-                    if (st.ExtendedProperties.Contains(Root.ARROWSTART_GUID))
-                    {
-                        Point pt = new Point((int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data);
-                        Bitmap b = Root.FormCollection.StoredArrowImages[(int)st.ExtendedProperties[Root.ARROWSTART_GUID].Data];
-                        pt.Offset(-b.Width/2, -b.Height / 2);
-                        g.DrawImage(b, new Rectangle(pt.X, pt.Y, b.Width, b.Height));
-                    }
-                    if (st.ExtendedProperties.Contains(Root.ARROWEND_GUID))
-                    {
-                        Point pt;
-                        if ((int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data != Int32.MinValue)
-                            pt = new Point((int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWEND_Y_GUID].Data);
-                        else
-                            pt = new Point((int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data);                                           
-                        Bitmap b = Root.FormCollection.StoredArrowImages[(int)st.ExtendedProperties[Root.ARROWEND_GUID].Data];
-                        pt.Offset(-b.Width / 2, -b.Height / 2);
-                        g.DrawImage(b, new Rectangle(pt.X, pt.Y, b.Width, b.Height));
-                    }
+
+
+
+
                     if (st.ExtendedProperties.Contains(Root.IMAGE_GUID))
                     {
                         //Image img = Root.FormCollection.ClipartsDlg.Images.Images[(int)(st.ExtendedProperties[Root.IMAGE_GUID].Data)];
@@ -1788,69 +1615,320 @@ namespace gInk
             p.Dispose();
         }
 
-        public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
-        {
-            Point[] pts = new Point[5];
-            double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
-            Pen p = PenForDrawOn(dr, st);
+        //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
+        //{
+        //    Point[] pts = new Point[5];
+        //    double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
+        //    Pen p = PenForDrawOn(dr, st);
 
-            double l = Root.FormCollection.ArrowVarLen();
+        //    double l = Root.FormCollection.ArrowVarLen();
 
-            gOutCanvus.DrawLine(p,CursorX0, CursorY0, (int)(CursorX0 + Math.Cos(theta + Root.ArrowAngle) * l), (int)(CursorY0 + Math.Sin(theta + Root.ArrowAngle) * l));
-            gOutCanvus.DrawLine(p, CursorX0, CursorY0, (int)(CursorX0 + Math.Cos(theta - Root.ArrowAngle) * l), (int)(CursorY0 + Math.Sin(theta - Root.ArrowAngle) * l));
-            gOutCanvus.DrawLine(p, CursorX0, CursorY0, CursorX,CursorY);
+        //    gOutCanvus.DrawLine(p,CursorX0, CursorY0, (int)(CursorX0 + Math.Cos(theta + Root.ArrowAngle) * l), (int)(CursorY0 + Math.Sin(theta + Root.ArrowAngle) * l));
+        //    gOutCanvus.DrawLine(p, CursorX0, CursorY0, (int)(CursorX0 + Math.Cos(theta - Root.ArrowAngle) * l), (int)(CursorY0 + Math.Sin(theta - Root.ArrowAngle) * l));
+        //    gOutCanvus.DrawLine(p, CursorX0, CursorY0, CursorX,CursorY);
 
-            p.Dispose();
-        }
+        //    p.Dispose();
+        //}
+
+        //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
+        //{
+        //    // Forcer couleur/épaisseur de la flèche depuis Root (persistés via options)
+        //    DrawingAttributes da = new DrawingAttributes();
+        //    try
+        //    {
+        //        da.Color = Root.GetArrowColor();
+        //    }
+        //    catch
+        //    {
+        //        da.Color = Color.Red;
+        //    }
+        //    da.Transparency = 0; // pleine opacité pour la flèche
+        //    da.Width = Root.GetArrowWidthHiMetric(); // width attendu en HiMetric
+
+        //    // Pen construit à partir des attributs forcés
+        //    Pen p = PenForDrawOn(da, st);
+
+        //    // angle de la flèche et longueur forcée (en pixels)
+        //    double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
+        //    double l = Root.GetFixedArrowLengthPx();
+
+        //    // dessiner les deux "ailes" de la tête d'arrow à partir du point de départ
+        //    gOutCanvus.DrawLine(p,
+        //                        CursorX0,
+        //                        CursorY0,
+        //                        (int)(CursorX0 + Math.Cos(theta + Root.ArrowAngle) * l),
+        //                        (int)(CursorY0 + Math.Sin(theta + Root.ArrowAngle) * l));
+        //    gOutCanvus.DrawLine(p,
+        //                        CursorX0,
+        //                        CursorY0,
+        //                        (int)(CursorX0 + Math.Cos(theta - Root.ArrowAngle) * l),
+        //                        (int)(CursorY0 + Math.Sin(theta - Root.ArrowAngle) * l));
+
+        //    // dessiner la hampe principale jusqu'à la position courante du curseur
+        //    gOutCanvus.DrawLine(p, CursorX0, CursorY0, CursorX, CursorY);
+
+        //    p.Dispose();
+        //}
+        //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
+        //{
+        //    // Forcer couleur/épaisseur de la flèche depuis Root (persistés via options)
+        //    DrawingAttributes da = new DrawingAttributes();
+        //    try
+        //    {
+        //        da.Color = Root.GetArrowColor();
+        //    }
+        //    catch
+        //    {
+        //        da.Color = Color.Red;
+        //    }
+        //    // Utiliser l'alpha enregistré (Color.A) : DrawingAttributes.Transparency = 255 - alpha
+        //    da.Transparency = (byte)(255 - da.Color.A);
+        //    da.Width = Root.GetArrowWidthHiMetric(); // width attendu en HiMetric
+
+        //    // Pen construit à partir des attributs forcés
+        //    Pen p = PenForDrawOn(da, st);
+
+        //    // angle de la flèche et longueur forcée (en pixels)
+        //    double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
+        //    double l = Root.GetFixedArrowLengthPx();
+
+        //    // dessiner les deux "ailes" de la tête d'arrow à partir du point de départ
+        //    gOutCanvus.DrawLine(p,
+        //                        CursorX0,
+        //                        CursorY0,
+        //                        (int)(CursorX0 + Math.Cos(theta + Root.ArrowAngle) * l),
+        //                        (int)(CursorY0 + Math.Sin(theta + Root.ArrowAngle) * l));
+        //    gOutCanvus.DrawLine(p,
+        //                        CursorX0,
+        //                        CursorY0,
+        //                        (int)(CursorX0 + Math.Cos(theta - Root.ArrowAngle) * l),
+        //                        (int)(CursorY0 + Math.Sin(theta - Root.ArrowAngle) * l));
+
+        //    // dessiner la hampe principale jusqu'à la position courante du curseur
+        //    gOutCanvus.DrawLine(p, CursorX0, CursorY0, CursorX, CursorY);
+
+        //    p.Dispose();
+        //}
+
+        //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
+        //{
+        //    // Couleur/épaisseur configurées
+        //    DrawingAttributes da = new DrawingAttributes();
+        //    try
+        //    {
+        //        da.Color = Root.GetArrowColor();
+        //    }
+        //    catch
+        //    {
+        //        da.Color = Color.Red;
+        //    }
+        //    // alpha depuis Color.A
+        //    da.Transparency = (byte)(255 - da.Color.A);
+        //    da.Width = Root.GetArrowWidthHiMetric(); // HiMetric
+
+        //    using (var p = PenForDrawOn(da, st))
+        //    {
+        //        // Direction du trait
+        //        double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
+        //        double l = Root.GetFixedArrowLengthPx();
+
+        //        // Tête AU POINT DE FIN (CursorX, CursorY)
+        //        int hx1 = (int)(CursorX - Math.Cos(theta + Root.ArrowAngle) * l);
+        //        int hy1 = (int)(CursorY - Math.Sin(theta + Root.ArrowAngle) * l);
+        //        int hx2 = (int)(CursorX - Math.Cos(theta - Root.ArrowAngle) * l);
+        //        int hy2 = (int)(CursorY - Math.Sin(theta - Root.ArrowAngle) * l);
+
+        //        // Hampe
+        //        gOutCanvus.DrawLine(p, CursorX0, CursorY0, CursorX, CursorY);
+        //        // Deux ailes de la tête au bout
+        //        gOutCanvus.DrawLine(p, CursorX, CursorY, hx1, hy1);
+        //        gOutCanvus.DrawLine(p, CursorX, CursorY, hx2, hy2);
+        //    }
+        //}
+
 
         public void DrawCustomOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY)
         {
-            if ((CursorX0 != int.MinValue) || (CursorY0 != int.MinValue))
+            if (CursorX0 == int.MinValue && CursorY0 == int.MinValue)
+                return;
+
+            if (Root.ToolSelected == Tools.Line || Root.ToolSelected == Tools.Poly)
             {
-                DrawingAttributes da = Root.FormCollection.IC.DefaultDrawingAttributes; ;
-                DashStyle ds;
-                try
-                {
-                    ds = Root.LineStyleFromString(Root.LineStyleToString(da.ExtendedProperties));
-                    if (ds == DashStyle.Custom) 
-                        ds = DashStyle.Solid;
-                }
-                catch
-                {
-                    ds = DashStyle.Solid;
-                }
-                if (Root.FormCollection.ZoomCapturing)
-                    DrawRectOnGraphic(g, CursorX0, CursorY0, CursorX, CursorY, da, ds);
-                //DrawRectOnGraphic(g, CursorX0, CursorY0, CursorX, CursorY,Root.FormCollection.IC.Ink.Strokes[Root.FormCollection.IC.Ink.Strokes.Count-1].DrawingAttributes);
-                else if ((Root.ToolSelected == Tools.Line) || (Root.ToolSelected == Tools.Poly))
-                    DrawLineOnGraphic(g, CursorX0, CursorY0, CursorX, CursorY, da, ds);
-                else if ((Root.ToolSelected == Tools.Rect) || (Root.ToolSelected == Tools.ClipArt) || (Root.ToolSelected == Tools.PatternLine && Root.FormCollection.PatternLineSteps == 0))
-                    if ((Root.FormCollection.CurrentMouseButton == MouseButtons.Right) || ((int)(Root.FormCollection.CurrentMouseButton) == 2))
-                        DrawRectOnGraphic(g, 2 * CursorX0 - CursorX, 2 * CursorY0 - CursorY, CursorX, CursorY, da, ds);
-                    else
-                        DrawRectOnGraphic(g, CursorX0, CursorY0, CursorX, CursorY, da, ds);
-                else if (Root.ToolSelected == Tools.PatternLine && Root.FormCollection.PatternLineSteps == 1)
-                {
-                    bool m = (Root.FormCollection.CurrentMouseButton == MouseButtons.Right) || ((int)(Root.FormCollection.CurrentMouseButton) == 2);
-                    List<Point> pts = new List<Point>();
-                    pts.Add(new Point() { X = CursorX0 - (m ? (Root.ImageStamp.X / 2) : 0), Y = CursorY0 - (m ? (Root.ImageStamp.Y / 2) : 0) });
-                    pts.Add(new Point() { X = CursorX - (m ? (Root.ImageStamp.X / 2) : 0), Y = CursorY - (m ? (Root.ImageStamp.Y / 2) : 0) });
-                    DrawImagesOnGraphic(g, pts, Root.FormCollection.PatternImage, Root.ImageStamp.X, Root.ImageStamp.Y,OnLine: Root.FormCollection.RotatingOnLine);
-                }
-                else if (Root.ToolSelected == Tools.PatternLine && Root.FormCollection.PatternLineSteps == 2)
-                    DrawImagesOnGraphic(g, Root.FormCollection.PatternPoints,Root.FormCollection.PatternImage, Root.ImageStamp.X, Root.ImageStamp.Y,OnLine: Root.FormCollection.RotatingOnLine);
-                else if (Root.ToolSelected == Tools.Oval)
-                    if ((Root.FormCollection.CurrentMouseButton == MouseButtons.Right) || ((int)(Root.FormCollection.CurrentMouseButton) == 2))
-                        DrawEllipseOnGraphic(g, CursorX0, CursorY0, CursorX, CursorY, da, ds);
-                    else
-                        DrawEllipseOnGraphic(g, (CursorX0 + CursorX) / 2, (CursorY0 + CursorY) / 2, CursorX, CursorY, da, ds);
-                else if ((Root.ToolSelected == Tools.StartArrow) || (Root.ToolSelected == Tools.EndArrow))
-                    if ((Root.ToolSelected == Tools.StartArrow) ^ ((Root.FormCollection.CurrentMouseButton == MouseButtons.Right) || ((int)(Root.FormCollection.CurrentMouseButton) == 2)))
-                        DrawArrowOnGraphic(g, CursorX, CursorY, CursorX0, CursorY0, da, ds);
-                    else
-                        DrawArrowOnGraphic(g, CursorX0, CursorY0, CursorX, CursorY, da, ds);
+                DrawLineOnGraphic(g, CursorX0, CursorY0, CursorX, CursorY);
+            }
+            else if (Root.ToolSelected == Tools.Rect)
+            {
+                DrawRectOnGraphic(g, CursorX0, CursorY0, CursorX, CursorY);
+            }
+            else if (Root.ToolSelected == Tools.Oval)
+            {
+                DrawEllipseOnGraphic(g, CursorX0, CursorY0, CursorX, CursorY);
+            }
+            else if (Root.ToolSelected == Tools.StartArrow || Root.ToolSelected == Tools.EndArrow)
+            {
+                DrawArrowOnGraphic(g, CursorX0, CursorY0, CursorX, CursorY);
             }
         }
+        //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
+        //{
+        //    if (CursorX0 == int.MinValue && CursorY0 == int.MinValue)
+        //        return;
+
+        //    if (g == null)
+        //        g = gOutCanvus;
+
+        //    // Préparer DrawingAttributes (priorité à dr si fourni)
+        //    DrawingAttributes da;
+        //    if (dr != null)
+        //        da = dr.Clone();
+        //    else
+        //    {
+        //        da = Root.FormCollection?.IC?.DefaultDrawingAttributes?.Clone() ?? new DrawingAttributes();
+        //        try { da.Color = Root.GetArrowColor(); } catch { }
+        //        da.Transparency = (byte)(255 - da.Color.A);
+        //        da.Width = Root.GetArrowWidthHiMetric();
+        //    }
+
+        //    // Rien à dessiner si pas de mouvement
+        //    double dx = CursorX - CursorX0;
+        //    double dy = CursorY - CursorY0;
+        //    if (Math.Abs(dx) < 1e-6 && Math.Abs(dy) < 1e-6)
+        //        return;
+
+        //    using (var pen = PenForDrawOn(da, st))
+        //    {
+        //        // Hampe
+        //        g.DrawLine(pen, CursorX0, CursorY0, CursorX, CursorY);
+
+        //        // Calcul de la tête (toujours au point de fin)
+        //        double theta = Math.Atan2(dy, dx);
+        //        double headLen = Root.GetFixedArrowLengthPx();
+        //        int hx1 = (int)Math.Round(CursorX - Math.Cos(theta + Root.ArrowAngle) * headLen);
+        //        int hy1 = (int)Math.Round(CursorY - Math.Sin(theta + Root.ArrowAngle) * headLen);
+        //        int hx2 = (int)Math.Round(CursorX - Math.Cos(theta - Root.ArrowAngle) * headLen);
+        //        int hy2 = (int)Math.Round(CursorY - Math.Sin(theta - Root.ArrowAngle) * headLen);
+
+        //        g.DrawLine(pen, CursorX, CursorY, hx1, hy1);
+        //        g.DrawLine(pen, CursorX, CursorY, hx2, hy2);
+        //    }
+        //}
+
+
+        //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
+        //{
+        //    if (CursorX0 == int.MinValue && CursorY0 == int.MinValue)
+        //        return;
+
+        //    if (g == null)
+        //        g = gOutCanvus;
+
+        //    // Préparer les DrawingAttributes (priorité à dr si fourni)
+        //    DrawingAttributes da = dr?.Clone() ?? Root.FormCollection?.IC?.DefaultDrawingAttributes?.Clone() ?? new DrawingAttributes();
+        //    try { da.Color = Root.GetArrowColor(); } catch { }
+        //    da.Transparency = (byte)(255 - da.Color.A);
+        //    da.Width = Root.GetArrowWidthHiMetric();
+
+        //    // Calcul de l'angle et de la longueur de la tête de flèche
+        //    double dx = CursorX - CursorX0;
+        //    double dy = CursorY - CursorY0;
+        //    if (Math.Abs(dx) < 1e-6 && Math.Abs(dy) < 1e-6)
+        //        return; // Pas de mouvement, rien à dessiner
+
+        //    double theta = Math.Atan2(dy, dx);
+        //    double headLen = Root.GetFixedArrowLengthPx();
+
+        //    // Calcul des points de la tête de flèche (au point d'arrivée)
+        //    int hx1 = (int)Math.Round(CursorX - Math.Cos(theta + Root.ArrowAngle) * headLen);
+        //    int hy1 = (int)Math.Round(CursorY - Math.Sin(theta + Root.ArrowAngle) * headLen);
+        //    int hx2 = (int)Math.Round(CursorX - Math.Cos(theta - Root.ArrowAngle) * headLen);
+        //    int hy2 = (int)Math.Round(CursorY - Math.Sin(theta - Root.ArrowAngle) * headLen);
+
+        //    using (var pen = PenForDrawOn(da, st))
+        //    {
+        //        // Dessiner la hampe de la flèche
+        //        g.DrawLine(pen, CursorX0, CursorY0, CursorX, CursorY);
+
+        //        // Dessiner les deux ailes de la tête de flèche
+        //        g.DrawLine(pen, CursorX, CursorY, hx1, hy1);
+        //        g.DrawLine(pen, CursorX, CursorY, hx2, hy2);
+        //    }
+        //}
+
+
+        // Remplacez entièrement DrawArrowOnGraphic par :
+        public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
+        {
+            if (CursorX0 == int.MinValue && CursorY0 == int.MinValue)
+                return;
+
+            if (g == null)
+                g = gOutCanvus;
+
+            double dx = CursorX - CursorX0;
+            double dy = CursorY - CursorY0;
+            double len = Math.Sqrt(dx * dx + dy * dy);
+            if (len <= 2.0)
+                return;
+
+            double ux = dx / len;
+            double uy = dy / len;
+            double vx = -uy;
+            double vy = ux;
+
+            //float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()));
+            //float halfStem = widthPx * 0.5f;
+
+            //float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx());
+            //float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
+
+            //PointF start = new PointF(CursorX0, CursorY0);
+            //PointF tip = new PointF(CursorX, CursorY);
+            //PointF headBase = new PointF(
+            //    (float)(tip.X - ux * headLen),
+            //    (float)(tip.Y - uy * headLen));
+
+            //const float HeadBaseFactor = 2.2f; // était 1.6f
+            //float headBaseHalf = halfStem * HeadBaseFactor;
+
+            // FACTEUR GRID
+            //float scale = GetArrowGridScale();
+            float scale = GetArrowGridScale() * ArrowSizeMultiplier;
+
+            // Options -> dimensions (échelle appliquée)
+            float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()) * scale);
+            float halfStem = widthPx * 0.5f;
+
+            float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx() * scale);
+            float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
+
+            // Points géométriques
+            PointF start = new PointF(CursorX0, CursorY0);
+            PointF tip = new PointF(CursorX, CursorY);
+            PointF headBase = new PointF(
+                (float)(tip.X - ux * headLen),
+                (float)(tip.Y - uy * headLen));
+            const float HeadBaseFactor = 2.2f; // pointe plus plate
+            float headBaseHalf = halfStem * HeadBaseFactor;
+
+
+            PointF p0 = new PointF((float)(start.X + vx * halfStem), (float)(start.Y + vy * halfStem));
+            PointF p1 = new PointF((float)(headBase.X + vx * halfStem), (float)(headBase.Y + vy * halfStem));
+            PointF p2 = new PointF((float)(headBase.X + vx * headBaseHalf), (float)(headBase.Y + vy * headBaseHalf));
+            PointF p3 = tip;
+            PointF p4 = new PointF((float)(headBase.X - vx * headBaseHalf), (float)(headBase.Y - vy * headBaseHalf));
+            PointF p5 = new PointF((float)(headBase.X - vx * halfStem), (float)(headBase.Y - vy * halfStem));
+            PointF p6 = new PointF((float)(start.X - vx * halfStem), (float)(start.Y - vy * halfStem));
+            PointF[] arrowPoly = new[] { p0, p1, p2, p3, p4, p5, p6 };
+
+            var oldSmo = g.SmoothingMode;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            using (var brush = new SolidBrush(Root.GetArrowColor()))
+                g.FillPolygon(brush, arrowPoly);
+
+            g.SmoothingMode = oldSmo;
+        }
+
 
         public int Test()
 		{
