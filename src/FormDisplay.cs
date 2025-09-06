@@ -880,368 +880,8 @@ namespace gInk
                     /// ################ goInk - START ####################
 
 
-                    //if (st.ExtendedProperties.Contains(Root.ARROWSTART_GUID))
-                    //{
-                    //    Point pt = new Point((int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data);
-                    //    Bitmap b = Root.FormCollection.StoredArrowImages[(int)st.ExtendedProperties[Root.ARROWSTART_GUID].Data];
-                    //    pt.Offset(-b.Width/2, -b.Height / 2);
-                    //    g.DrawImage(b, new Rectangle(pt.X, pt.Y, b.Width, b.Height));
-                    //}
 
 
-
-                    //if (st.ExtendedProperties.Contains(Root.ARROWEND_GUID))
-                    //{
-                    //    Point pt;
-                    //    if ((int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data != Int32.MinValue)
-                    //        pt = new Point((int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWEND_Y_GUID].Data);
-                    //    else
-                    //        pt = new Point((int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data);                                           
-                    //    Bitmap b = Root.FormCollection.StoredArrowImages[(int)st.ExtendedProperties[Root.ARROWEND_GUID].Data];
-                    //    pt.Offset(-b.Width / 2, -b.Height / 2);
-                    //    g.DrawImage(b, new Rectangle(pt.X, pt.Y, b.Width, b.Height));
-                    //}
-
-
-                    //// Remplacez l'ancien bloc qui dessinait l'image de la tête de flèche par ceci :
-                    //if (st.ExtendedProperties.Contains(Root.ARROWSTART_GUID))
-                    //{
-                    //    try
-                    //    {
-                    //        int sx = (int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data;
-                    //        int sy = (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data;
-                    //        PointF start = new PointF(sx, sy);
-
-                    //        PointF end;
-                    //        if (st.ExtendedProperties.Contains(Root.ARROWEND_X_GUID) && (int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data != Int32.MinValue)
-                    //            end = new PointF((int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWEND_Y_GUID].Data);
-                    //        else
-                    //            end = start;
-
-                    //        double theta = Math.Atan2(end.Y - start.Y, end.X - start.X);
-                    //        float headLen = (float)Root.GetFixedArrowLengthPx();
-                    //        // Points de la pointe (triangle) orientés vers theta
-                    //        PointF p1 = start;
-                    //        PointF p2 = new PointF((float)(start.X + Math.Cos(theta + Root.ArrowAngle) * headLen),
-                    //                               (float)(start.Y + Math.Sin(theta + Root.ArrowAngle) * headLen));
-                    //        PointF p3 = new PointF((float)(start.X + Math.Cos(theta - Root.ArrowAngle) * headLen),
-                    //                               (float)(start.Y + Math.Sin(theta - Root.ArrowAngle) * headLen));
-
-                    //        var oldSmo = g.SmoothingMode;
-                    //        g.SmoothingMode = SmoothingMode.AntiAlias;
-
-                    //        int alpha = 255 - st.DrawingAttributes.Transparency;
-                    //        Color baseColor = st.DrawingAttributes.Color;
-                    //        using (var bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-                    //            g.FillPolygon(bru, new PointF[] { p1, p2, p3 });
-
-                    //        using (var pen = PenForDrawOn(st.DrawingAttributes, DashStyle.Solid))
-                    //            g.DrawLine(pen, start, end);
-
-                    //        g.SmoothingMode = oldSmo;
-                    //    }
-                    //    catch { }
-                    //}
-
-                    //// Remplacez l'ancien bloc qui dessinait l'image de la queue de flèche par ceci :
-                    //if (st.ExtendedProperties.Contains(Root.ARROWEND_GUID))
-                    //{
-                    //    try
-                    //    {
-                    //        PointF end;
-                    //        if ((int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data != Int32.MinValue)
-                    //            end = new PointF((int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWEND_Y_GUID].Data);
-                    //        else
-                    //            end = new PointF((int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data);
-
-                    //        PointF start = new PointF((int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data);
-
-                    //        double theta = Math.Atan2(end.Y - start.Y, end.X - start.X);
-                    //        // pour la queue (fin), la pointe doit être orientée vers theta + PI
-                    //        double thetaTail = theta + Math.PI;
-                    //        float headLen = (float)Root.GetFixedArrowLengthPx();
-
-                    //        PointF p1 = end;
-                    //        PointF p2 = new PointF((float)(end.X + Math.Cos(thetaTail + Root.ArrowAngle) * headLen),
-                    //                               (float)(end.Y + Math.Sin(thetaTail + Root.ArrowAngle) * headLen));
-                    //        PointF p3 = new PointF((float)(end.X + Math.Cos(thetaTail - Root.ArrowAngle) * headLen),
-                    //                               (float)(end.Y + Math.Sin(thetaTail - Root.ArrowAngle) * headLen));
-
-                    //        var oldSmo = g.SmoothingMode;
-                    //        g.SmoothingMode = SmoothingMode.AntiAlias;
-
-                    //        int alpha = 255 - st.DrawingAttributes.Transparency;
-                    //        Color baseColor = st.DrawingAttributes.Color;
-                    //        using (var bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-                    //            g.FillPolygon(bru, new PointF[] { p1, p2, p3 });
-
-                    //        using (var pen = PenForDrawOn(st.DrawingAttributes, DashStyle.Solid))
-                    //            g.DrawLine(pen, start, end);
-
-                    //        g.SmoothingMode = oldSmo;
-                    //    }
-                    //    catch { }
-                    //}
-
-
-                    // Dessin vectoriel : une seule pointe (à l'extrémité) — triangle rempli + contour fin (moins pointu)
-                    //if (st.ExtendedProperties.Contains(Root.ARROWSTART_GUID) || st.ExtendedProperties.Contains(Root.ARROWEND_GUID))
-                    //{
-                    //    try
-                    //    {
-                    //        PointF start = new PointF((int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data);
-                    //        PointF end;
-                    //        if (st.ExtendedProperties.Contains(Root.ARROWEND_X_GUID) && (int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data != Int32.MinValue)
-                    //            end = new PointF((int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data, (int)st.ExtendedProperties[Root.ARROWEND_Y_GUID].Data);
-                    //        else
-                    //            end = start;
-
-                    //        double dx = end.X - start.X;
-                    //        double dy = end.Y - start.Y;
-                    //        double dist = Math.Sqrt(dx * dx + dy * dy);
-
-                    //        if (dist > 2.0)
-                    //        {
-                    //            // angle de la hampe
-                    //            double theta = Math.Atan2(dy, dx);
-                    //            // rendre la pointe moins pointue : on augmente l'angle de la pointe
-                    //            double tipAngle = Math.Min(Math.PI / 2.0, Root.ArrowAngle * 2.0); // ex : 15° -> 30°
-                    //                                                                              // longueur de la pointe en pixels
-                    //            float headLen = (float)(Root.GetFixedArrowLengthPx() * 0.9);
-
-                    //            PointF tip = end;
-                    //            PointF baseA = new PointF((float)(end.X + Math.Cos(theta + tipAngle) * headLen), (float)(end.Y + Math.Sin(theta + tipAngle) * headLen));
-                    //            PointF baseB = new PointF((float)(end.X + Math.Cos(theta - tipAngle) * headLen), (float)(end.Y + Math.Sin(theta - tipAngle) * headLen));
-
-                    //            var oldSmo = g.SmoothingMode;
-                    //            g.SmoothingMode = SmoothingMode.AntiAlias;
-
-                    //            int alpha = 255 - st.DrawingAttributes.Transparency;
-                    //            Color baseColor = st.DrawingAttributes.Color;
-
-                    //            // Remplissage de la pointe
-                    //            using (var brush = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-                    //                g.FillPolygon(brush, new PointF[] { tip, baseA, baseB });
-
-                    //            // Contour fin pour lisibilité (épaisseur adaptée)
-                    //            float outlineWidth = Math.Max(1f, Root.HiMetricToPixel(st.DrawingAttributes.Width) * 0.15f);
-                    //            using (var outline = new Pen(Color.FromArgb(alpha, baseColor), outlineWidth))
-                    //            {
-                    //                outline.LineJoin = LineJoin.Round;
-                    //                g.DrawPolygon(outline, new PointF[] { tip, baseA, baseB });
-                    //            }
-
-                    //            g.SmoothingMode = oldSmo;
-                    //        }
-                    //        else
-                    //        {
-                    //            // si trop court, un petit point
-                    //            int alpha = 255 - st.DrawingAttributes.Transparency;
-                    //            using (var brush = new SolidBrush(Color.FromArgb(alpha, st.DrawingAttributes.Color)))
-                    //                g.FillEllipse(brush, end.X - 2, end.Y - 2, 4, 4);
-                    //        }
-                    //    }
-                    //    catch { }
-                    //}
-
-
-                    // Dessin vectoriel : utiliser les points de la stroke (convertis en pixels) pour positionner la pointe
-                    // Dessin vectoriel robuste : détermination fiable de start/end depuis ExtendedProperties ou depuis les points de la stroke
-
-                    // Pointe de flèche vectorielle robuste: priorité END, sinon START. Position prise des ExtendedProperties si dispo, sinon des points de la stroke.
-
-                    // Flèche vectorielle: tête uniquement à END
-                    // Flèche vectorielle : tête uniquement à END — toujours basée sur les points de la stroke (pixels)
-                    // Flèche vectorielle : pointe FORCÉE à la position finale (CursorX,CursorY)
-                    // Remplacement robuste du bloc qui dessinait la pointe basée uniquement sur ExtendedProperties.
-                    // On préfère utiliser les ExtendedProperties si elles sont valides, sinon on déduit
-                    // start/end depuis les points de la stroke (convertis en pixels).
-                    //if (st.ExtendedProperties.Contains(Root.ARROWEND_GUID))
-                    //{
-                    //    try
-                    //    {
-                    //        // Déterminer tip (position finale) : priorité aux propriétés enregistrées
-                    //        PointF tip;
-                    //        bool tipFromProps = false;
-                    //        if (st.ExtendedProperties.Contains(Root.ARROWEND_X_GUID) &&
-                    //            st.ExtendedProperties.Contains(Root.ARROWEND_Y_GUID) &&
-                    //            (int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data != Int32.MinValue)
-                    //        {
-                    //            tip = new PointF((int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data,
-                    //                             (int)st.ExtendedProperties[Root.ARROWEND_Y_GUID].Data);
-                    //            tipFromProps = true;
-                    //        }
-                    //        else
-                    //        {
-                    //            // Fallback : récupérer le dernier point de la stroke (converti en pixels)
-                    //            Point[] inkPts = st.GetPoints();
-                    //            if (inkPts != null && inkPts.Length > 0)
-                    //            {
-                    //                // Convertir en pixels
-                    //                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref inkPts);
-                    //                Point p = inkPts[inkPts.Length - 1];
-                    //                tip = new PointF(p.X, p.Y);
-                    //            }
-                    //            else
-                    //            {
-                    //                // pas d'info -> ignorer
-                    //                continue;
-                    //            }
-                    //        }
-
-                    //        // Déterminer start (origine de la hampe) : priorité aux propriétés enregistrées
-                    //        PointF start;
-                    //        if (st.ExtendedProperties.Contains(Root.ARROWSTART_X_GUID) &&
-                    //            st.ExtendedProperties.Contains(Root.ARROWSTART_Y_GUID) &&
-                    //            (int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data != Int32.MinValue)
-                    //        {
-                    //            start = new PointF((int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data,
-                    //                               (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data);
-                    //        }
-                    //        else
-                    //        {
-                    //            // Fallback : premier point de la stroke (converti en pixels) si disponible
-                    //            Point[] inkPts2 = st.GetPoints();
-                    //            if (inkPts2 != null && inkPts2.Length > 0)
-                    //            {
-                    //                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref inkPts2);
-                    //                Point p0 = inkPts2[0];
-                    //                start = new PointF(p0.X, p0.Y);
-                    //            }
-                    //            else
-                    //            {
-                    //                // si pas possible, positionner start légèrement en arrière de tip
-                    //                start = new PointF(tip.X - 50f, tip.Y);
-                    //            }
-                    //        }
-
-                    //        // Si la tip provient des props mais start n'est pas cohérent (même point), fallback sur points de stroke
-                    //        if (tipFromProps)
-                    //        {
-                    //            double dxTest = tip.X - start.X;
-                    //            double dyTest = tip.Y - start.Y;
-                    //            if (Math.Sqrt(dxTest * dxTest + dyTest * dyTest) <= 1.0)
-                    //            {
-                    //                Point[] pts = st.GetPoints();
-                    //                if (pts != null && pts.Length > 1)
-                    //                {
-                    //                    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //                    start = new PointF(pts[0].X, pts[0].Y);
-                    //                    tip = new PointF(pts[pts.Length - 1].X, pts[pts.Length - 1].Y);
-                    //                }
-                    //            }
-                    //        }
-
-                    //        // Calcul géométrique et dessin de la pointe (triangle rempli + contour)
-                    //        double dx = tip.X - start.X;
-                    //        double dy = tip.Y - start.Y;
-                    //        double dist = Math.Sqrt(dx * dx + dy * dy);
-                    //        if (dist <= 2.0) // trop court -> petit disque
-                    //        {
-                    //            int alpha0 = 255 - st.DrawingAttributes.Transparency;
-                    //            using (var brush0 = new SolidBrush(Color.FromArgb(alpha0, st.DrawingAttributes.Color)))
-                    //                g.FillEllipse(brush0, tip.X - 2, tip.Y - 2, 4, 4);
-                    //        }
-                    //        else
-                    //        {
-                    //            double theta = Math.Atan2(dy, dx);
-                    //            double tipAngle = Math.Min(Math.PI / 2.0, Root.ArrowAngle * 2.0);
-                    //            float headLen = (float)(Root.GetFixedArrowLengthPx() * 0.9);
-
-                    //            PointF baseA = new PointF((float)(tip.X + Math.Cos(theta + tipAngle) * headLen),
-                    //                                      (float)(tip.Y + Math.Sin(theta + tipAngle) * headLen));
-                    //            PointF baseB = new PointF((float)(tip.X + Math.Cos(theta - tipAngle) * headLen),
-                    //                                      (float)(tip.Y + Math.Sin(theta - tipAngle) * headLen));
-
-                    //            var oldSmo = g.SmoothingMode;
-                    //            g.SmoothingMode = SmoothingMode.AntiAlias;
-
-                    //            int alpha = 255 - st.DrawingAttributes.Transparency;
-                    //            Color col = st.DrawingAttributes.Color;
-
-                    //            using (var brush = new SolidBrush(Color.FromArgb(alpha, col)))
-                    //                g.FillPolygon(brush, new[] { tip, baseA, baseB });
-
-                    //            float outlineWidth = Math.Max(1f, Root.HiMetricToPixel(st.DrawingAttributes.Width) * 0.15f);
-                    //            using (var outline = new Pen(Color.FromArgb(alpha, col), outlineWidth))
-                    //            {
-                    //                outline.LineJoin = LineJoin.Round;
-                    //                g.DrawPolygon(outline, new[] { tip, baseA, baseB });
-                    //            }
-
-                    //            g.SmoothingMode = oldSmo;
-                    //        }
-                    //    }
-                    //    catch { }
-                    //}
-
-                    //ArrowEndDone:;
-
-
-                    // Pointe de flèche vectorielle — toujours au point d’arrivée (dernier point de la stroke),
-                    // indépendamment des coordonnées ARROW* éventuellement inversées dans les ExtendedProperties.
-                    //    if (st.ExtendedProperties.Contains(Root.ARROWEND_GUID) || st.ExtendedProperties.Contains(Root.ARROWSTART_GUID))
-                    //    {
-                    //        try
-                    //        {
-                    //            Point[] pts = st.GetPoints();
-                    //            if (pts == null || pts.Length < 2)
-                    //                goto AfterArrowHead;
-
-                    //            // InkSpace -> Pixels
-                    //            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //            PointF start = pts[0];
-                    //            PointF tip = pts[pts.Length - 1];
-
-                    //            double dx = tip.X - start.X;
-                    //            double dy = tip.Y - start.Y;
-                    //            double dist = Math.Sqrt(dx * dx + dy * dy);
-
-                    //            if (dist <= 2.0)
-                    //            {
-                    //                int alpha0 = 255 - st.DrawingAttributes.Transparency;
-                    //                using (var brush0 = new SolidBrush(Color.FromArgb(alpha0, st.DrawingAttributes.Color)))
-                    //                    g.FillEllipse(brush0, tip.X - 2, tip.Y - 2, 4, 4);
-                    //            }
-                    //            else
-                    //            {
-                    //                double theta = Math.Atan2(dy, dx);
-                    //                double tipAngle = Math.Min(Math.PI / 2.0, Root.ArrowAngle * 2.0);
-                    //                float headLen = (float)(Root.GetFixedArrowLengthPx() * 0.9);
-
-                    //                PointF baseA = new PointF(
-                    //                    (float)(tip.X + Math.Cos(theta + tipAngle) * headLen),
-                    //                    (float)(tip.Y + Math.Sin(theta + tipAngle) * headLen));
-                    //                PointF baseB = new PointF(
-                    //                    (float)(tip.X + Math.Cos(theta - tipAngle) * headLen),
-                    //                    (float)(tip.Y + Math.Sin(theta - tipAngle) * headLen));
-
-                    //                var oldSmo = g.SmoothingMode;
-                    //                g.SmoothingMode = SmoothingMode.AntiAlias;
-
-                    //                int alpha = 255 - st.DrawingAttributes.Transparency;
-                    //                Color col = st.DrawingAttributes.Color;
-
-                    //                using (var brush = new SolidBrush(Color.FromArgb(alpha, col)))
-                    //                    g.FillPolygon(brush, new[] { tip, baseA, baseB });
-
-                    //                float outlineWidth = Math.Max(1f, Root.HiMetricToPixel(st.DrawingAttributes.Width) * 0.15f);
-                    //                using (var outline = new Pen(Color.FromArgb(alpha, col), outlineWidth))
-                    //                {
-                    //                    outline.LineJoin = LineJoin.Round;
-                    //                    g.DrawPolygon(outline, new[] { tip, baseA, baseB });
-                    //                }
-
-                    //                g.SmoothingMode = oldSmo;
-                    //            }
-                    //        }
-                    //        catch { }
-                    //    }
-                    //AfterArrowHead:;
-
-                    // Pointe de flèche vectorielle — positionnée de façon robuste au END (point d’arrivée).
-                    // Si ARROWEND_X/Y ou ARROWSTART_X/Y existent, on s’en sert pour choisir l’extrémité correcte.
-                    // Fallback: dernier point de la stroke = tip.
                     //    if (st.ExtendedProperties.Contains(Root.ARROWEND_GUID) || st.ExtendedProperties.Contains(Root.ARROWSTART_GUID))
                     //    {
                     //        try
@@ -1255,15 +895,17 @@ namespace gInk
                     //            PointF endA = pts[0];
                     //            PointF endB = pts[pts.Length - 1];
 
-                    //            // Helper distance
+                    //            // Helper distance (évite shadowing des noms dx/dy)
                     //            Func<PointF, PointF, double> d2 = (a, b) =>
                     //            {
-                    //                double dx = a.X - b.X, dy = a.Y - b.Y;
-                    //                return dx * dx + dy * dy;
+                    //                double ddx = a.X - b.X, ddy = a.Y - b.Y;
+                    //                return ddx * ddx + ddy * ddy;
                     //            };
 
                     //            // Choix robuste du tip/start à partir des propriétés si dispo
-                    //            PointF tip, start;
+                    //            // initialisation sûre par défaut (fallback)
+                    //            PointF tip = endB;
+                    //            PointF start = endA;
                     //            bool chosen = false;
 
                     //            // 1) Si END (pointe) est stocké => tip = extrémité la plus proche d’ARROWEND_X/Y
@@ -1309,16 +951,11 @@ namespace gInk
                     //                }
                     //            }
 
-                    //            // 3) Fallback: dernier point comme tip
-                    //            if (!chosen)
-                    //            {
-                    //                start = endA;
-                    //                tip = endB;
-                    //            }
+                    //            // 3) Fallback déjà assuré par l'initialisation ci‑dessus
 
-                    //            double dx = tip.X - start.X;
-                    //            double dy = tip.Y - start.Y;
-                    //            double dist = Math.Sqrt(dx * dx + dy * dy);
+                    //            double ddx2 = tip.X - start.X;
+                    //            double ddy2 = tip.Y - start.Y;
+                    //            double dist = Math.Sqrt(ddx2 * ddx2 + ddy2 * ddy2);
 
                     //            if (dist <= 2.0)
                     //            {
@@ -1328,44 +965,73 @@ namespace gInk
                     //            }
                     //            else
                     //            {
-                    //                double theta = Math.Atan2(dy, dx);
-                    //                double tipAngle = Math.Min(Math.PI / 2.0, Root.ArrowAngle * 2.0);
+
+
+                    //                // Correction: adapter le triangle pour qu'il soit plus plat et dépasse de l'extrémité
+                    //                // ET appliquer correctement la transparence configurée
+                    //                double theta = Math.Atan2(ddy2, ddx2) + Math.PI;
+                    //                // Angle plus large pour un triangle plus plat
+                    //                double tipAngle = Math.Min(Math.PI / 3.0, Root.ArrowAngle * 3.0);
                     //                float headLen = (float)(Root.GetFixedArrowLengthPx() * 0.9);
 
+                    //                // Déplacement de la pointe pour qu'elle dépasse de l'extrémité END
+                    //                float offsetFactor = -0.33f * headLen;
+                    //                PointF adjustedTip = new PointF(
+                    //                    (float)(tip.X + Math.Cos(theta) * offsetFactor),
+                    //                    (float)(tip.Y + Math.Sin(theta) * offsetFactor)
+                    //                );
+
+                    //                // Construire le triangle avec la pointe ajustée
                     //                PointF baseA = new PointF(
-                    //                    (float)(tip.X + Math.Cos(theta + tipAngle) * headLen),
-                    //                    (float)(tip.Y + Math.Sin(theta + tipAngle) * headLen));
+                    //                    (float)(adjustedTip.X + Math.Cos(theta + tipAngle) * headLen),
+                    //                    (float)(adjustedTip.Y + Math.Sin(theta + tipAngle) * headLen));
                     //                PointF baseB = new PointF(
-                    //                    (float)(tip.X + Math.Cos(theta - tipAngle) * headLen),
-                    //                    (float)(tip.Y + Math.Sin(theta - tipAngle) * headLen));
+                    //                    (float)(adjustedTip.X + Math.Cos(theta - tipAngle) * headLen),
+                    //                    (float)(adjustedTip.Y + Math.Sin(theta - tipAngle) * headLen));
 
                     //                var oldSmo = g.SmoothingMode;
                     //                g.SmoothingMode = SmoothingMode.AntiAlias;
 
-                    //                int alpha = 255 - st.DrawingAttributes.Transparency;
-                    //                Color col = st.DrawingAttributes.Color;
+                    //                // CORRECTION: Appliquer directement l'opacité configurée dans les options
+                    //                int arrowAlpha = (int)(255 * (Root.GoFillOpacityPercent / 100.0));
+                    //                // Obtenir la couleur de base de la flèche
+                    //                Color baseArrowColor = Root.GetArrowColor();
+                    //                // Créer une couleur avec l'alpha défini par les options
+                    //                Color arrowColor = Color.FromArgb(arrowAlpha, baseArrowColor.R, baseArrowColor.G, baseArrowColor.B);
 
-                    //                using (var brush = new SolidBrush(Color.FromArgb(alpha, col)))
-                    //                    g.FillPolygon(brush, new[] { tip, baseA, baseB });
+                    //                // Utiliser la couleur avec la transparence correcte pour le remplissage
+                    //                using (var brush = new SolidBrush(arrowColor))
+                    //                    g.FillPolygon(brush, new[] { adjustedTip, baseA, baseB });
 
+                    //                // Utiliser la même couleur avec transparence pour le contour
                     //                float outlineWidth = Math.Max(1f, Root.HiMetricToPixel(st.DrawingAttributes.Width) * 0.15f);
-                    //                using (var outline = new Pen(Color.FromArgb(alpha, col), outlineWidth))
+                    //                using (var outline = new Pen(arrowColor, outlineWidth))
                     //                {
                     //                    outline.LineJoin = LineJoin.Round;
-                    //                    g.DrawPolygon(outline, new[] { tip, baseA, baseB });
+                    //                    g.DrawPolygon(outline, new[] { adjustedTip, baseA, baseB });
                     //                }
 
                     //                g.SmoothingMode = oldSmo;
+
+
                     //            }
                     //        }
                     //        catch { }
                     //    }
 
-                    // Pointe de flèche vectorielle — positionnée de façon robuste au END (point d’arrivée).
-                    // Si ARROWEND_X/Y ou ARROWSTART_X/Y existent, on s’en sert pour choisir l’extrémité correcte.
-                    // Fallback: dernier point de la stroke = tip.
+                    //AfterArrowHead:;
 
 
+                    // ... dans DrawStrokes(Graphics g), remplacez le bloc flèche par :
+
+                    // ... dans DrawStrokes(Graphics g), dans le bloc flèche:
+
+
+
+                    // ... dans DrawStrokes(Graphics g), bloc flèche :
+
+
+                    // ... dans DrawStrokes(Graphics g), remplacez le bloc flèche existant par :
                     if (st.ExtendedProperties.Contains(Root.ARROWEND_GUID) || st.ExtendedProperties.Contains(Root.ARROWSTART_GUID))
                     {
                         try
@@ -1379,20 +1045,19 @@ namespace gInk
                             PointF endA = pts[0];
                             PointF endB = pts[pts.Length - 1];
 
-                            // Helper distance (évite shadowing des noms dx/dy)
+                            // Distance^2
                             Func<PointF, PointF, double> d2 = (a, b) =>
                             {
                                 double ddx = a.X - b.X, ddy = a.Y - b.Y;
                                 return ddx * ddx + ddy * ddy;
                             };
 
-                            // Choix robuste du tip/start à partir des propriétés si dispo
-                            // initialisation sûre par défaut (fallback)
-                            PointF tip = endB;
+                            // Choix de la pointe et de la queue
                             PointF start = endA;
+                            PointF tip = endB;
                             bool chosen = false;
 
-                            // 1) Si END (pointe) est stocké => tip = extrémité la plus proche d’ARROWEND_X/Y
+                            // 1) Priorité à ARROWEND (pointe au relâchement)
                             if (st.ExtendedProperties.Contains(Root.ARROWEND_X_GUID) &&
                                 st.ExtendedProperties.Contains(Root.ARROWEND_Y_GUID))
                             {
@@ -1400,8 +1065,8 @@ namespace gInk
                                 int ey = (int)st.ExtendedProperties[Root.ARROWEND_Y_GUID].Data;
                                 if (ex != Int32.MinValue)
                                 {
-                                    PointF propEnd = new PointF(ex, ey);
-                                    if (d2(endA, propEnd) <= d2(endB, propEnd))
+                                    PointF endProp = new PointF(ex, ey);
+                                    if (d2(endA, endProp) <= d2(endB, endProp))
                                     {
                                         tip = endA; start = endB;
                                     }
@@ -1413,7 +1078,7 @@ namespace gInk
                                 }
                             }
 
-                            // 2) Sinon, si START (queue) est stocké => start = extrémité la plus proche d’ARROWSTART_X/Y
+                            // 2) Sinon ARROWSTART (pointe au départ)
                             if (!chosen &&
                                 st.ExtendedProperties.Contains(Root.ARROWSTART_X_GUID) &&
                                 st.ExtendedProperties.Contains(Root.ARROWSTART_Y_GUID))
@@ -1422,90 +1087,71 @@ namespace gInk
                                 int sy = (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data;
                                 if (sx != Int32.MinValue)
                                 {
-                                    PointF propStart = new PointF(sx, sy);
-                                    if (d2(endA, propStart) <= d2(endB, propStart))
+                                    PointF startProp = new PointF(sx, sy);
+                                    if (d2(endA, startProp) <= d2(endB, startProp))
                                     {
-                                        start = endA; tip = endB;
+                                        tip = endA; start = endB;
                                     }
                                     else
                                     {
-                                        start = endB; tip = endA;
+                                        tip = endB; start = endA;
                                     }
                                     chosen = true;
                                 }
                             }
 
-                            // 3) Fallback déjà assuré par l'initialisation ci‑dessus
-
-                            double ddx2 = tip.X - start.X;
-                            double ddy2 = tip.Y - start.Y;
-                            double dist = Math.Sqrt(ddx2 * ddx2 + ddy2 * ddy2);
-
-                            if (dist <= 2.0)
+                            // Géométrie
+                            double dirX = tip.X - start.X;
+                            double dirY = tip.Y - start.Y;
+                            double len = Math.Sqrt(dirX * dirX + dirY * dirY);
+                            if (len <= 2.0)
                             {
-                                int alpha0 = 255 - st.DrawingAttributes.Transparency;
-                                using (var brush0 = new SolidBrush(Color.FromArgb(alpha0, st.DrawingAttributes.Color)))
+                                using (var brush0 = new SolidBrush(Root.GetArrowColor()))
                                     g.FillEllipse(brush0, tip.X - 2, tip.Y - 2, 4, 4);
+                                continue;
                             }
-                            else
-                            {
 
+                            double ux = dirX / len, uy = dirY / len;
+                            double vx = -uy, vy = ux;
 
-                                // Correction: adapter le triangle pour qu'il soit plus plat et dépasse de l'extrémité
-                                // ET appliquer correctement la transparence configurée
-                                double theta = Math.Atan2(ddy2, ddx2) + Math.PI;
-                                // Angle plus large pour un triangle plus plat
-                                double tipAngle = Math.Min(Math.PI / 3.0, Root.ArrowAngle * 3.0);
-                                float headLen = (float)(Root.GetFixedArrowLengthPx() * 0.9);
+                            float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()));
+                            float halfStem = widthPx * 0.5f;
 
-                                // Déplacement de la pointe pour qu'elle dépasse de l'extrémité END
-                                float offsetFactor = -0.33f * headLen;
-                                PointF adjustedTip = new PointF(
-                                    (float)(tip.X + Math.Cos(theta) * offsetFactor),
-                                    (float)(tip.Y + Math.Sin(theta) * offsetFactor)
-                                );
+                            float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx());
+                            float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
 
-                                // Construire le triangle avec la pointe ajustée
-                                PointF baseA = new PointF(
-                                    (float)(adjustedTip.X + Math.Cos(theta + tipAngle) * headLen),
-                                    (float)(adjustedTip.Y + Math.Sin(theta + tipAngle) * headLen));
-                                PointF baseB = new PointF(
-                                    (float)(adjustedTip.X + Math.Cos(theta - tipAngle) * headLen),
-                                    (float)(adjustedTip.Y + Math.Sin(theta - tipAngle) * headLen));
+                            PointF headBase = new PointF(
+                                (float)(tip.X - ux * headLen),
+                                (float)(tip.Y - uy * headLen));
 
-                                var oldSmo = g.SmoothingMode;
-                                g.SmoothingMode = SmoothingMode.AntiAlias;
+                            // Pointe plus plate (base élargie)
+                            const float HeadBaseFactor = 2.2f; // était 1.6f
+                            float headBaseHalf = halfStem * HeadBaseFactor;
 
-                                // CORRECTION: Appliquer directement l'opacité configurée dans les options
-                                int arrowAlpha = (int)(255 * (Root.GoFillOpacityPercent / 100.0));
-                                // Obtenir la couleur de base de la flèche
-                                Color baseArrowColor = Root.GetArrowColor();
-                                // Créer une couleur avec l'alpha défini par les options
-                                Color arrowColor = Color.FromArgb(arrowAlpha, baseArrowColor.R, baseArrowColor.G, baseArrowColor.B);
+                            PointF p0 = new PointF((float)(start.X + vx * halfStem), (float)(start.Y + vy * halfStem));
+                            PointF p1 = new PointF((float)(headBase.X + vx * halfStem), (float)(headBase.Y + vy * halfStem));
+                            PointF p2 = new PointF((float)(headBase.X + vx * headBaseHalf), (float)(headBase.Y + vy * headBaseHalf));
+                            PointF p3 = tip;
+                            PointF p4 = new PointF((float)(headBase.X - vx * headBaseHalf), (float)(headBase.Y - vy * headBaseHalf));
+                            PointF p5 = new PointF((float)(headBase.X - vx * halfStem), (float)(headBase.Y - vy * halfStem));
+                            PointF p6 = new PointF((float)(start.X - vx * halfStem), (float)(start.Y - vy * halfStem));
 
-                                // Utiliser la couleur avec la transparence correcte pour le remplissage
-                                using (var brush = new SolidBrush(arrowColor))
-                                    g.FillPolygon(brush, new[] { adjustedTip, baseA, baseB });
+                            PointF[] arrowPoly = new[] { p0, p1, p2, p3, p4, p5, p6 };
 
-                                // Utiliser la même couleur avec transparence pour le contour
-                                float outlineWidth = Math.Max(1f, Root.HiMetricToPixel(st.DrawingAttributes.Width) * 0.15f);
-                                using (var outline = new Pen(arrowColor, outlineWidth))
-                                {
-                                    outline.LineJoin = LineJoin.Round;
-                                    g.DrawPolygon(outline, new[] { adjustedTip, baseA, baseB });
-                                }
+                            var oldSmo = g.SmoothingMode;
+                            g.SmoothingMode = SmoothingMode.AntiAlias;
 
-                                g.SmoothingMode = oldSmo;
+                            using (var brush = new SolidBrush(Root.GetArrowColor()))
+                                g.FillPolygon(brush, arrowPoly);
 
+                            g.SmoothingMode = oldSmo;
 
-                            }
+                            continue; // ne pas dessiner le trait initial
                         }
                         catch { }
                     }
 
                 AfterArrowHead:;
-
-
 
 
 
@@ -2601,6 +2247,48 @@ namespace gInk
         //}
 
 
+        //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
+        //{
+        //    if (CursorX0 == int.MinValue && CursorY0 == int.MinValue)
+        //        return;
+
+        //    if (g == null)
+        //        g = gOutCanvus;
+
+        //    // Préparer les DrawingAttributes (priorité à dr si fourni)
+        //    DrawingAttributes da = dr?.Clone() ?? Root.FormCollection?.IC?.DefaultDrawingAttributes?.Clone() ?? new DrawingAttributes();
+        //    try { da.Color = Root.GetArrowColor(); } catch { }
+        //    da.Transparency = (byte)(255 - da.Color.A);
+        //    da.Width = Root.GetArrowWidthHiMetric();
+
+        //    // Calcul de l'angle et de la longueur de la tête de flèche
+        //    double dx = CursorX - CursorX0;
+        //    double dy = CursorY - CursorY0;
+        //    if (Math.Abs(dx) < 1e-6 && Math.Abs(dy) < 1e-6)
+        //        return; // Pas de mouvement, rien à dessiner
+
+        //    double theta = Math.Atan2(dy, dx);
+        //    double headLen = Root.GetFixedArrowLengthPx();
+
+        //    // Calcul des points de la tête de flèche (au point d'arrivée)
+        //    int hx1 = (int)Math.Round(CursorX - Math.Cos(theta + Root.ArrowAngle) * headLen);
+        //    int hy1 = (int)Math.Round(CursorY - Math.Sin(theta + Root.ArrowAngle) * headLen);
+        //    int hx2 = (int)Math.Round(CursorX - Math.Cos(theta - Root.ArrowAngle) * headLen);
+        //    int hy2 = (int)Math.Round(CursorY - Math.Sin(theta - Root.ArrowAngle) * headLen);
+
+        //    using (var pen = PenForDrawOn(da, st))
+        //    {
+        //        // Dessiner la hampe de la flèche
+        //        g.DrawLine(pen, CursorX0, CursorY0, CursorX, CursorY);
+
+        //        // Dessiner les deux ailes de la tête de flèche
+        //        g.DrawLine(pen, CursorX, CursorY, hx1, hy1);
+        //        g.DrawLine(pen, CursorX, CursorY, hx2, hy2);
+        //    }
+        //}
+
+
+        // Remplacez entièrement DrawArrowOnGraphic par :
         public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
         {
             if (CursorX0 == int.MinValue && CursorY0 == int.MinValue)
@@ -2609,38 +2297,49 @@ namespace gInk
             if (g == null)
                 g = gOutCanvus;
 
-            // Préparer les DrawingAttributes (priorité à dr si fourni)
-            DrawingAttributes da = dr?.Clone() ?? Root.FormCollection?.IC?.DefaultDrawingAttributes?.Clone() ?? new DrawingAttributes();
-            try { da.Color = Root.GetArrowColor(); } catch { }
-            da.Transparency = (byte)(255 - da.Color.A);
-            da.Width = Root.GetArrowWidthHiMetric();
-
-            // Calcul de l'angle et de la longueur de la tête de flèche
             double dx = CursorX - CursorX0;
             double dy = CursorY - CursorY0;
-            if (Math.Abs(dx) < 1e-6 && Math.Abs(dy) < 1e-6)
-                return; // Pas de mouvement, rien à dessiner
+            double len = Math.Sqrt(dx * dx + dy * dy);
+            if (len <= 2.0)
+                return;
 
-            double theta = Math.Atan2(dy, dx);
-            double headLen = Root.GetFixedArrowLengthPx();
+            double ux = dx / len;
+            double uy = dy / len;
+            double vx = -uy;
+            double vy = ux;
 
-            // Calcul des points de la tête de flèche (au point d'arrivée)
-            int hx1 = (int)Math.Round(CursorX - Math.Cos(theta + Root.ArrowAngle) * headLen);
-            int hy1 = (int)Math.Round(CursorY - Math.Sin(theta + Root.ArrowAngle) * headLen);
-            int hx2 = (int)Math.Round(CursorX - Math.Cos(theta - Root.ArrowAngle) * headLen);
-            int hy2 = (int)Math.Round(CursorY - Math.Sin(theta - Root.ArrowAngle) * headLen);
+            float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()));
+            float halfStem = widthPx * 0.5f;
 
-            using (var pen = PenForDrawOn(da, st))
-            {
-                // Dessiner la hampe de la flèche
-                g.DrawLine(pen, CursorX0, CursorY0, CursorX, CursorY);
+            float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx());
+            float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
 
-                // Dessiner les deux ailes de la tête de flèche
-                g.DrawLine(pen, CursorX, CursorY, hx1, hy1);
-                g.DrawLine(pen, CursorX, CursorY, hx2, hy2);
-            }
+            PointF start = new PointF(CursorX0, CursorY0);
+            PointF tip = new PointF(CursorX, CursorY);
+            PointF headBase = new PointF(
+                (float)(tip.X - ux * headLen),
+                (float)(tip.Y - uy * headLen));
+
+            const float HeadBaseFactor = 2.2f; // était 1.6f
+            float headBaseHalf = halfStem * HeadBaseFactor;
+
+            PointF p0 = new PointF((float)(start.X + vx * halfStem), (float)(start.Y + vy * halfStem));
+            PointF p1 = new PointF((float)(headBase.X + vx * halfStem), (float)(headBase.Y + vy * halfStem));
+            PointF p2 = new PointF((float)(headBase.X + vx * headBaseHalf), (float)(headBase.Y + vy * headBaseHalf));
+            PointF p3 = tip;
+            PointF p4 = new PointF((float)(headBase.X - vx * headBaseHalf), (float)(headBase.Y - vy * headBaseHalf));
+            PointF p5 = new PointF((float)(headBase.X - vx * halfStem), (float)(headBase.Y - vy * halfStem));
+            PointF p6 = new PointF((float)(start.X - vx * halfStem), (float)(start.Y - vy * halfStem));
+            PointF[] arrowPoly = new[] { p0, p1, p2, p3, p4, p5, p6 };
+
+            var oldSmo = g.SmoothingMode;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            using (var brush = new SolidBrush(Root.GetArrowColor()))
+                g.FillPolygon(brush, arrowPoly);
+
+            g.SmoothingMode = oldSmo;
         }
-
 
 
         public int Test()
