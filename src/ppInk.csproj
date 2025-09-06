@@ -367,6 +367,10 @@
     <None Include="FloatingCall.png" />
     <None Include="ExtraPens.png" />
     <None Include="ExtraPens1.png" />
+    <Content Include="images\outils.png" />
+    <Content Include="images\outil_set goban.png" />
+    <Content Include="images\taille goban.png" />
+    <Content Include="images\zones.png" />
     <Content Include="Magnetic.png" />
     <Content Include="Magnetic_act.png" />
     <None Include="pan1_act.png" />

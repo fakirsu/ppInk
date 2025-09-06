@@ -1,7 +1,23 @@
 
 # Introduction
 
-ppInk is a user-friendly on-screen annotation software for Windows, compatible with Mouse use, touchscreen or drawing tablet(also with pressure). 
+goInk est un outil pour faciliter les commentaires de parties de jeu de go. 
+
+goInk est un fork de ppInk : https://github.com/pubpub-zz/ppInk/
+
+Ne sont décrits ici que les ajouts spécifiques au jeu de go, les autres fonctionnalités de ppInk sont documentées sur https://github.com/pubpub-zz/ppInk/
+
+Pour les besoins spécifiques du commentateur de partie de go, nous avons créé les outils suivants : 
+- ajout d'une séquence de pierres (aléternées noire/blanc), avec ou sans numéros. 
+- ajout de zones (blanches ou noires) dessinées à main levées
+- ajout de lettres (A, B, C, ...) et de symboles (triangle, carré, croix, cercle) sur le goban)
+
+Ces outils sont paramétrables (couleur, opacité, taille, ...) dans le menu option accessible avec un clic droit sur l'icône de la barre des tâches.
+
+<img src="images/outils.png" alt="Description courte" width="600"/>
+
+
+a user-friendly on-screen annotation software for Windows, compatible with Mouse use, touchscreen or drawing tablet(also with pressure). 
 
 ![](Animation.gif)
 
