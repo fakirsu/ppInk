@@ -11,57 +11,57 @@ Dans StreamlDeck, il suffit d'appeler une adresse URL précise :
 ## Pour les outils spécifiques au jeu de go
 
 - /NTag_Show_White  
-  Description (fr.txt) : Pierres numérotées (première pierre blanche)  
-  Exemple : curl "http://localhost:1234/NTag_Show_White"  
-  StreamDeck : HTTP GET -> URL = http://localhost:1234/NTag_Show_White
+  Description : Pierres numérotées (première pierre blanche)  
+  "http://localhost:1234/NTag_Show_White"  
 
 - /NTag_Show_Black  
-  Description (fr.txt) : Pierres numérotées (première pierre noire)  
-  Exemple : curl "http://localhost:1234/NTag_Show_Black"
+  Description : Pierres numérotées (première pierre noire)  
+  "http://localhost:1234/NTag_Show_Black"
 
 - /NTag_Hide_White  
-  Description (fr.txt) : (Ajout de pierres) sans numéros (1ère blanche)  
-  Exemple : curl "http://localhost:1234/NTag_Hide_White"
+  Description : Ajout de pierres sans numéros (1ère blanche)  
+  "http://localhost:1234/NTag_Hide_White"
 
 - /NTag_Hide_Black  
-  Description (fr.txt) : (Ajout de pierres) sans numéros (1ère noire)  
-  Exemple : curl "http://localhost:1234/NTag_Hide_Black"
+  Description : Ajout de pierres sans numéros (1ère noire)  
+  "http://localhost:1234/NTag_Hide_Black"
 
 - /HandFilledWhite  
-  Description (fr.txt) : Ajout d'une zone blanche  
-  Exemple : curl "http://localhost:1234/HandFilledWhite"
+  Description : Ajout d'une zone blanche  
+  "http://localhost:1234/HandFilledWhite"
 
 - /HandFilledBlack  
-  Description (fr.txt) : Ajout d'une zone noire  
-  Exemple : curl "http://localhost:1234/HandFilledBlack"
+  Description : Ajout d'une zone noire  
+  "http://localhost:1234/HandFilledBlack"
 
 - /LetterTag  
-  Description (fr.txt) : Ajout de lettres (A, B, C, ...)  
-  Exemple : curl "http://localhost:1234/LetterTag"
+  Description : Ajout de lettres (A, B, C, ...)  
+  "http://localhost:1234/LetterTag"
 
 - /SquareTag  
-  Description (fr.txt) : Ajout de carrés  
-  Exemple : curl "http://localhost:1234/SquareTag"
+  Description : Ajout de carrés  
+  "http://localhost:1234/SquareTag"
 
 - /TriangleTag  
-  Description (fr.txt) : Ajout de triangles  
-  Exemple : curl "http://localhost:1234/TriangleTag"
+  Description : Ajout de triangles  
+  "http://localhost:1234/TriangleTag"
 
 - /CircleTag  
-  Description (fr.txt) : Ajouts de cercles  
-  Exemple : curl "http://localhost:1234/CircleTag"
+  Description : Ajouts de cercles  
+  "http://localhost:1234/CircleTag"
 
 - /CrossTag  
-  Description (fr.txt) : Ajout de croix  
-  Exemple : curl "http://localhost:1234/CrossTag"
+  Description : Ajout de croix  
+  "http://localhost:1234/CrossTag"
 
-Notes :
-- Pour les /NTag_* vous pouvez ajouter ?C=true pour forcer le nettoyage des tracés existants avant application (paramètre C repris dans l'implémentation REST).
-- Ces descriptions proviennent des clés de langue dans ppInk/lang/fr.txt (OptionsTagOpacityPerc, OptionsGoStrokeWidth, etc.) et servent à documenter l'usage / but des endpoints.
+Remarques générales
+- Remplacer http://localhost:1234 par l'URL de base configurée dans votre menu Options (onglet Général)
+- Beaucoup d’actions ne fonctionneront pas si l'application n'est pas en mode inking (barre d'outils ouverte) : la réponse sera 409 "Not in Inking mode".
+
 
 ---
 
-## Liste exhaustive des autres endpoints REST disponibles (résumé fonctionnel)
+## Liste des autres endpoints REST disponibles (résumé fonctionnel du fichier APIRest.cs)
 Tous les endpoints acceptent GET ; la plupart exigent que l'application soit en mode inking (sinon réponse 409).
 
 - /Inking
@@ -165,10 +165,6 @@ Tous les endpoints acceptent GET ; la plupart exigent que l'application soit en 
 
 - autres chemins non implémentés -> 404
 
-Remarques générales
-- Remplacer http://localhost:7799 par l'URL de base configurée dans votre __APIRestUrl__ (voir options ou APIRest.GetAddress()).
-- StreamDeck : créez une action HTTP GET pointant sur l'URL correspondante. Pour indiquer un effet visuel sur le bouton (état), vous pouvez appeler périodiquement /CurrentTool ou /Inking et parser le JSON renvoyé.
-- Beaucoup d’actions ne fonctionneront pas si l'application n'est pas en mode inking : la réponse sera 409 "Not in Inking mode".
-- Pour /NTag_* : ajoutez ?C=true si vous voulez forcer l'effacement des tracés existants (comme le comportement "clear" optionnel).
+
 
 ---

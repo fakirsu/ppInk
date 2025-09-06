@@ -22,10 +22,11 @@ Si le goban n'est pas un 19x19, penser à changer dans le menu options : <img sr
 
 
 ## Utilisation
-Les outils sont accessibles par raccourcis clavier, qui peuvent être appelés depuis un StreamDeck). 
+Les outils sont accessibles par raccourcis clavier, qui peuvent être appelés depuis un StreamDeck, ou bien par une API comme expliqué sur la page [Conseils pour StreamDeck](/src/doc/readme_StreamDeck.md)
+
 Les raccourcis sont également paramétrables dans le menu options.
 
-## Disclaimer
+## Avertissement
 Ce fork a été exclusivement réalisé avec l'aide d'une IA, car je ne suis pas du tout développeur de code. 
 
 ## Problèmes connus
