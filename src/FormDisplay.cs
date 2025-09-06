@@ -70,6 +70,30 @@ namespace gInk
         }
 
 
+        // Homothétie des flèches selon la GRID par rapport à la surface de dessin
+        private float GetArrowGridScale()
+        {
+            try
+            {
+                // Utilise la définition utilisateur de la GRID si elle existe
+                if (Root != null && Root.GridRectDefined && Root.GridRect.Width > 0 && Root.GridRect.Height > 0 && this.Width > 0 && this.Height > 0)
+                {
+                    double rx = Root.GridRect.Width / (double)this.Width;
+                    double ry = Root.GridRect.Height / (double)this.Height;
+                    double s = Math.Min(rx, ry);
+                    if (s <= 0.0 || double.IsNaN(s) || double.IsInfinity(s))
+                        return 1f;
+                    // ne pas agrandir au‑delà de la taille actuelle
+                    return (float)Math.Min(1.0, s);
+                }
+            }
+            catch { }
+            return 1f;
+        }
+
+
+
+
         // http://www.csharp411.com/hide-form-from-alttab/
         protected override CreateParams CreateParams
 		{
@@ -459,70 +483,6 @@ namespace gInk
                     }
                     if (st.ExtendedProperties.Contains(Root.ISHIDDEN_GUID))
                         continue;
-                    //else //Should not be drawn as a stroke : for the moment only filled values.
-                    //if (st.ExtendedProperties.Contains(Root.ISFILLEDOUTSIDE_GUID))
-                    //    //{
-                    //    //    SolidBrush bru = new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color));
-                    //    //    try
-                    //    //    {
-                    //    //        GraphicsPath gp = new GraphicsPath();
-                    //    //        gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
-                    //    //        Point[] pts = st.DrawingAttributes.FitToCurve ? st.GetFlattenedBezierPoints(0) : st.GetPoints();
-                    //    //        Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //    //        gp.AddPolygon(pts);
-                    //    //        g.FillPath(bru, gp);
-                    //    //    }
-                    //    //    catch { }
-                    //    //}
-                    //    // appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis le facteur d'opacité des pierres
-                        
-                    //    {
-                    //        // appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis appliquer le facteur d'opacité des pierres
-                    //        int baseAlpha = 255 - st.DrawingAttributes.Transparency;
-                    //    //    int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.TagStoneOpacityPercent / 100.0))));
-                    //    int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.GoFillOpacityPercent / 100.0))));
-
-                    //    Color baseColor = st.DrawingAttributes.Color;
-                    //        try
-                    //        {
-                    //            using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-                    //            {
-                    //                GraphicsPath gp = new GraphicsPath();
-                    //                gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
-                    //                Point[] pts = st.DrawingAttributes.FitToCurve ? st.GetFlattenedBezierPoints(0) : st.GetPoints();
-                    //                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //                gp.AddPolygon(pts);
-                    //                g.FillPath(bru, gp);
-                    //            }
-                    //        }
-                    //        catch { }
-                    //    }
-
-                    //if (st.ExtendedProperties.Contains(Root.ISFILLEDOUTSIDE_GUID))
-                    //{
-                    //    //int baseAlpha = 255 - st.DrawingAttributes.Transparency;
-                    //    //int alpha = Math.Max(0, Math.Min(255,
-                    //        (int)(baseAlpha * (Root.GoFillOpacityPercent / 100.0))));
-                    //    // nouvelle version :
-                    //    int fillAlpha = FillAlphaForStroke(st, st.ExtendedProperties.Contains(Root.ISTAG_GUID));
-
-                    //    Color baseColor = st.DrawingAttributes.Color;
-                    //    try
-                    //    {
-                    //        using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-                    //        {
-                    //            GraphicsPath gp = new GraphicsPath();
-                    //            gp.AddRectangle(new Rectangle(0, 0, this.Width, this.Height));
-                    //            Point[] pts = st.DrawingAttributes.FitToCurve
-                    //                ? st.GetFlattenedBezierPoints(0)
-                    //                : st.GetPoints();
-                    //            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //            gp.AddPolygon(pts);
-                    //            g.FillPath(bru, gp);
-                    //        }
-                    //    }
-                    //    catch { }
-                    //}
 
                     if (st.ExtendedProperties.Contains(Root.ISFILLEDOUTSIDE_GUID))
                     {
@@ -547,251 +507,6 @@ namespace gInk
                     }
 
                     /// ################ goInk - START ####################
-                    /// //else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID) )
-                    //{
-                    //    SolidBrush bru;
-                    //    if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
-                    //        bru = new SolidBrush(Color.FromArgb(255 - st.DrawingAttributes.Transparency, st.DrawingAttributes.Color));
-                    //    else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
-                    //        bru = new SolidBrush(Color.White);
-                    //    else if (st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
-                    //        bru = new SolidBrush(Color.Black);
-                    //    else
-                    //        continue;
-                    //        //bru = new SolidBrush(Color.Purple);
-                    //    if (st.DrawingAttributes.FitToCurve)
-                    //    {
-                    //        try
-                    //        {
-                    //            Point[] pts = st.GetFlattenedBezierPoints(0); // 0 to get a good fitting curve
-                    //            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //            g.FillClosedCurve(bru, pts);
-                    //        }
-                    //        catch { }
-                    //    }
-                    //    else
-                    //    {
-                    //        Point[] pts = st.GetPoints();
-                    //        Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //        g.FillPolygon(bru, pts);
-
-                    //    }
-
-                    //}
-
-                    //else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
-                    //    {
-                    //// appliquer la transparence du DrawingAttributes au remplissage
-                    ////int alpha = Math.Max(0, Math.Min(255, 255 - st.DrawingAttributes.Transparency));
-                    ////Color baseColor;
-                    ////if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
-                    ////    baseColor = st.DrawingAttributes.Color;
-                    ////else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
-                    ////    baseColor = Color.White;
-                    ////else // ISFILLEDBLACK
-                    ////    baseColor = Color.Black;
-
-                    ////using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-
-                    //// appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis appliquer le facteur d'opacité des pierres
-                    //int baseAlpha = 255 - st.DrawingAttributes.Transparency;
-                    //int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.TagStoneOpacityPercent / 100.0))));
-                    //Color baseColor;
-                    //if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
-                    //    baseColor = st.DrawingAttributes.Color;
-                    //else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
-                    //    baseColor = Color.White;
-                    //else // ISFILLEDBLACK
-                    //    baseColor = Color.Black;
-
-                    //using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-
-
-                    //{
-                    //            if (st.DrawingAttributes.FitToCurve)
-                    //            {
-                    //                try
-                    //                {
-                    //                    Point[] pts = st.GetFlattenedBezierPoints(0);
-                    //                    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //                    g.FillClosedCurve(bru, pts);
-                    //                }
-                    //                catch { }
-                    //            }
-                    //            else
-                    //            {
-                    //                Point[] pts = st.GetPoints();
-                    //                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //                g.FillPolygon(bru, pts);
-                    //            }
-                    //        }
-                    //    }
-
-                    //else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) || st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
-                    //{
-                    //    // appliquer la transparence du DrawingAttributes AU REMPLISSAGE, puis appliquer le facteur d'opacité des pierres
-                    //    int baseAlpha = 255 - st.DrawingAttributes.Transparency;
-                    //    int alpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.TagStoneOpacityPercent / 100.0))));
-                    //    Color baseColor;
-                    //    if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
-                    //        baseColor = st.DrawingAttributes.Color;
-                    //    else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
-                    //        baseColor = Color.White;
-                    //    else // ISFILLEDBLACK
-                    //        baseColor = Color.Black;
-
-                    //    using (SolidBrush bru = new SolidBrush(Color.FromArgb(alpha, baseColor)))
-                    //    {
-                    //        try
-                    //        {
-                    //            // Si c'est une pastille numérotée, dessiner un vrai disque (ellipse) pour un arrondi propre
-                    //            if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
-                    //            {
-                    //                Rectangle rect = st.GetBoundingBox();
-                    //                Point p = rect.Location;
-                    //                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref p);
-                    //                rect.Location = p;
-                    //                p.X = rect.Width;
-                    //                p.Y = rect.Height;
-                    //                Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref p);
-                    //                rect.Width = Math.Max(1, p.X);
-                    //                rect.Height = Math.Max(1, p.Y);
-
-                    //                // Ajustement pour alignement pixel et éviter crénelage
-                    //                RectangleF rf = new RectangleF(rect.X + 0.5f, rect.Y + 0.5f, Math.Max(0, rect.Width - 1f), Math.Max(0, rect.Height - 1f));
-                    //                Rectangle rfinal = Rectangle.Round(rf);
-
-                    //                var oldSmo = g.SmoothingMode;
-                    //                var oldPix = g.PixelOffsetMode;
-                    //                g.SmoothingMode = SmoothingMode.AntiAlias;
-                    //                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                    //                g.FillEllipse(bru, rfinal);
-                    //                g.SmoothingMode = oldSmo;
-                    //                g.PixelOffsetMode = oldPix;
-                    //            }
-                    //            else
-                    //            {
-                    //                // Cas générique : remplir la forme en conservant FitToCurve, mais avec anti‑aliasing
-                    //                var oldSmo = g.SmoothingMode;
-                    //                var oldPix = g.PixelOffsetMode;
-                    //                g.SmoothingMode = SmoothingMode.AntiAlias;
-                    //                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                    //                if (st.DrawingAttributes.FitToCurve)
-                    //                {
-                    //                    try
-                    //                    {
-                    //                        Point[] pts = st.GetFlattenedBezierPoints(0);
-                    //                        Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //                        g.FillClosedCurve(bru, pts);
-                    //                    }
-                    //                    catch { }
-                    //                }
-                    //                else
-                    //                {
-                    //                    Point[] pts = st.GetPoints();
-                    //                    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //                    g.FillPolygon(bru, pts);
-                    //                }
-
-                    //                g.SmoothingMode = oldSmo;
-                    //                g.PixelOffsetMode = oldPix;
-                    //            }
-                    //        }
-                    //        catch { }
-                    //    }
-                    //}
-
-                    //           else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) ||
-                    //st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) ||
-                    //st.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID))
-                    //           {
-                    //               //// Contour forcé invisible : on ignore complètement GoStrokeOpacityPercent / GoStrokeWidth
-                    //               //int baseAlpha = 255 - st.DrawingAttributes.Transparency;
-
-                    //               //// Opacité du REMPLISSAGE seulement (on conserve le réglage utilisateur GoFillOpacityPercent)
-                    //               //int fillAlpha = Math.Max(0, Math.Min(255, (int)(baseAlpha * (Root.GoFillOpacityPercent / 100.0))));
-
-
-                    //               int fillAlpha = Math.Max(0, Math.Min(255, (int)(255 * (Root.GoFillOpacityPercent / 100.0))));
-
-                    //               // Couleur de base
-                    //               Color baseColor;
-                    //               if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID))
-                    //                   baseColor = st.DrawingAttributes.Color;
-                    //               else if (st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID))
-                    //                   baseColor = Color.White;
-                    //               else
-                    //                   baseColor = Color.Black;
-
-                    //               try
-                    //               {
-                    //                   if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
-                    //                   {
-                    //                       // Pastille numérotée => ellipse propre
-                    //                       Rectangle rect = st.GetBoundingBox();
-                    //                       Point p = rect.Location;
-                    //                       Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref p);
-                    //                       rect.Location = p;
-                    //                       p.X = rect.Width;
-                    //                       p.Y = rect.Height;
-                    //                       Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref p);
-                    //                       rect.Width = Math.Max(1, p.X);
-                    //                       rect.Height = Math.Max(1, p.Y);
-
-                    //                       RectangleF rf = new RectangleF(rect.X + 0.5f, rect.Y + 0.5f,
-                    //                                                      Math.Max(0, rect.Width - 1f),
-                    //                                                      Math.Max(0, rect.Height - 1f));
-                    //                       Rectangle rfinal = Rectangle.Round(rf);
-
-                    //                       var oldSmo = g.SmoothingMode;
-                    //                       var oldPix = g.PixelOffsetMode;
-                    //                       g.SmoothingMode = SmoothingMode.AntiAlias;
-                    //                       g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                    //                       if (fillAlpha > 0)
-                    //                       {
-                    //                           using (SolidBrush fillBrush = new SolidBrush(Color.FromArgb(fillAlpha, baseColor)))
-                    //                               g.FillEllipse(fillBrush, rfinal);
-                    //                       }
-
-                    //                       // PAS de contour (suppression volontaire)
-
-                    //                       g.SmoothingMode = oldSmo;
-                    //                       g.PixelOffsetMode = oldPix;
-                    //                   }
-                    //                   else
-                    //                   {
-                    //                       // Forme générique (polygone / closed curve)
-                    //                       var oldSmo = g.SmoothingMode;
-                    //                       var oldPix = g.PixelOffsetMode;
-                    //                       g.SmoothingMode = SmoothingMode.AntiAlias;
-                    //                       g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                    //                       Point[] pts = st.DrawingAttributes.FitToCurve
-                    //                           ? st.GetFlattenedBezierPoints(0)
-                    //                           : st.GetPoints();
-                    //                       Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-
-                    //                       if (fillAlpha > 0)
-                    //                       {
-                    //                           using (SolidBrush fillBrush = new SolidBrush(Color.FromArgb(fillAlpha, baseColor)))
-                    //                           {
-                    //                               if (st.DrawingAttributes.FitToCurve)
-                    //                                   g.FillClosedCurve(fillBrush, pts);
-                    //                               else
-                    //                                   g.FillPolygon(fillBrush, pts);
-                    //                           }
-                    //                       }
-
-                    //                       // PAS de contour (suppression volontaire)
-
-                    //                       g.SmoothingMode = oldSmo;
-                    //                       g.PixelOffsetMode = oldPix;
-                    //                   }
-                    //               }
-                    //               catch { }
-                    //           }
 
                     else if (st.ExtendedProperties.Contains(Root.ISFILLEDCOLOR_GUID) ||
                             st.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) ||
@@ -877,160 +592,6 @@ namespace gInk
                     }
 
 
-                    /// ################ goInk - START ####################
-
-
-
-
-                    //    if (st.ExtendedProperties.Contains(Root.ARROWEND_GUID) || st.ExtendedProperties.Contains(Root.ARROWSTART_GUID))
-                    //    {
-                    //        try
-                    //        {
-                    //            Point[] pts = st.GetPoints();
-                    //            if (pts == null || pts.Length < 2)
-                    //                goto AfterArrowHead;
-
-                    //            // InkSpace -> Pixels
-                    //            Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pts);
-                    //            PointF endA = pts[0];
-                    //            PointF endB = pts[pts.Length - 1];
-
-                    //            // Helper distance (évite shadowing des noms dx/dy)
-                    //            Func<PointF, PointF, double> d2 = (a, b) =>
-                    //            {
-                    //                double ddx = a.X - b.X, ddy = a.Y - b.Y;
-                    //                return ddx * ddx + ddy * ddy;
-                    //            };
-
-                    //            // Choix robuste du tip/start à partir des propriétés si dispo
-                    //            // initialisation sûre par défaut (fallback)
-                    //            PointF tip = endB;
-                    //            PointF start = endA;
-                    //            bool chosen = false;
-
-                    //            // 1) Si END (pointe) est stocké => tip = extrémité la plus proche d’ARROWEND_X/Y
-                    //            if (st.ExtendedProperties.Contains(Root.ARROWEND_X_GUID) &&
-                    //                st.ExtendedProperties.Contains(Root.ARROWEND_Y_GUID))
-                    //            {
-                    //                int ex = (int)st.ExtendedProperties[Root.ARROWEND_X_GUID].Data;
-                    //                int ey = (int)st.ExtendedProperties[Root.ARROWEND_Y_GUID].Data;
-                    //                if (ex != Int32.MinValue)
-                    //                {
-                    //                    PointF propEnd = new PointF(ex, ey);
-                    //                    if (d2(endA, propEnd) <= d2(endB, propEnd))
-                    //                    {
-                    //                        tip = endA; start = endB;
-                    //                    }
-                    //                    else
-                    //                    {
-                    //                        tip = endB; start = endA;
-                    //                    }
-                    //                    chosen = true;
-                    //                }
-                    //            }
-
-                    //            // 2) Sinon, si START (queue) est stocké => start = extrémité la plus proche d’ARROWSTART_X/Y
-                    //            if (!chosen &&
-                    //                st.ExtendedProperties.Contains(Root.ARROWSTART_X_GUID) &&
-                    //                st.ExtendedProperties.Contains(Root.ARROWSTART_Y_GUID))
-                    //            {
-                    //                int sx = (int)st.ExtendedProperties[Root.ARROWSTART_X_GUID].Data;
-                    //                int sy = (int)st.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data;
-                    //                if (sx != Int32.MinValue)
-                    //                {
-                    //                    PointF propStart = new PointF(sx, sy);
-                    //                    if (d2(endA, propStart) <= d2(endB, propStart))
-                    //                    {
-                    //                        start = endA; tip = endB;
-                    //                    }
-                    //                    else
-                    //                    {
-                    //                        start = endB; tip = endA;
-                    //                    }
-                    //                    chosen = true;
-                    //                }
-                    //            }
-
-                    //            // 3) Fallback déjà assuré par l'initialisation ci‑dessus
-
-                    //            double ddx2 = tip.X - start.X;
-                    //            double ddy2 = tip.Y - start.Y;
-                    //            double dist = Math.Sqrt(ddx2 * ddx2 + ddy2 * ddy2);
-
-                    //            if (dist <= 2.0)
-                    //            {
-                    //                int alpha0 = 255 - st.DrawingAttributes.Transparency;
-                    //                using (var brush0 = new SolidBrush(Color.FromArgb(alpha0, st.DrawingAttributes.Color)))
-                    //                    g.FillEllipse(brush0, tip.X - 2, tip.Y - 2, 4, 4);
-                    //            }
-                    //            else
-                    //            {
-
-
-                    //                // Correction: adapter le triangle pour qu'il soit plus plat et dépasse de l'extrémité
-                    //                // ET appliquer correctement la transparence configurée
-                    //                double theta = Math.Atan2(ddy2, ddx2) + Math.PI;
-                    //                // Angle plus large pour un triangle plus plat
-                    //                double tipAngle = Math.Min(Math.PI / 3.0, Root.ArrowAngle * 3.0);
-                    //                float headLen = (float)(Root.GetFixedArrowLengthPx() * 0.9);
-
-                    //                // Déplacement de la pointe pour qu'elle dépasse de l'extrémité END
-                    //                float offsetFactor = -0.33f * headLen;
-                    //                PointF adjustedTip = new PointF(
-                    //                    (float)(tip.X + Math.Cos(theta) * offsetFactor),
-                    //                    (float)(tip.Y + Math.Sin(theta) * offsetFactor)
-                    //                );
-
-                    //                // Construire le triangle avec la pointe ajustée
-                    //                PointF baseA = new PointF(
-                    //                    (float)(adjustedTip.X + Math.Cos(theta + tipAngle) * headLen),
-                    //                    (float)(adjustedTip.Y + Math.Sin(theta + tipAngle) * headLen));
-                    //                PointF baseB = new PointF(
-                    //                    (float)(adjustedTip.X + Math.Cos(theta - tipAngle) * headLen),
-                    //                    (float)(adjustedTip.Y + Math.Sin(theta - tipAngle) * headLen));
-
-                    //                var oldSmo = g.SmoothingMode;
-                    //                g.SmoothingMode = SmoothingMode.AntiAlias;
-
-                    //                // CORRECTION: Appliquer directement l'opacité configurée dans les options
-                    //                int arrowAlpha = (int)(255 * (Root.GoFillOpacityPercent / 100.0));
-                    //                // Obtenir la couleur de base de la flèche
-                    //                Color baseArrowColor = Root.GetArrowColor();
-                    //                // Créer une couleur avec l'alpha défini par les options
-                    //                Color arrowColor = Color.FromArgb(arrowAlpha, baseArrowColor.R, baseArrowColor.G, baseArrowColor.B);
-
-                    //                // Utiliser la couleur avec la transparence correcte pour le remplissage
-                    //                using (var brush = new SolidBrush(arrowColor))
-                    //                    g.FillPolygon(brush, new[] { adjustedTip, baseA, baseB });
-
-                    //                // Utiliser la même couleur avec transparence pour le contour
-                    //                float outlineWidth = Math.Max(1f, Root.HiMetricToPixel(st.DrawingAttributes.Width) * 0.15f);
-                    //                using (var outline = new Pen(arrowColor, outlineWidth))
-                    //                {
-                    //                    outline.LineJoin = LineJoin.Round;
-                    //                    g.DrawPolygon(outline, new[] { adjustedTip, baseA, baseB });
-                    //                }
-
-                    //                g.SmoothingMode = oldSmo;
-
-
-                    //            }
-                    //        }
-                    //        catch { }
-                    //    }
-
-                    //AfterArrowHead:;
-
-
-                    // ... dans DrawStrokes(Graphics g), remplacez le bloc flèche par :
-
-                    // ... dans DrawStrokes(Graphics g), dans le bloc flèche:
-
-
-
-                    // ... dans DrawStrokes(Graphics g), bloc flèche :
-
-
                     // ... dans DrawStrokes(Graphics g), remplacez le bloc flèche existant par :
                     if (st.ExtendedProperties.Contains(Root.ARROWEND_GUID) || st.ExtendedProperties.Contains(Root.ARROWSTART_GUID))
                     {
@@ -1114,18 +675,22 @@ namespace gInk
                             double ux = dirX / len, uy = dirY / len;
                             double vx = -uy, vy = ux;
 
-                            float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()));
+                            // FACTEUR GRID
+                            float scale = GetArrowGridScale();
+
+                            // Largeur de hampe et longueur de tête avec homothétie
+                            float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()) * scale);
                             float halfStem = widthPx * 0.5f;
 
-                            float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx());
+                            float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx() * scale);
                             float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
 
                             PointF headBase = new PointF(
                                 (float)(tip.X - ux * headLen),
                                 (float)(tip.Y - uy * headLen));
 
-                            // Pointe plus plate (base élargie)
-                            const float HeadBaseFactor = 2.2f; // était 1.6f
+                            // Pointe plus plate
+                            const float HeadBaseFactor = 2.2f;
                             float headBaseHalf = halfStem * HeadBaseFactor;
 
                             PointF p0 = new PointF((float)(start.X + vx * halfStem), (float)(start.Y + vy * halfStem));
@@ -2308,20 +1873,40 @@ namespace gInk
             double vx = -uy;
             double vy = ux;
 
-            float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()));
+            //float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()));
+            //float halfStem = widthPx * 0.5f;
+
+            //float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx());
+            //float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
+
+            //PointF start = new PointF(CursorX0, CursorY0);
+            //PointF tip = new PointF(CursorX, CursorY);
+            //PointF headBase = new PointF(
+            //    (float)(tip.X - ux * headLen),
+            //    (float)(tip.Y - uy * headLen));
+
+            //const float HeadBaseFactor = 2.2f; // était 1.6f
+            //float headBaseHalf = halfStem * HeadBaseFactor;
+
+            // FACTEUR GRID
+            float scale = GetArrowGridScale();
+
+            // Options -> dimensions (échelle appliquée)
+            float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()) * scale);
             float halfStem = widthPx * 0.5f;
 
-            float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx());
+            float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx() * scale);
             float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
 
+            // Points géométriques
             PointF start = new PointF(CursorX0, CursorY0);
             PointF tip = new PointF(CursorX, CursorY);
             PointF headBase = new PointF(
                 (float)(tip.X - ux * headLen),
                 (float)(tip.Y - uy * headLen));
-
-            const float HeadBaseFactor = 2.2f; // était 1.6f
+            const float HeadBaseFactor = 2.2f; // pointe plus plate
             float headBaseHalf = halfStem * HeadBaseFactor;
+
 
             PointF p0 = new PointF((float)(start.X + vx * halfStem), (float)(start.Y + vy * halfStem));
             PointF p1 = new PointF((float)(headBase.X + vx * halfStem), (float)(headBase.Y + vy * halfStem));
