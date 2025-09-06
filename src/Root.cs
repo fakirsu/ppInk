@@ -173,6 +173,37 @@ namespace gInk
         public float GoStrokeWidth = 3.0f;         // largeur finale (HiMetric)
                                                    // 0 = fin (/12), 1 = moyen (/9), 2 = épais (/6)
         public int GoStrokeThickness = 1;
+
+        // Paramètres flèches (Jeu de go)
+        public int GoArrowColorArgb;          // Couleur des flèches (ARGB)
+        public int GoArrowThickness;          // 0=fin(400) 1=moyen(1000) 2=épais(2000)
+        public int GoArrowLength;             // 0=courte(1/10) 1=moyenne(1/5) 2=longue(1/3)
+
+        // Helpers d’accès
+        public Color GetArrowColor() => Color.FromArgb(GoArrowColorArgb);
+        public float GetArrowWidthHiMetric()
+        {
+            switch (GoArrowThickness)
+            {
+                case 0: return 400f;
+                case 1: return 1000f;
+                case 2: return 2000f;
+                default: return 1000f;
+            }
+        }
+        public int GetFixedArrowLengthPx()
+        {
+            // Si pas de grille définie, fallback sur largeur d’écran
+            int gridWidth = GridRectDefined ? GridRect.Width : Screen.PrimaryScreen.Bounds.Width;
+            double ratio = GoArrowLength == 0 ? 0.10 : (GoArrowLength == 1 ? 0.20 : 1.0 / 3.0);
+            return (int)Math.Round(gridWidth * ratio);
+        }
+
+
+
+
+
+
         // Couleurs spécifiques aux 5 tags (A,R,G,B) ; ordre : Letter, Square, Triangle, Circle, Cross
         // Format identique à Toolbar_Color (A,R,G,B)
         public int[] GoTool_Letter_Color = new int[] { 255, 0, 0, 0 };   // défaut : noir opaque
@@ -1090,6 +1121,13 @@ namespace gInk
             //TagNumbering = 3; // numéro de départ (optionnel ; choisis la valeur voulue)
             //FilledSelected = Filling.WhiteFilled; // ← important : définit l'état de remplissage initial
 
+            // Flèches (go) - défauts
+            GoArrowColorArgb = Color.Red.ToArgb(); // couleur par défaut
+            GoArrowThickness = 1;                  // moyen (1000)
+            GoArrowLength = 1;                     // moyenne (1/5)
+
+
+
         }
 
 		public void SetTrayIconColor()
@@ -1500,6 +1538,107 @@ namespace gInk
                                     GoStrokeThickness = 2;
                                 else
                                     GoStrokeThickness = 1;
+                            }
+                            break;
+
+
+                        // Ajoutez ces cases juste après le case "GOSTROKE_THICKNESS":
+                        //case "GOARROWCOLOR":
+                        //    // accepte "#RRGGBB" ou "R,G,B"
+                        //    if (!string.IsNullOrEmpty(sPara))
+                        //    {
+                        //        try
+                        //        {
+                        //            if (sPara.Trim().StartsWith("#"))
+                        //                GoArrowColorArgb = ColorTranslator.FromHtml(sPara.Trim()).ToArgb();
+                        //            else
+                        //            {
+                        //                var p = sPara.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray();
+                        //                if (p.Length >= 3 && int.TryParse(p[0], out int rr) && int.TryParse(p[1], out int gg) && int.TryParse(p[2], out int bb))
+                        //                    GoArrowColorArgb = Color.FromArgb(rr, gg, bb).ToArgb();
+                        //            }
+                        //        }
+                        //        catch { /* ignore invalid values */ }
+                        //    }
+                        //    break;
+
+                        case "GOARROWCOLOR":
+                            if (!string.IsNullOrEmpty(sPara))
+                            {
+                                string v = sPara.Trim();
+                                try
+                                {
+                                    if (v.StartsWith("#"))
+                                    {
+                                        string hex = v.Substring(1);
+                                        if (hex.Length == 6)
+                                        {
+                                            int r = int.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
+                                            int g = int.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
+                                            int b = int.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
+                                            GoArrowColorArgb = Color.FromArgb(255, r, g, b).ToArgb();
+                                        }
+                                        else if (hex.Length == 8)
+                                        {
+                                            int a = int.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
+                                            int r = int.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
+                                            int g = int.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
+                                            int b = int.Parse(hex.Substring(6, 2), NumberStyles.HexNumber);
+                                            GoArrowColorArgb = Color.FromArgb(a, r, g, b).ToArgb();
+                                        }
+                                        else
+                                        {
+                                            GoArrowColorArgb = ColorTranslator.FromHtml(v).ToArgb();
+                                        }
+                                    }
+                                    else if (v.Contains(","))
+                                    {
+                                        var p = v.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray();
+                                        if (p.Length >= 4)
+                                        {
+                                            if (int.TryParse(p[0], out int a) && int.TryParse(p[1], out int rr) && int.TryParse(p[2], out int gg) && int.TryParse(p[3], out int bb))
+                                                GoArrowColorArgb = Color.FromArgb(a, rr, gg, bb).ToArgb();
+                                        }
+                                        else if (p.Length >= 3)
+                                        {
+                                            if (int.TryParse(p[0], out int rr) && int.TryParse(p[1], out int gg) && int.TryParse(p[2], out int bb))
+                                                GoArrowColorArgb = Color.FromArgb(255, rr, gg, bb).ToArgb();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        GoArrowColorArgb = ColorTranslator.FromHtml(v).ToArgb();
+                                    }
+                                }
+                                catch { /* ignore invalid */ }
+                            }
+                            break;
+
+
+
+                        case "GOARROWTHICKNESS":
+                            // 0=Thin,1=Normal,2=Thick (ou mots)
+                            if (int.TryParse(sPara, out tempi))
+                                GoArrowThickness = Math.Max(0, Math.Min(2, tempi));
+                            else
+                            {
+                                string up = sPara.Trim().ToUpperInvariant();
+                                if (up.StartsWith("THIN")) GoArrowThickness = 0;
+                                else if (up.StartsWith("THICK")) GoArrowThickness = 2;
+                                else GoArrowThickness = 1;
+                            }
+                            break;
+
+                        case "GOARROWLENGTH":
+                            // 0=short,1=medium,2=long (ou mots)
+                            if (int.TryParse(sPara, out tempi))
+                                GoArrowLength = Math.Max(0, Math.Min(2, tempi));
+                            else
+                            {
+                                string up = sPara.Trim().ToUpperInvariant();
+                                if (up.StartsWith("SHORT") || up.StartsWith("COURT")) GoArrowLength = 0;
+                                else if (up.StartsWith("LONG")) GoArrowLength = 2;
+                                else GoArrowLength = 1;
                             }
                             break;
 
@@ -3183,6 +3322,17 @@ namespace gInk
                 SetOrReplace(writelines, "GOSTROKEOPACITY", GoStrokeOpacityPercent.ToString());
                 SetOrReplace(writelines, "GOSTROKEWIDTH", GoStrokeWidth.ToString(System.Globalization.CultureInfo.InvariantCulture));
                 SetOrReplace(writelines, "GOSTROKE_THICKNESS", (GoStrokeThickness == 0) ? "Thin" : (GoStrokeThickness == 2) ? "Thick" : "Normal");
+
+                // Ajoutez ces lignes juste après le SetOrReplace existant pour GOSTROKE_THICKNESS
+                //SetOrReplace(writelines, "GOARROWCOLOR", Color.FromArgb(GoArrowColorArgb).R + "," + Color.FromArgb(GoArrowColorArgb).G + "," + Color.FromArgb(GoArrowColorArgb).B);
+
+                var ca = Color.FromArgb(GoArrowColorArgb);
+                SetOrReplace(writelines, "GOARROWCOLOR", $"{ca.A},{ca.R},{ca.G},{ca.B}");
+
+
+                SetOrReplace(writelines, "GOARROWTHICKNESS", GoArrowThickness.ToString(CultureInfo.InvariantCulture));
+                SetOrReplace(writelines, "GOARROWLENGTH", GoArrowLength.ToString(CultureInfo.InvariantCulture));
+
 
                 // Tags / goInk specific (force la persistance)
                 SetOrReplace(writelines, "TAGSIZE_PERCENT", TagSizePercent.ToString(System.Globalization.CultureInfo.InvariantCulture));

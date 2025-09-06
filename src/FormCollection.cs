@@ -4768,56 +4768,514 @@ namespace gInk
             return bmpo;
         }
 
+        //private Stroke AddArrowStroke(int CursorX0, int CursorY0, int CursorX, int CursorY)
+        //// arrow at starting point
+        //{
+        //    Point[] pts = new Point[2];
+        //    double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
+        //    double len = Math.Sqrt((CursorX - CursorX0) * (CursorX - CursorX0) + (CursorY - CursorY0) * (CursorY - CursorY0));
+        //    double scale = (Root.FormCollection.IC.DefaultDrawingAttributes.Width * 0.037795280352161) / 18.0;
+
+        //    double l = ArrowVarLen();
+
+        //    /*pts[0] = new Point((int)(CursorX0 + Math.Cos(theta + Root.ArrowAngle) * l), (int)(CursorY0 + Math.Sin(theta + Root.ArrowAngle) * l));
+        //    pts[1] = new Point(CursorX0, CursorY0);
+        //    pts[2] = new Point((int)(CursorX0 + Math.Cos(theta - Root.ArrowAngle) * l), (int)(CursorY0 + Math.Sin(theta - Root.ArrowAngle) * l));
+        //    pts[3] = new Point(CursorX0, CursorY0);
+        //    pts[4] = new Point(CursorX, CursorY);*/
+        //    int l1, l2;
+        //    Bitmap bmp = PrepareArrowBitmap(Root.ArrowHead[Root.CurrentArrow], Root.FormCollection.IC.DefaultDrawingAttributes.Color, Root.FormCollection.IC.DefaultDrawingAttributes.Transparency,
+        //                               Root.HiMetricToPixel(Root.FormCollection.IC.DefaultDrawingAttributes.Width), (float)theta, out l1);
+        //    StoredArrowImages.Add(bmp);
+        //    int i = StoredArrowImages.Count - 1;
+        //    bmp = PrepareArrowBitmap(Root.ArrowTail[Root.CurrentArrow], Root.FormCollection.IC.DefaultDrawingAttributes.Color, Root.FormCollection.IC.DefaultDrawingAttributes.Transparency,
+        //                               Root.HiMetricToPixel(Root.FormCollection.IC.DefaultDrawingAttributes.Width), (float)(Math.PI + theta), out l2);
+        //    StoredArrowImages.Add(bmp);
+        //    int j = StoredArrowImages.Count - 1;
+
+        //    pts[0] = new Point((int)Math.Round(CursorX0 + Math.Cos(theta) * scale * l1), (int)Math.Round(CursorY0 + Math.Sin(theta) * scale * l1));
+        //    pts[1] = new Point((int)Math.Round(CursorX - Math.Cos(theta) * scale * l2), (int)Math.Round(CursorY - Math.Sin(theta) * scale * l2));
+
+        //    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+        //    Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
+        //    st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+        //    st.DrawingAttributes.AntiAliased = true;
+        //    st.DrawingAttributes.FitToCurve = false;
+        //    setStrokeProperties(ref st, 0);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_GUID, i);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_X_GUID, CursorX0);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_Y_GUID, CursorY0);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_FN_GUID, Root.ArrowHead[Root.CurrentArrow]);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_GUID, j);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_X_GUID, CursorX);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_Y_GUID, CursorY);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_FN_GUID, Root.ArrowTail[Root.CurrentArrow]);
+
+        //    Root.FormCollection.IC.Ink.Strokes.Add(st);
+        //    if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+        //        FadingList.Add(st);
+        //    return st;
+        //}
+
+
+        //private Stroke AddArrowStroke(int CursorX0, int CursorY0, int CursorX, int CursorY)
+        //        {
+        //            Point[] pts = new Point[2];
+        //            double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
+        //            double len = Math.Sqrt((CursorX - CursorX0) * (CursorX - CursorX0) + (CursorY - CursorY0) * (CursorY - CursorY0));
+        //            double scale = (Root.FormCollection.IC.DefaultDrawingAttributes.Width * 0.037795280352161) / 18.0;
+
+        //            double l = ArrowVarLen();
+
+
+
+
+
+
+        //            // ======= INSERTION ICI : forcer les DrawingAttributes utilisés pour la flèche =======
+        //            // Créez une DrawingAttributes dérivée de l'actuelle puis forcez les propriétés voulues.
+        //            // Adaptez la couleur/largeur/transparence à vos besoins.
+        //            Microsoft.Ink.DrawingAttributes forcedDA = IC.DefaultDrawingAttributes.Clone();
+        //            try
+        //            {
+        //                // Exemple : forcer couleur opaque rouge et opacité pleine (adapter si besoin)
+        //                forcedDA.Color = Color.Red;                  // <- changez la couleur souhaitée
+        //                forcedDA.Transparency = 0;                   // 0 = pas de transparence (opaque)
+        //                                                             // forcedDA.Width est en HiMetric (conserver ou définir une valeur ici)
+        //                                                             // forcedDA.Width = Root.GoStrokeWidth; // ou une autre valeur HiMetric si souhaité
+        //            }
+        //            catch { /* silent fallback */ }
+        //            // =====================================================================================
+
+        //            int l1, l2;
+        //            // Utiliser forcedDA pour préparer les bitmaps (couleur/transparence/largeur)
+        //            Bitmap bmp = PrepareArrowBitmap(Root.ArrowHead[Root.CurrentArrow],
+        //                                           forcedDA.Color,
+        //                                           forcedDA.Transparency,
+        //                                           Root.HiMetricToPixel(forcedDA.Width),
+        //                                           (float)theta,
+        //                                           out l1);
+        //            StoredArrowImages.Add(bmp);
+        //            int i = StoredArrowImages.Count - 1;
+        //            bmp = PrepareArrowBitmap(Root.ArrowTail[Root.CurrentArrow],
+        //                                     forcedDA.Color,
+        //                                     forcedDA.Transparency,
+        //                                     Root.HiMetricToPixel(forcedDA.Width),
+        //                                     (float)(Math.PI + theta),
+        //                                     out l2);
+        //            StoredArrowImages.Add(bmp);
+        //            int j = StoredArrowImages.Count - 1;
+
+        //            pts[0] = new Point((int)Math.Round(CursorX0 + Math.Cos(theta) * scale * l1), (int)Math.Round(CursorY0 + Math.Sin(theta) * scale * l1));
+        //            pts[1] = new Point((int)Math.Round(CursorX - Math.Cos(theta) * scale * l2), (int)Math.Round(CursorY - Math.Sin(theta) * scale * l2));
+
+        //            IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+        //            Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
+
+        //            // Affecter les DrawingAttributes forcés AU STROKE avant d'ajouter les ExtendedProperties
+        //            st.DrawingAttributes = forcedDA.Clone();
+        //            st.DrawingAttributes.AntiAliased = true;
+        //            st.DrawingAttributes.FitToCurve = false;
+
+        //            setStrokeProperties(ref st, 0);
+        //            st.ExtendedProperties.Add(Root.ARROWSTART_GUID, i);
+        //            st.ExtendedProperties.Add(Root.ARROWSTART_X_GUID, CursorX0);
+        //            st.ExtendedProperties.Add(Root.ARROWSTART_Y_GUID, CursorY0);
+        //            st.ExtendedProperties.Add(Root.ARROWSTART_FN_GUID, Root.ArrowHead[Root.CurrentArrow]);
+        //            st.ExtendedProperties.Add(Root.ARROWEND_GUID, j);
+        //            st.ExtendedProperties.Add(Root.ARROWEND_X_GUID, CursorX);
+        //            st.ExtendedProperties.Add(Root.ARROWEND_Y_GUID, CursorY);
+        //            st.ExtendedProperties.Add(Root.ARROWEND_FN_GUID, Root.ArrowTail[Root.CurrentArrow]);
+
+        //            Root.FormCollection.IC.Ink.Strokes.Add(st);
+        //            if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+        //                FadingList.Add(st);
+        //            return st;
+        //        }
+
+        //private Stroke AddArrowStroke(int CursorX0, int CursorY0, int CursorX, int CursorY)
+        //{
+        //    // calcul géométrique
+        //    double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
+
+        //    // ===== Forcer les DrawingAttributes pour la flèche (couleur, opacité, largeur) =====
+        //    // On clone les attributs par défaut puis on les remplace par les valeurs persistées dans Root
+        //    Microsoft.Ink.DrawingAttributes forcedDA = IC.DefaultDrawingAttributes.Clone();
+        //    try
+        //    {
+        //        // Couleur et épaisseur forcées depuis Root
+        //        forcedDA.Color = Root.GetArrowColor();
+        //        forcedDA.Transparency = 0; // flèche pleine opacité
+        //        forcedDA.Width = Root.GetArrowWidthHiMetric(); // HiMetric
+        //    }
+        //    catch
+        //    {
+        //        // fallback silencieux si quelque chose casse
+        //        forcedDA.Color = Color.Red;
+        //        forcedDA.Transparency = 0;
+        //    }
+        //    // ==================================================================================
+
+        //    // Préparer les bitmaps de tête et queue en utilisant la couleur/largeur forcées
+        //    int connLenHead = 0, connLenTail = 0;
+        //    Bitmap bmpHead = PrepareArrowBitmap(Root.ArrowHead[Root.CurrentArrow],
+        //                                        forcedDA.Color,
+        //                                        forcedDA.Transparency,
+        //                                        Root.HiMetricToPixel(forcedDA.Width),
+        //                                        (float)theta,
+        //                                        out connLenHead);
+        //    StoredArrowImages.Add(bmpHead);
+        //    int idxHead = StoredArrowImages.Count - 1;
+
+        //    Bitmap bmpTail = PrepareArrowBitmap(Root.ArrowTail[Root.CurrentArrow],
+        //                                        forcedDA.Color,
+        //                                        forcedDA.Transparency,
+        //                                        Root.HiMetricToPixel(forcedDA.Width),
+        //                                        (float)(Math.PI + theta),
+        //                                        out connLenTail);
+        //    StoredArrowImages.Add(bmpTail);
+        //    int idxTail = StoredArrowImages.Count - 1;
+
+        //    // Calculer points d'extrémité pour la "hampe" de la flèche (pixel space)
+        //    // On rapproche la hampe des bitmaps de tête/queue en utilisant connLen*
+        //    Point pStart = new Point((int)Math.Round(CursorX0 + Math.Cos(theta) * connLenHead),
+        //                             (int)Math.Round(CursorY0 + Math.Sin(theta) * connLenHead));
+        //    Point pEnd = new Point((int)Math.Round(CursorX - Math.Cos(theta) * connLenTail),
+        //                           (int)Math.Round(CursorY - Math.Sin(theta) * connLenTail));
+
+        //    Point[] pts = new Point[] { pStart, pEnd };
+
+        //    // Convertir pixels -> InkSpace (même usage que le reste du code)
+        //    try
+        //    {
+        //        IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+        //    }
+        //    catch
+        //    {
+        //        // fallback si renderer indisponible
+        //    }
+
+        //    // Créer la stroke
+        //    Stroke st = IC.Ink.CreateStroke(pts);
+
+        //    // Appliquer les DrawingAttributes forcés AU STROKE AVANT d'ajouter les ExtendedProperties
+        //    st.DrawingAttributes = forcedDA.Clone();
+        //    st.DrawingAttributes.AntiAliased = true;
+
+        //    // Appliquer propriétés standard (couleur/filling ... helper existant)
+        //    try { setStrokeProperties(ref st, 0); } catch { }
+
+        //    // ExtendedProperties pour tête/queue (permet DrawStrokes de retrouver les bitmaps)
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_GUID, idxHead);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_X_GUID, CursorX0);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_Y_GUID, CursorY0);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_FN_GUID, Root.ArrowHead[Root.CurrentArrow]);
+
+        //    st.ExtendedProperties.Add(Root.ARROWEND_GUID, idxTail);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_X_GUID, CursorX);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_Y_GUID, CursorY);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_FN_GUID, Root.ArrowTail[Root.CurrentArrow]);
+
+        //    // Ajouter la stroke à l'encre
+        //    IC.Ink.Strokes.Add(st);
+
+        //    // Si la stroke possède fading, l'ajouter à la liste de fading
+        //    try
+        //    {
+        //        if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+        //            FadingList.Add(st);
+        //    }
+        //    catch { }
+
+        //    return st;
+        //}
+
+        //private Stroke AddArrowStroke(int CursorX0, int CursorY0, int CursorX, int CursorY)
+        //{
+        //    // calcul géométrique
+        //    double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
+
+        //    // ===== Forcer les DrawingAttributes pour la flèche (couleur, opacité, largeur) =====
+        //    Microsoft.Ink.DrawingAttributes forcedDA = IC.DefaultDrawingAttributes.Clone();
+        //    try
+        //    {
+        //        forcedDA.Color = Root.GetArrowColor();
+        //        forcedDA.Transparency = 0; // flèche pleine opacité
+        //        forcedDA.Width = Root.GetArrowWidthHiMetric(); // HiMetric
+        //    }
+        //    catch
+        //    {
+        //        forcedDA.Color = Color.Red;
+        //        forcedDA.Transparency = 0;
+        //    }
+        //    // ==================================================================================
+
+        //    // Préparer les bitmaps de tête et queue en utilisant la couleur/largeur forcées
+        //    int connLenHead = 0, connLenTail = 0;
+
+        //    // La tête doit être au POINT FINAL -> angle = theta
+        //    Bitmap bmpHead = PrepareArrowBitmap(
+        //        Root.ArrowHead[Root.CurrentArrow],
+        //        forcedDA.Color,
+        //        forcedDA.Transparency,
+        //        Root.HiMetricToPixel(forcedDA.Width),
+        //        (float)theta,
+        //        out connLenHead);
+        //    StoredArrowImages.Add(bmpHead);
+        //    int idxHead = StoredArrowImages.Count - 1;
+
+        //    // La queue au POINT DE DÉPART -> angle = theta + PI
+        //    Bitmap bmpTail = PrepareArrowBitmap(
+        //        Root.ArrowTail[Root.CurrentArrow],
+        //        forcedDA.Color,
+        //        forcedDA.Transparency,
+        //        Root.HiMetricToPixel(forcedDA.Width),
+        //        (float)(Math.PI + theta),
+        //        out connLenTail);
+        //    StoredArrowImages.Add(bmpTail);
+        //    int idxTail = StoredArrowImages.Count - 1;
+
+        //    // Calculer les points de la hampe (espace pixel)
+        //    // Début: avancer de la connexion de la QUEUE
+        //    Point pStart = new Point(
+        //        (int)Math.Round(CursorX0 + Math.Cos(theta) * connLenTail),
+        //        (int)Math.Round(CursorY0 + Math.Sin(theta) * connLenTail));
+
+        //    // Fin: reculer de la connexion de la TÊTE
+        //    Point pEnd = new Point(
+        //        (int)Math.Round(CursorX - Math.Cos(theta) * connLenHead),
+        //        (int)Math.Round(CursorY - Math.Sin(theta) * connLenHead));
+
+        //    Point[] pts = new Point[] { pStart, pEnd };
+
+        //    // Convertir pixels -> InkSpace
+        //    try
+        //    {
+        //        IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
+        //    }
+        //    catch
+        //    {
+        //        // fallback si renderer indisponible
+        //    }
+
+        //    // Créer la stroke
+        //    Stroke st = IC.Ink.CreateStroke(pts);
+
+        //    // Appliquer les DrawingAttributes forcés
+        //    st.DrawingAttributes = forcedDA.Clone();
+        //    st.DrawingAttributes.AntiAliased = true;
+
+        //    // Appliquer propriétés standard (si nécessaire)
+        //    try { setStrokeProperties(ref st, 0); } catch { }
+
+        //    // ExtendedProperties:
+        //    // - Début (START) = QUEUE
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_GUID, idxTail);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_X_GUID, CursorX0);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_Y_GUID, CursorY0);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_FN_GUID, Root.ArrowTail[Root.CurrentArrow]);
+
+        //    // - Fin (END) = TÊTE
+        //    st.ExtendedProperties.Add(Root.ARROWEND_GUID, idxHead);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_X_GUID, CursorX);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_Y_GUID, CursorY);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_FN_GUID, Root.ArrowHead[Root.CurrentArrow]);
+
+        //    // Ajouter la stroke à l'encre
+        //    IC.Ink.Strokes.Add(st);
+
+        //    // Gestion du fading éventuel
+        //    try
+        //    {
+        //        if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+        //            FadingList.Add(st);
+        //    }
+        //    catch { }
+
+        //    return st;
+        //}
+
+
+        //private Stroke AddArrowStroke(int CursorX0, int CursorY0, int CursorX, int CursorY)
+        //{
+        //    // Direction
+        //    double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
+
+        //    // Attributs de dessin (couleur/largeur de flèche)
+        //    var forcedDA = IC.DefaultDrawingAttributes.Clone();
+        //    try
+        //    {
+        //        forcedDA.Color = Root.GetArrowColor();
+        //        forcedDA.Transparency = (byte)(255 - forcedDA.Color.A);
+        //        forcedDA.Width = Root.GetArrowWidthHiMetric(); // HiMetric
+        //    }
+        //    catch
+        //    {
+        //        forcedDA.Color = Color.Red;
+        //        forcedDA.Transparency = 0;
+        //    }
+
+        //    // Préparer bitmaps (même si le rendu final est vectoriel) pour compat UI/édition
+        //    int connLenHead = 0, connLenTail = 0;
+        //    Bitmap bmpHead = PrepareArrowBitmap(
+        //        Root.ArrowHead[Root.CurrentArrow],
+        //        forcedDA.Color,
+        //        forcedDA.Transparency,
+        //        Root.HiMetricToPixel(forcedDA.Width),
+        //        (float)theta,
+        //        out connLenHead);
+        //    StoredArrowImages.Add(bmpHead);
+        //    int idxHead = StoredArrowImages.Count - 1;
+
+        //    Bitmap bmpTail = PrepareArrowBitmap(
+        //        Root.ArrowTail[Root.CurrentArrow],
+        //        forcedDA.Color,
+        //        forcedDA.Transparency,
+        //        Root.HiMetricToPixel(forcedDA.Width),
+        //        (float)(Math.PI + theta),
+        //        out connLenTail);
+        //    StoredArrowImages.Add(bmpTail);
+        //    int idxTail = StoredArrowImages.Count - 1;
+
+        //    // Points hampe (on colle aux bitmaps via longueurs de connexion)
+        //    // Début = queue => avancer du connLenTail
+        //    Point pStart = new Point(
+        //        (int)Math.Round(CursorX0 + Math.Cos(theta) * connLenTail),
+        //        (int)Math.Round(CursorY0 + Math.Sin(theta) * connLenTail));
+        //    // Fin = tête => reculer du connLenHead
+        //    Point pEnd = new Point(
+        //        (int)Math.Round(CursorX - Math.Cos(theta) * connLenHead),
+        //        (int)Math.Round(CursorY - Math.Sin(theta) * connLenHead));
+
+        //    Point[] pts = new[] { pStart, pEnd };
+        //    try { IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts); } catch { }
+
+        //    Stroke st = IC.Ink.CreateStroke(pts);
+        //    st.DrawingAttributes = forcedDA.Clone();
+        //    st.DrawingAttributes.AntiAliased = true;
+
+        //    try { setStrokeProperties(ref st, 0); } catch { }
+
+        //    // IMPORTANT: mapper START = queue, END = tête (ce que DrawStrokes attend)
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_GUID, idxTail);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_X_GUID, CursorX0);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_Y_GUID, CursorY0);
+        //    st.ExtendedProperties.Add(Root.ARROWSTART_FN_GUID, Root.ArrowTail[Root.CurrentArrow]);
+
+        //    st.ExtendedProperties.Add(Root.ARROWEND_GUID, idxHead);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_X_GUID, CursorX);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_Y_GUID, CursorY);
+        //    st.ExtendedProperties.Add(Root.ARROWEND_FN_GUID, Root.ArrowHead[Root.CurrentArrow]);
+
+        //    IC.Ink.Strokes.Add(st);
+
+        //    try { if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st); } catch { }
+
+        //    return st;
+        //}
+
+
         private Stroke AddArrowStroke(int CursorX0, int CursorY0, int CursorX, int CursorY)
-        // arrow at starting point
         {
-            Point[] pts = new Point[2];
+            // Calculer l'angle du tracé
             double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
-            double len = Math.Sqrt((CursorX - CursorX0) * (CursorX - CursorX0) + (CursorY - CursorY0) * (CursorY - CursorY0));
-            double scale = (Root.FormCollection.IC.DefaultDrawingAttributes.Width * 0.037795280352161) / 18.0;
 
-            double l = ArrowVarLen();
+            // Utiliser les attributs forcés pour les flèches
+            DrawingAttributes forcedDA = IC.DefaultDrawingAttributes.Clone();
+            try
+            {
+                forcedDA.Color = Root.GetArrowColor();
+                forcedDA.Transparency = (byte)(255 - forcedDA.Color.A);
+                forcedDA.Width = Root.GetArrowWidthHiMetric();
+            }
+            catch
+            {
+                // Fallback si erreur
+                forcedDA.Color = Color.Red;
+                forcedDA.Transparency = 0;
+            }
 
-            /*pts[0] = new Point((int)(CursorX0 + Math.Cos(theta + Root.ArrowAngle) * l), (int)(CursorY0 + Math.Sin(theta + Root.ArrowAngle) * l));
-            pts[1] = new Point(CursorX0, CursorY0);
-            pts[2] = new Point((int)(CursorX0 + Math.Cos(theta - Root.ArrowAngle) * l), (int)(CursorY0 + Math.Sin(theta - Root.ArrowAngle) * l));
-            pts[3] = new Point(CursorX0, CursorY0);
-            pts[4] = new Point(CursorX, CursorY);*/
-            int l1, l2;
-            Bitmap bmp = PrepareArrowBitmap(Root.ArrowHead[Root.CurrentArrow], Root.FormCollection.IC.DefaultDrawingAttributes.Color, Root.FormCollection.IC.DefaultDrawingAttributes.Transparency,
-                                       Root.HiMetricToPixel(Root.FormCollection.IC.DefaultDrawingAttributes.Width), (float)theta, out l1);
-            StoredArrowImages.Add(bmp);
-            int i = StoredArrowImages.Count - 1;
-            bmp = PrepareArrowBitmap(Root.ArrowTail[Root.CurrentArrow], Root.FormCollection.IC.DefaultDrawingAttributes.Color, Root.FormCollection.IC.DefaultDrawingAttributes.Transparency,
-                                       Root.HiMetricToPixel(Root.FormCollection.IC.DefaultDrawingAttributes.Width), (float)(Math.PI + theta), out l2);
-            StoredArrowImages.Add(bmp);
-            int j = StoredArrowImages.Count - 1;
+            // Préparer bitmaps pour VISUAL_CUES (interface d'édition) - mais le rendu final est vectoriel
+            int connLenHead = 0, connLenTail = 0;
 
-            pts[0] = new Point((int)Math.Round(CursorX0 + Math.Cos(theta) * scale * l1), (int)Math.Round(CursorY0 + Math.Sin(theta) * scale * l1));
-            pts[1] = new Point((int)Math.Round(CursorX - Math.Cos(theta) * scale * l2), (int)Math.Round(CursorY - Math.Sin(theta) * scale * l2));
+            // Détermine si c'est une flèche avec pointe au début ou à la fin
+            bool isStartArrow = (Root.ToolSelected == Tools.StartArrow);
 
-            IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
-            Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
-            st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+            // IMPORTANT: Ces bitmaps servent uniquement de référence visuelle, pas de rendu final
+            // Préparer la bitmap de la pointe
+            Bitmap bmpHead = PrepareArrowBitmap(
+                Root.ArrowHead[Root.CurrentArrow],
+                forcedDA.Color, forcedDA.Transparency,
+                Root.HiMetricToPixel(forcedDA.Width),
+                (float)(isStartArrow ? Math.PI + theta : theta),
+                out connLenHead);
+            StoredArrowImages.Add(bmpHead);
+            int idxHead = StoredArrowImages.Count - 1;
+
+            // Préparer la bitmap de la queue
+            Bitmap bmpTail = PrepareArrowBitmap(
+                Root.ArrowTail[Root.CurrentArrow],
+                forcedDA.Color, forcedDA.Transparency,
+                Root.HiMetricToPixel(forcedDA.Width),
+                (float)(isStartArrow ? theta : Math.PI + theta),
+                out connLenTail);
+            StoredArrowImages.Add(bmpTail);
+            int idxTail = StoredArrowImages.Count - 1;
+
+            // Créer la stroke et assigner les propriétés
+            Point[] pts;
+
+            // Toujours stocker dans l'ordre naturel du tracé
+            pts = new Point[] {
+        new Point(CursorX0, CursorY0),
+        new Point(CursorX, CursorY)
+    };
+
+            // Convertir en InkSpace
+            try { IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts); }
+            catch { }
+
+            // Créer la stroke avec les points et attributs
+            Stroke st = IC.Ink.CreateStroke(pts);
+            st.DrawingAttributes = forcedDA.Clone();
             st.DrawingAttributes.AntiAliased = true;
-            st.DrawingAttributes.FitToCurve = false;
-            setStrokeProperties(ref st, 0);
-            st.ExtendedProperties.Add(Root.ARROWSTART_GUID, i);
-            st.ExtendedProperties.Add(Root.ARROWSTART_X_GUID, CursorX0);
-            st.ExtendedProperties.Add(Root.ARROWSTART_Y_GUID, CursorY0);
-            st.ExtendedProperties.Add(Root.ARROWSTART_FN_GUID, Root.ArrowHead[Root.CurrentArrow]);
-            st.ExtendedProperties.Add(Root.ARROWEND_GUID, j);
-            st.ExtendedProperties.Add(Root.ARROWEND_X_GUID, CursorX);
-            st.ExtendedProperties.Add(Root.ARROWEND_Y_GUID, CursorY);
-            st.ExtendedProperties.Add(Root.ARROWEND_FN_GUID, Root.ArrowTail[Root.CurrentArrow]);
+            try { setStrokeProperties(ref st, 0); } catch { }
 
-            Root.FormCollection.IC.Ink.Strokes.Add(st);
-            if (st.ExtendedProperties.Contains(Root.FADING_PEN))
-                FadingList.Add(st);
+            // CRITIQUE: Stocker les informations de la flèche dans les propriétés étendues
+            // TOUJOURS associer ARROWEND_* avec la pointe/tip et ARROWSTART_* avec la queue/base
+            if (isStartArrow)
+            {
+                // Pour les flèches StartArrow: pointe à CursorX0,CursorY0
+                st.ExtendedProperties.Add(Root.ARROWEND_GUID, idxHead);
+                st.ExtendedProperties.Add(Root.ARROWEND_X_GUID, CursorX0);
+                st.ExtendedProperties.Add(Root.ARROWEND_Y_GUID, CursorY0);
+                st.ExtendedProperties.Add(Root.ARROWEND_FN_GUID, Root.ArrowHead[Root.CurrentArrow]);
+
+                st.ExtendedProperties.Add(Root.ARROWSTART_GUID, idxTail);
+                st.ExtendedProperties.Add(Root.ARROWSTART_X_GUID, CursorX);
+                st.ExtendedProperties.Add(Root.ARROWSTART_Y_GUID, CursorY);
+                st.ExtendedProperties.Add(Root.ARROWSTART_FN_GUID, Root.ArrowTail[Root.CurrentArrow]);
+            }
+            else
+            {
+                // Pour les flèches EndArrow (par défaut): pointe à CursorX,CursorY
+                st.ExtendedProperties.Add(Root.ARROWEND_GUID, idxHead);
+                st.ExtendedProperties.Add(Root.ARROWEND_X_GUID, CursorX);
+                st.ExtendedProperties.Add(Root.ARROWEND_Y_GUID, CursorY);
+                st.ExtendedProperties.Add(Root.ARROWEND_FN_GUID, Root.ArrowHead[Root.CurrentArrow]);
+
+                st.ExtendedProperties.Add(Root.ARROWSTART_GUID, idxTail);
+                st.ExtendedProperties.Add(Root.ARROWSTART_X_GUID, CursorX0);
+                st.ExtendedProperties.Add(Root.ARROWSTART_Y_GUID, CursorY0);
+                st.ExtendedProperties.Add(Root.ARROWSTART_FN_GUID, Root.ArrowTail[Root.CurrentArrow]);
+            }
+
+            // Ajouter à l'encre et aux flèches qui disparaissent si nécessaire
+            IC.Ink.Strokes.Add(st);
+            try { if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st); } catch { }
+
             return st;
         }
-
-
 
 
 
@@ -7154,7 +7612,16 @@ namespace gInk
             if (tool != Tools.StartArrow && tool != Tools.EndArrow)
             {
                 btArrow.BackgroundImage.Dispose();
-                btArrow.BackgroundImage = BuildArrowBtn(Root.ArrowHead[Root.CurrentArrow], Root.ArrowTail[Root.CurrentArrow], Color.Black);
+                //btArrow.BackgroundImage = BuildArrowBtn(Root.ArrowHead[Root.CurrentArrow], Root.ArrowTail[Root.CurrentArrow], Color.Black);
+
+                // Remplacement sûr : libère l'ancienne image, récupère la couleur courante du pen (fallback sur Root.GetArrowColor)
+// puis reconstruit l'icône de la flèche.
+try { btArrow.BackgroundImage?.Dispose(); } catch { }
+Color arrowColor;
+try { arrowColor = IC?.DefaultDrawingAttributes?.Color ?? Root.GetArrowColor(); }
+catch { arrowColor = Root.GetArrowColor(); }
+btArrow.BackgroundImage = BuildArrowBtn(Root.ArrowHead[Root.CurrentArrow], Root.ArrowTail[Root.CurrentArrow], arrowColor);
+
             }
             ////btNumb.BackgroundImage = getImgFromDiskOrRes("tool_numb", ImageExts);
             //// Affiche par défaut l'icône pastille BLANCHE avant tout clic

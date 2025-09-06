@@ -13,17 +13,17 @@ namespace gInk
     }
 
     public class Local
-	{
-		Dictionary<string, string> Languages = new Dictionary<string, string>();
+    {
+        Dictionary<string, string> Languages = new Dictionary<string, string>();
 
-		public string CurrentLanguageFile;
+        public string CurrentLanguageFile;
 
-		public string[] ButtonNamePen = new string[Root.MaxPenCount];
+        public string[] ButtonNamePen = new string[Root.MaxPenCount];
 
         public string ButtonNameToogle;
         public string ButtonNamePenwidth;
-		public string ButtonNameErasor;
-		public string ButtonNamePan;
+        public string ButtonNameErasor;
+        public string ButtonNamePan;
         public string ButtonNameScaleRotate;
         public string ButtonNameMousePointer;
         public string ButtonNameInkVisible;
@@ -121,7 +121,7 @@ namespace gInk
         public string OptionMeasureWhileDrawing;
         public string FormatLength;
         public string FormatRectSize;
-        public string FormatEllipseSize;    
+        public string FormatEllipseSize;
         public string FormatAngle;
         public string FormaTotalLength;
 
@@ -154,7 +154,7 @@ namespace gInk
 
 
         public string MenuEntryExit;
-		public string MenuEntryOptions;
+        public string MenuEntryOptions;
         public string MenuEntryAbout;
 
         public string OptionsTabGeneral;
@@ -165,17 +165,13 @@ namespace gInk
         // nouveau : libellé pour l'épaisseur des contours (onglet Jeu de go)
         public string OptionsGoStrokeThickness;
 
-        //// 
-        //public string OptionsTabGoHotkeys;
-        //public string OptionsGoHotkeys_ShowWhite;
-        //public string OptionsGoHotkeys_ShowBlack;
-        //public string OptionsGoHotkeys_HideWhite;
-        //public string OptionsGoHotkeys_HideBlack;
+        // --- Ajout : libellés flèche (onglet Jeu de go)
+        public string GoOptionsArrowColor;
+        public string GoOptionsArrowThickness;
+        public string GoOptionsArrowThicknessItems; // "Thin;Normal;Thick"
+        public string GoOptionsArrowLength;
+        public string GoOptionsArrowLengthItems;    // "Short;Normal;Long"
 
-        //public string OptionsGoFillOpacity;
-        //public string OptionsGoStrokeOpacity;
-        //public string OptionsGoStrokeWidth;
-        // 
         public string OptionsTabGoHotkeys;
         public string OptionsGoHotkeys_ShowWhite;
         public string OptionsGoHotkeys_ShowBlack;
@@ -195,7 +191,7 @@ namespace gInk
         public string OptionsGeneralOpenIntoSnapMode;
         public string OptionGeneralStartFolded;
         public string OptionsGeneralWhitetrayicon;
-		public string OptionsGeneralAllowdragging;
+        public string OptionsGeneralAllowdragging;
         public string OptionsGeneralShowFloatingWindow;
         public string OptionsGeneralSaveFloatingWindowPos;
         public string OptionsGeneralArrowHead;
@@ -283,17 +279,17 @@ namespace gInk
         public Dictionary<int, string> KeyNames = new Dictionary<int, string>();
 
         public Local()
-		{
-			ButtonNamePen[0] = "Pen 0";
-			ButtonNamePen[1] = "Pen 1";
-			ButtonNamePen[2] = "Pen 2";
-			ButtonNamePen[3] = "Pen 3";
-			ButtonNamePen[4] = "Pen 4";
-			ButtonNamePen[5] = "Pen 5";
-			ButtonNamePen[6] = "Pen 6";
-			ButtonNamePen[7] = "Pen 7";
-			ButtonNamePen[8] = "Pen 8";
-			ButtonNamePen[9] = "Pen 9";
+        {
+            ButtonNamePen[0] = "Pen 0";
+            ButtonNamePen[1] = "Pen 1";
+            ButtonNamePen[2] = "Pen 2";
+            ButtonNamePen[3] = "Pen 3";
+            ButtonNamePen[4] = "Pen 4";
+            ButtonNamePen[5] = "Pen 5";
+            ButtonNamePen[6] = "Pen 6";
+            ButtonNamePen[7] = "Pen 7";
+            ButtonNamePen[8] = "Pen 8";
+            ButtonNamePen[9] = "Pen 9";
             ButtonNamePen[10] = "Pen 10";
             ButtonNamePen[11] = "Pen 11";
             ButtonNamePen[12] = "Pen 12";
@@ -316,7 +312,7 @@ namespace gInk
             ButtonNameCircleTag = "Circle";
             ButtonNameCrossTag = "Cross";
 
-            // libellés pour les options Go (valeurs par défaut)
+            // libellés pour les options Go (valeurs par défaut en anglais)
             GoOptionsHandWhiteAlpha = "White filled opacity (%)";
             GoOptionsHandStrokeAlpha = "Outline opacity of areas (%)";
             GoOptionsHandStrokeWidth = "Area outline thickness";
@@ -332,64 +328,64 @@ namespace gInk
             OptionsTagSizePerc = "Number size (%) :";
             OptionsTagNumberOpacityPerc = "Number opacity (%) :";
 
-            // libellés pour les options Go (valeurs par défaut)
-            OptionsTagOpacityPerc = "Stone opacity (%) :";
-            OptionsTagCirclePerc = "Stone diameter (%) :";
-            OptionsTagSizePerc = "Number size (%) :";
-            OptionsTagNumberOpacityPerc = "Number opacity (%) :";
-
             // nouveau : valeur par défaut pour l'étiquette d'épaisseur des contours
             OptionsGoStrokeThickness = "Stroke thickness :";
 
+            // --- Défauts pour les options flèche (ajoutés pour FormOptions)
+            GoOptionsArrowColor = "Arrow color :";
+            GoOptionsArrowThickness = "Arrow thickness :";
+            GoOptionsArrowThicknessItems = "Thin;Normal;Thick";
+            GoOptionsArrowLength = "Arrow length :";
+            GoOptionsArrowLengthItems = "Short;Normal;Long";
 
             LoadKeyNames();
 
-			LoadLocalList();
-		}
+            LoadLocalList();
+        }
 
         private void LoadKeyNames()
         {
             System.ComponentModel.Int32Converter conv = new System.ComponentModel.Int32Converter();
             foreach (string st1 in KeyNamesStr.Split('\n'))
             {
-                string[] st = st1.Trim().Split(new char[] { '=' },2);
-                KeyNames[(int)(conv.ConvertFromString(st[0]))]=st[1];
+                string[] st = st1.Trim().Split(new char[] { '=' }, 2);
+                KeyNames[(int)(conv.ConvertFromString(st[0]))] = st[1];
             }
             LocalSt.KeyNames = KeyNames;
         }
 
-		public void LoadLocalList()
-		{
-			DirectoryInfo d = new DirectoryInfo("./lang/");
-			if (!d.Exists)
-				d = new DirectoryInfo(Program.RunningFolder + "lang");
+        public void LoadLocalList()
+        {
+            DirectoryInfo d = new DirectoryInfo("./lang/");
+            if (!d.Exists)
+                d = new DirectoryInfo(Program.RunningFolder + "lang");
             if (!d.Exists)
                 d = new DirectoryInfo(Program.ProgramFolder + "lang");
             if (!d.Exists)
-				return;
+                return;
 
-			FileInfo[] Files = d.GetFiles("*.txt");
-			foreach (FileInfo file in Files)
-			{
-				FileStream fini = new FileStream(file.FullName, FileMode.Open);
-				StreamReader srini = new StreamReader(fini);
-				string sLine;
-				do
-				{
-					sLine = srini.ReadLine();
-				}
-				while (sLine != null && !sLine.StartsWith("LanguageName"));
-				if (sLine == null)
-					continue;
-				string sPara = sLine.Substring(sLine.IndexOf("=") + 1);
-				sPara = sPara.Trim();
-				sPara = sPara.Trim('\"');
-				string languagename = sPara;
+            FileInfo[] Files = d.GetFiles("*.txt");
+            foreach (FileInfo file in Files)
+            {
+                FileStream fini = new FileStream(file.FullName, FileMode.Open);
+                StreamReader srini = new StreamReader(fini);
+                string sLine;
+                do
+                {
+                    sLine = srini.ReadLine();
+                }
+                while (sLine != null && !sLine.StartsWith("LanguageName"));
+                if (sLine == null)
+                    continue;
+                string sPara = sLine.Substring(sLine.IndexOf("=") + 1);
+                sPara = sPara.Trim();
+                sPara = sPara.Trim('\"');
+                string languagename = sPara;
 
-				Languages.Add(file.Name.Substring(0, file.Name.Length - 4), sPara);
+                Languages.Add(file.Name.Substring(0, file.Name.Length - 4), sPara);
 
-				fini.Close();
-			}
+                fini.Close();
+            }
         }
 
         public string ShortTxt(string sin)
@@ -401,37 +397,37 @@ namespace gInk
 
 
         public List<string> GetLanguagenames()
-		{
-			List<string> names = new List<string>();
-			foreach (KeyValuePair<string, string> pair in Languages)
-				names.Add(pair.Value);
+        {
+            List<string> names = new List<string>();
+            foreach (KeyValuePair<string, string> pair in Languages)
+                names.Add(pair.Value);
 
-			return names;
-		}
+            return names;
+        }
 
-		public string GetFilenameByLanguagename(string languagename)
-		{
-			foreach (KeyValuePair<string, string> pair in Languages)
-				if (pair.Value == languagename)
-					return pair.Key;
+        public string GetFilenameByLanguagename(string languagename)
+        {
+            foreach (KeyValuePair<string, string> pair in Languages)
+                if (pair.Value == languagename)
+                    return pair.Key;
 
-			return "";
-		}
+            return "";
+        }
 
-		public string GetLanguagenameByFilename(string filename)
-		{
-			foreach (KeyValuePair<string, string> pair in Languages)
-				if (pair.Key == filename)
-					return pair.Value;
+        public string GetLanguagenameByFilename(string filename)
+        {
+            foreach (KeyValuePair<string, string> pair in Languages)
+                if (pair.Key == filename)
+                    return pair.Value;
 
-			return "";
-		}
+            return "";
+        }
 
         public void LoadLocalFile(string loname)
         {
             //
             LoadLocalStream(new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(Properties.Resources.en_us))));
-                        
+
             string filename = "./lang/" + loname + ".txt";
 
             if (!File.Exists(filename))
@@ -450,50 +446,50 @@ namespace gInk
 
         public void LoadLocalStream(StreamReader srini)
         {
-			string sLine = "";
-			string sName = "", sPara = "";
-			while (sLine != null)
-			{
-				sLine = srini.ReadLine();
-				if
-				(
-					sLine != null &&
-					sLine != "" &&
-					sLine.Substring(0, 1) != "-" &&
-					sLine.Substring(0, 1) != "%" &&
-					sLine.Substring(0, 1) != "'" &&
-					sLine.Substring(0, 1) != "/" &&
-					sLine.Substring(0, 1) != "!" &&
-					sLine.Substring(0, 1) != "[" &&
-					sLine.Substring(0, 1) != "#" &&
+            string sLine = "";
+            string sName = "", sPara = "";
+            while (sLine != null)
+            {
+                sLine = srini.ReadLine();
+                if
+                (
+                    sLine != null &&
+                    sLine != "" &&
+                    sLine.Substring(0, 1) != "-" &&
+                    sLine.Substring(0, 1) != "%" &&
+                    sLine.Substring(0, 1) != "'" &&
+                    sLine.Substring(0, 1) != "/" &&
+                    sLine.Substring(0, 1) != "!" &&
+                    sLine.Substring(0, 1) != "[" &&
+                    sLine.Substring(0, 1) != "#" &&
                     sLine.Contains("=")
-                    //sLine.Contains("=") &&
-                    //!sLine.Substring(sLine.IndexOf("=") + 1).Contains("=")
+                //sLine.Contains("=") &&
+                //!sLine.Substring(sLine.IndexOf("=") + 1).Contains("=")
                 )
-				{
+                {
                     sName = sLine.Substring(0, sLine.IndexOf("="));
-					sName = sName.Trim();
-					sPara = sLine.Substring(sLine.IndexOf("=") + 1).Replace("\\n","\n");
-					sPara = sPara.Trim();
-					sPara = sPara.Trim('\"');
+                    sName = sName.Trim();
+                    sPara = sLine.Substring(sLine.IndexOf("=") + 1).Replace("\\n", "\n");
+                    sPara = sPara.Trim();
+                    sPara = sPara.Trim('\"');
 
-					if (sName.StartsWith("ButtonNamePen"))
-					{
-						int penid = 0;
-						if (int.TryParse(sName.Substring(13), out penid))
-						{
-							ButtonNamePen[penid] = sPara;
-						}
-					}
+                    if (sName.StartsWith("ButtonNamePen"))
+                    {
+                        int penid = 0;
+                        if (int.TryParse(sName.Substring(13), out penid))
+                        {
+                            ButtonNamePen[penid] = sPara;
+                        }
+                    }
 
-					System.Reflection.FieldInfo fi = typeof(Local).GetField(sName);
-					if (fi != null)
-						fi.SetValue(this, sPara);
-				}
-			}
-			//fini.Close();
+                    System.Reflection.FieldInfo fi = typeof(Local).GetField(sName);
+                    if (fi != null)
+                        fi.SetValue(this, sPara);
+                }
+            }
+            //fini.Close();
             LoadKeyNames();
-			//CurrentLanguageFile = loname;
-		}
-	}
+            //CurrentLanguageFile = loname;
+        }
+    }
 }
