@@ -5278,7 +5278,34 @@ namespace gInk
         }
 
 
-
+        public Stroke AddArrowPublic(int CursorX0, int CursorY0, int CursorX, int CursorY, bool startArrow)
+        {
+            // Wrapper public pour créer une flèche (utilise la méthode privée AddArrowStroke)
+            // startArrow = true  => tête au début
+            // startArrow = false => tête à la fin (par défaut)
+            int prevTool = Root.ToolSelected;
+            int prevFilled = Root.FilledSelected;
+            try
+            {
+                // Sélectionne temporairement l'outil flèche approprié
+                SelectTool(startArrow ? Tools.StartArrow : Tools.EndArrow, -1);
+                // Crée la stroke (méthode privée existante)
+                Stroke st = AddArrowStroke(CursorX0, CursorY0, CursorX, CursorY);
+                // Demande rafraîchissement de l'affichage
+                Root.UponAllDrawingUpdate = true;
+                Root.UponButtonsUpdate |= 0x2;
+                return st;
+            }
+            catch
+            {
+                return null;
+            }
+            finally
+            {
+                // Restaure l'outil précédent
+                try { SelectTool(prevTool, prevFilled); } catch { }
+            }
+        }
 
         /// ################ goInk - START ####################
         private Stroke AddNumberTagStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt)

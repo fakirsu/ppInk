@@ -32,8 +32,8 @@ ButtonNameCrossTag = "Ajout de croix"
 OptionsGoStrokeThickness = "Ajout de symboles\n > épaisseur des symboles\nLes couleurs sont paramétrables :\nLettres / Carrés / Triangles / Cercles / Croix"
 GoOptionsArrowColor = "Flèches > couleur"
 GoOptionsArrowThickness = "Flèches > épaisseur"
-GoOptionsArrowLength = "Flèches > longueur"
-GoOptionsArrowThicknessItems = "Fin;Moyen;Épais"
+GoOptionsArrowLength = "Flèches > taille de la pointe"
+GoOptionsArrowThicknessItems = "Flèches > épaisseur (Fin;Moyen;Épais)"
 GoOptionsArrowLengthItems = "Courte;Moyenne;Longue"
 # -> Fin des entrées pour jeu de go ###
 

@@ -91,7 +91,8 @@ namespace gInk
             return 1f;
         }
 
-
+        // Facteur global d'ajustement du gabarit des flèches (1.0 = inchangé)
+        private const float ArrowSizeMultiplier = 2.50f;
 
 
         // http://www.csharp411.com/hide-form-from-alttab/
@@ -676,7 +677,8 @@ namespace gInk
                             double vx = -uy, vy = ux;
 
                             // FACTEUR GRID
-                            float scale = GetArrowGridScale();
+                            //float scale = GetArrowGridScale();
+                            float scale = GetArrowGridScale() * ArrowSizeMultiplier;
 
                             // Largeur de hampe et longueur de tête avec homothétie
                             float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()) * scale);
@@ -1889,7 +1891,8 @@ namespace gInk
             //float headBaseHalf = halfStem * HeadBaseFactor;
 
             // FACTEUR GRID
-            float scale = GetArrowGridScale();
+            //float scale = GetArrowGridScale();
+            float scale = GetArrowGridScale() * ArrowSizeMultiplier;
 
             // Options -> dimensions (échelle appliquée)
             float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()) * scale);

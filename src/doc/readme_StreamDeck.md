@@ -34,6 +34,10 @@ Dans StreamlDeck, il suffit d'appeler une adresse URL précise :
   Description : Ajout d'une zone noire  
   "http://localhost:1234/HandFilledBlack"
 
+- /HandFilledBlack  
+  Description : Ajout d'une flèche 
+  "http://localhost:1234/AddArrow"
+
 - /LetterTag  
   Description : Ajout de lettres (A, B, C, ...)  
   "http://localhost:1234/LetterTag"
