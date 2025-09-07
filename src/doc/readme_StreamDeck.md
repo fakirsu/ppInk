@@ -1,5 +1,11 @@
 # goInk et StreamDeck
 
+## Sommaire
+- [English version](readme_StreamDeck_EN.md)
+- [Pour les outils spécifiques au jeu de go](#pour-les-outils-spécifiques-au-jeu-de-go)
+- [Tous les autres endpoints](#liste-des-autres-endpoints-rest-disponibles-résumé-fonctionnel-du-fichier-apirestcs)]
+- [Prédéfinir vos gobans](#prédéfinir-vos-gobans)
+
 Il est possible d'utiliser goInk avec des raccourcis clavier, mais également avec [Rest API](https://github.com/fakirsu/ppInk?tab=readme-ov-file#rest-api). Les deux solutions sont possibles avec un StreamDeck. A ma connaissance, il y a très peu de différences en termes de performances, consommation de ressource, fiabilité, ... 
 
 Pour ma part j'utilise Rest API, car cela évite des conflits potentiels de raccourcis clavier avec d'autres applications.
@@ -9,6 +15,10 @@ Dans StreamlDeck, il suffit d'appeler une adresse URL précise :
 <img src="../images/rest_api.png" alt="Appel dans StreamDeck" width="500"/>
 
 ## Pour les outils spécifiques au jeu de go
+
+- /RectTool  
+  Description : Outil "Set goban" pour définir les dimensions du goban  
+  "http://localhost:1234/RectTool"
 
 - /NTag_Show_White  
   Description : Pierres numérotées (première pierre blanche)  
@@ -168,6 +178,38 @@ Tous les endpoints acceptent GET ; la plupart exigent que l'application soit en 
   - réponse : { "PageNumer": n, "TotalPages": m }
 
 - autres chemins non implémentés -> 404
+
+
+
+## Prédéfinir vos gobans
+Si vous utilisez plusieurs goban de tailles différentes (OGS, KGS, FOX, ...), vous pouvez utiliser le StreamDeck pour "préenregistrer" les dimensions de chacun d'eux.
+
+Je vous conseille l'utilisation de l'extension [BarRaider SuperMacro](https://marketplace.elgato.com/product/supermacro-62195fec-7bcb-403d-b650-c342e9dfec67)
+
+Vous pourrez ensuite créer une multi-action dans StreamDeck, avec les actions suivantes :
+  - Ouvrir la barre d'outils goInk (si pas déjà ouvert)
+  - Attendre 500 ms (pour laisser le temps à goInk de s'ouvrir)
+  - Appeler l'endpoint "http://localhost:1234/RectTool" pour activer l'outil "Set goban"
+  - Attendre 200 ms
+  - Fonction BarRaider avec le code suivant dans Short-Press-Macro :
+	<pre><code>{{MSAVEPOS}}
+	{{MOUSEPOS:30000,15000}}
+	{{MLEFTDOWN}}
+	{{PAUSE:50}}
+	{{MOUSEPOS:50000,45000}}
+	{{PAUSE:50}}
+	{{MLEFTUP}}
+	{{MLOADPOS}} </code></pre>
+	
+Les coordonnées (x,y) dans {{MOUSEPOS:x,y}} sont à adapter en fonction de la position de votre goban sur l'écran. Vous pouvez utiliser l'outil Windows "Capture d'écran et croquis" pour obtenir les coordonnées.
+x et y doivent être entre 0 et 65535 (le point 65535,65535 est tout en bas à droite de votre écran)
+Vous poouvez utiliser des outils tiers pour déterminer les coordonnées x,y de votre souris (par exemple VoiceAttack).
+
+
+
+
+
+
 
 
 

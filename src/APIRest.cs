@@ -822,6 +822,37 @@ namespace gInk
                     }
 
 
+                    else if (req.Url.AbsolutePath == "/Rect" || req.Url.AbsolutePath == "/RectTool")
+                    {
+                        // Active l'outil Rectangle (simple, sans paramètre)
+                        if (!(Root.FormDisplay.Visible || Root.FormCollection.Visible))
+                        {
+                            resp.StatusCode = 409;
+                            ret = "!!!!! Not in Inking mode";
+                        }
+                        else
+                        {
+                            try
+                            {
+                                // Sélectionne l'outil Rectangle en respectant le filling courant
+                                Root.FormCollection.SelectTool(Tools.Rect, Root.FilledSelected);
+
+                                // Forcer mise à jour UI
+                                Root.UponButtonsUpdate |= 0x2;
+                                Root.UponAllDrawingUpdate = true;
+
+                                ret = "{\"OK\": true, \"Tool\": \"Rect\"}";
+                            }
+                            catch (Exception e)
+                            {
+                                resp.StatusCode = 500;
+                                ret = string.Format("!!!! Exception: {0}", e.Message);
+                            }
+                        }
+                    }
+
+
+
                     else if (req.Url.AbsolutePath == "/Rotate")
                     {
                         string s;
