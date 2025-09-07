@@ -35,6 +35,8 @@ GoOptionsArrowThickness = "Flèches > épaisseur"
 GoOptionsArrowLength = "Flèches > taille de la pointe"
 GoOptionsArrowThicknessItems = "Flèches > épaisseur (Fin;Moyen;Épais)"
 GoOptionsArrowLengthItems = "Courte;Moyenne;Longue"
+OptionsGoHotkeys_OpenToolbar = "Ouvrir la barre d'outils (ne fait rien si déjà ouverte)"
+OptionsGoHotkeys_CloseToolbar = "Fermer la barre d'outils (ne fait rien si déjà fermée)"
 # -> Fin des entrées pour jeu de go ###
 
 ButtonNamePen0 = "Stylo 0"

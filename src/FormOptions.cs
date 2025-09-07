@@ -60,6 +60,12 @@ namespace gInk
         private HotkeyInputBox hiHK_CircleTag;
         private HotkeyInputBox hiHK_CrossTag;
 
+        // --- Nouveaux raccourcis en tête de l’onglet Go ---
+        private Label lblHK_OpenToolbar;
+        private HotkeyInputBox hiHK_OpenToolbar;
+        private Label lblHK_CloseToolbar;
+        private HotkeyInputBox hiHK_CloseToolbar;
+
 
         private Label lblTagCirclePerc;
         private NumericUpDown nudTagCirclePerc;

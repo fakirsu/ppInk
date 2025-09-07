@@ -183,6 +183,37 @@ namespace gInk
                     }
 
 
+                    else if (req.Url.AbsolutePath == "/OpenToolbar")
+                    {
+                        try
+                        {
+                            if (!(Root.FormDisplay?.Visible == true || Root.FormCollection?.Visible == true))
+                                Root.StartInk();
+                            ret = " { \"Opened\" : " + ((Root.FormDisplay.Visible || Root.FormCollection.Visible) ? "true" : "false") + " }";
+                        }
+                        catch (Exception e)
+                        {
+                            resp.StatusCode = 500;
+                            ret = string.Format("!!!! Exception: {0}", e.Message);
+                        }
+                    }
+
+                    else if (req.Url.AbsolutePath == "/CloseToolbar")
+                    {
+                        try
+                        {
+                            if (Root.FormDisplay?.Visible == true || Root.FormCollection?.Visible == true)
+                                Root.StopInk();
+                            ret = " { \"Closed\" : " + ((Root.FormDisplay.Visible || Root.FormCollection.Visible) ? "false" : "true") + " }";
+                        }
+                        catch (Exception e)
+                        {
+                            resp.StatusCode = 500;
+                            ret = string.Format("!!!! Exception: {0}", e.Message);
+                        }
+                    }
+
+
                     else if (req.Url.AbsolutePath == "/PenDef")
                     {
                         string s;
@@ -545,6 +576,7 @@ namespace gInk
                             ret = string.Format("!!!! Error in Query ({0}) - {1} ", req.HttpMethod, req.Url.AbsoluteUri);
                     }
 
+
                     else if (req.Url.AbsolutePath == "/EnlargePen")
                     {
                         string s;
@@ -731,6 +763,7 @@ namespace gInk
                             ret = string.Format("!!!! Error in Query ({0}) - {1} ", req.HttpMethod, req.Url.AbsoluteUri);
                         }
                     }
+
 
 
                     else if (req.Url.AbsolutePath == "/ClearScreen")
