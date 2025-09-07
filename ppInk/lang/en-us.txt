@@ -30,6 +30,11 @@ ButtonNameTriangleTag = "Add triangles"
 ButtonNameCircleTag = "Add circles"
 ButtonNameCrossTag = "Add crosses"
 OptionsGoStrokeThickness = "Add symbols\n > symbol thickness\nColors are configurable:\nLetters / Squares / Triangles / Circles / Crosses"
+GoOptionsArrowColor = "Arrows > color"
+GoOptionsArrowThickness = "Arrows > thickness"
+GoOptionsArrowLength = "Arrows > length"
+GoOptionsArrowThicknessItems = "Thin;Medium;Thick"
+GoOptionsArrowLengthItems = "Short;Medium;Long"
 # -> End of entries for Go game
 
 ButtonNamePen0 = "Pen 0"

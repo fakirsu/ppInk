@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.IO;
+using Microsoft.Ink;
 
 namespace gInk
 {
@@ -1018,6 +1019,38 @@ namespace gInk
                         }
                         if (resp.StatusCode == 200)
                             ret = " { \"ArrowForced\" : " + (Root.APIRestAltPressed ? "true" : "false") + " }";
+                    }
+
+
+                    else if (req.Url.AbsolutePath == "/AddArrow")
+                    {
+                        // Sélectionne l'outil Flèche (simple, sans paramètre).
+                        if (!(Root.FormDisplay.Visible || Root.FormCollection.Visible))
+                        {
+                            resp.StatusCode = 409;
+                            ret = "!!!!! Not in Inking mode";
+                        }
+                        else
+                        {
+                            try
+                            {
+                                // Choix ici : on sélectionne la flèche "tête à la fin"
+                                int tool = Tools.EndArrow;
+                                Root.FormCollection.SelectTool(tool, -1);
+
+                                // Forcer rafraîchissements UI
+                                Root.UponButtonsUpdate |= 0x2;
+                                Root.UponAllDrawingUpdate = true;
+
+                                ret = string.Format("{{ \"OK\": true, \"Tool\": \"{0}\" }}",
+                                                    Tools.Names[Array.IndexOf(Tools.All, tool)]);
+                            }
+                            catch (Exception e)
+                            {
+                                resp.StatusCode = 500;
+                                ret = string.Format("!!!! Exception: {0}", e.Message);
+                            }
+                        }
                     }
 
 
