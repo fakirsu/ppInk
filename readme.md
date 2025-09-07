@@ -30,7 +30,9 @@
 
 
 ## Avertissements
-Ce logiciel a été exclusivement réalisé avec l'aide d'une IA, car je ne suis pas du tout développeur de code. A priori, il est exempt de bug et fonctionne bien sur mon ordinateur, mais je ne peux pas garantir qu'il n'y aura aucun problème pour vous. 
+Ce fork a été exclusivement réalisé avec l'aide d'une IA, car je ne suis pas du tout développeur de code. 
+A priori, il est globalement exempt de bug et fonctionne bien sur mon ordinateur, 
+mais je ne peux pas garantir qu'il n'y aura aucun problème sur un autre ordinateur. 
 
 Si vous avez une demande particulière, n'hésitez pas à me contacter (mon adresse email est dans mon profil GitHub).
 
@@ -50,8 +52,9 @@ Pour les besoins spécifiques du jeu de go, nous avons créé les outils suivant
 
 Ces outils sont paramétrables (couleur, opacité, taille, ...) dans le menu option accessible avec un clic droit sur l'icône de la barre des tâches.
 
-<img src="src/images/outils.png" alt="Les outils" width="200"/>
+<img src="src/images/outils.png" alt="Les outils" height="150"/>
 <img src="src/images/zones.png" alt="Les zones" height="150"/>
+<img src="src/images/arrow.png" alt="Les flèches" height="150"/>
 
 ## Important : définissez les dimensions de votre goban avant d'utiliser les outils
 Les outils sont <u>automatiquement redimensionnés</u> à la taille du goban qui est en cours d'utilisation, avec une <u>aimantation sur les intersections</u> du goban. 
