@@ -363,25 +363,14 @@ namespace gInk.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à LanguageName = &quot;English&quot;
         ///
-        ///ButtonNamePen0 = &quot;Pen 0&quot;
-        ///ButtonNamePen1 = &quot;Pen 1&quot;
-        ///ButtonNamePen2 = &quot;Pen 2&quot;
-        ///ButtonNamePen3 = &quot;Pen 3&quot;
-        ///ButtonNamePen4 = &quot;Pen 4&quot;
-        ///ButtonNamePen5 = &quot;Pen 5&quot;
-        ///ButtonNamePen6 = &quot;Pen 6&quot;
-        ///ButtonNamePen7 = &quot;Pen 7&quot;
-        ///ButtonNamePen8 = &quot;Pen 8&quot;
-        ///ButtonNamePen9 = &quot;Pen 9&quot;
-        ///ButtonNamePen10 = &quot;Pen 10&quot;
-        ///ButtonNamePen11 = &quot;Pen 11&quot;
-        ///ButtonNamePen12 = &quot;Pen 12&quot;
-        ///ButtonNamePen13 = &quot;Pen 13&quot;
-        ///ButtonNamePen14 = &quot;Pen 14&quot;
-        ///ButtonNamePen15 = &quot;Pen 15&quot;
-        ///ButtonNamePen16 = &quot;Pen 16&quot;
-        ///ButtonNamePen17 = &quot;Pen 17&quot;
-        /// [le reste de la chaîne a été tronqué]&quot;;.
+        ///# -&gt; Entries for Go game
+        ///ButtonNameNumbWhite = &quot;Numbered stones (first stone white)&quot;
+        ///ButtonNameNumbBlack = &quot;Numbered stones (first stone black)&quot;
+        ///OptionsTabGoHotkeys = &quot;Go - Hotkeys&quot;
+        ///OptionsTagOpacityPerc = &quot;Add stones &gt; stone opacity\n(0% = transparent):&quot;
+        ///OptionsTagCirclePerc = &quot;Add stones &gt; stone diameter\n(100% = default diameter):&quot;
+        ///OptionsTagSizePerc = &quot;Add stones &gt; number size\n(100% = default size):&quot;
+        ///OptionsTagNumberOpacityPerc = &quot;Add stones &gt; number opacity\n(0% = tr [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
         public static string en_us {
             get {

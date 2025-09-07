@@ -9,6 +9,7 @@
 - [Dimensions du goban](#important--définissez-les-dimensions-de-votre-goban-avant-dutiliser-les-outils)
 - [Utilisation](#utilisation)
 - [Problèmes connus](#problèmes-connus)
+- [Lien avec OBS](#lien-avec-obs)
 - [goInk et StreamDeck](#goink-et-streamdeck)
   - [Pour les outils spécifiques au jeu de go](#pour-les-outils-spécifiques-au-jeu-de-go)
   - [Tous les autres endpoints](#liste-des-autres-endpoints-rest-disponibles-résumé-fonctionnel-du-fichier-apirestcs)
@@ -64,6 +65,10 @@ Les outils Lettres, Carré, Cercle, Triangle et Croix n'ont pas de bouton dans l
 Selon l'orientation de la barre d'outils, elle peut être tronquée. 
 
 D'une manière générale, goInk est davantage conçu pour fonctionner avec des raccourcis clavier que via la barre d'outils. 
+
+
+## Lien avec OBS
+Théoriquement, ppInk peut exporter vers OBS Studio ([Documentation ppInk](https://pubpub-zz.github.io/ppInk/#video-recording)), mais cette possibilité ne fonctionnent plus avec les versions récentes d'OBS. 
 
 
 # goInk et StreamDeck
