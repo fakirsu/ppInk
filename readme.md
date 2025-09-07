@@ -84,10 +84,11 @@ D'une manière générale, goInk est davantage conçu pour fonctionner avec des 
 
 
 ## Lien avec OBS
-Théoriquement, ppInk peut exporter vers OBS Studio ([Documentation ppInk](https://pubpub-zz.github.io/ppInk/#video-recording)), mais cette possibilité ne fonctionnent plus avec les versions récentes d'OBS. 
+Théoriquement, ppInk peut exporter vers OBS Studio ([Documentation ppInk](https://pubpub-zz.github.io/ppInk/#video-recording)), 
+mais cela ne fonctionne plus avec les versions récentes d'OBS. 
 
 
-# goInk et StreamDeck
+## goInk et StreamDeck
 - [Pour les outils spécifiques au jeu de go](#pour-les-outils-spécifiques-au-jeu-de-go)
 - [Tous les autres endpoints](#liste-des-autres-endpoints-rest-disponibles-résumé-fonctionnel-du-fichier-apirestcs)]
 - [Prédéfinir vos gobans](#prédéfinir-vos-gobans)
@@ -98,7 +99,7 @@ Pour ma part j'utilise Rest API, car cela évite des conflits potentiels de racc
 
 Dans StreamlDeck, il suffit d'appeler une adresse URL précise : 
 
-<img src="../images/rest_api.png" alt="Appel dans StreamDeck" width="500"/>
+<img src="src/images/rest_api.png" alt="Appel dans StreamDeck" width="500"/>
 
 ## Pour les outils spécifiques au jeu de go
 
