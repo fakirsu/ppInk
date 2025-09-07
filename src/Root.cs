@@ -135,6 +135,20 @@ namespace gInk
                     Root?.FormCollection?.AddM3UEntry(null);
                     return true;
                 }
+                else if (id == 2) // OpenToolbar only
+                                    {
+                                        if (!(Root.FormCollection?.Visible == true || Root.FormDisplay?.Visible == true))
+                        Root.StartInk();
+                                        return true;
+                                    }
+                                else if (id == 3) // CloseToolbar only
+                                    {
+                                        if (Root.FormCollection?.Visible == true || Root.FormDisplay?.Visible == true)
+                        Root.StopInk();
+                                        return true;
+                                    }
+
+
                 else
                 {
                     bool activePointer = (m.Msg == 0x0312 && (Root.FormCollection != null && Root.FormCollection.Visible));
@@ -500,6 +514,10 @@ namespace gInk
 
         public bool CreateM3U = true;
         public Hotkey Hotkey_CreateIndex = new Hotkey();
+        // Nouveaux hotkeys : ouvrir / fermer la barre (persistants)
+        public Hotkey Hotkey_OpenToolbar = new Hotkey();
+        public Hotkey Hotkey_CloseToolbar = new Hotkey();
+
         public bool CreateIndexOnUndock = false;
         public string IndexDefaultText = "%H%:%M%:%S% = ";
         public bool UndockOnIndexCreate = false;
@@ -1269,7 +1287,13 @@ namespace gInk
                     string[] tab;
                     switch (sName)
                     {
-                        
+                        //case "HOTKEY_OPENTOOLBAR":
+                        //    Hotkey_OpenToolbar.Parse(sPara);
+                        //break;
+                        //case "HOTKEY_CLOSETOOLBAR":
+                        //    Hotkey_CloseToolbar.Parse(sPara);
+                        //break;
+
                         case "LANGUAGE_FILE":
                             ChangeLanguage(sPara);
                             break;
@@ -1482,6 +1506,13 @@ namespace gInk
                         case "HOTKEY_LASSO":
                             Hotkey_Lasso.Parse(sPara);
                             break;
+
+                        case "HOTKEY_OPENTOOLBAR":
+                            Hotkey_OpenToolbar.Parse(sPara);
+                        break;
+                        case "HOTKEY_CLOSETOOLBAR":
+                        Hotkey_CloseToolbar.Parse(sPara);
+                        break;
 
                         case "CURSOR_ARROW":
                             cursorarrowFileName = sPara;
@@ -2572,6 +2603,15 @@ namespace gInk
 
 					switch (sName)
 					{
+                        case "HOTKEY_OPENTOOLBAR":
+                        sPara = Hotkey_OpenToolbar.ToStringInvariant();
+                        break;
+                        
+                        case "HOTKEY_CLOSETOOLBAR":
+                        sPara = Hotkey_CloseToolbar.ToStringInvariant();
+                        break;
+                        
+                        
                         case "ALT_AS_TEMPORARY_COMMAND":
                             if (AltAsOneCommand == 2)
                                 sPara = "True";
@@ -3318,6 +3358,11 @@ namespace gInk
                     lines.Add(key + "= " + value);
                 }
 
+                // Forcer la présence des nouvelles clés hotkeys
+                SetOrReplace(writelines, "HOTKEY_OPENTOOLBAR", Hotkey_OpenToolbar.ToStringInvariant());
+                SetOrReplace(writelines, "HOTKEY_CLOSETOOLBAR", Hotkey_CloseToolbar.ToStringInvariant());
+                
+                
                 SetOrReplace(writelines, "GOFILLOPACITY", GoFillOpacityPercent.ToString());
                 SetOrReplace(writelines, "GOSTROKEOPACITY", GoStrokeOpacityPercent.ToString());
                 SetOrReplace(writelines, "GOSTROKEWIDTH", GoStrokeWidth.ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -3443,6 +3488,31 @@ namespace gInk
 			if (Hotkey_Global.Win) modifier |= 0x8;
 			//if (modifier != 0)
 				RegisterHotKey(IntPtr.Zero, 0, modifier, Hotkey_Global.Key);
+
+
+
+                        // id = 2 : OpenToolbar (si défini)
+                        if (Hotkey_OpenToolbar.Key > 0)
+                            {
+                modifier = 0;
+                                if (Hotkey_OpenToolbar.Control) modifier |= 0x2;
+                                if (Hotkey_OpenToolbar.Alt) modifier |= 0x1;
+                                if (Hotkey_OpenToolbar.Shift) modifier |= 0x4;
+                                if (Hotkey_OpenToolbar.Win) modifier |= 0x8;
+                RegisterHotKey(IntPtr.Zero, 2, modifier, Hotkey_OpenToolbar.Key);
+                            }
+                        // id = 3 : CloseToolbar (si défini)
+                        if (Hotkey_CloseToolbar.Key > 0)
+                            {
+                modifier = 0;
+                                if (Hotkey_CloseToolbar.Control) modifier |= 0x2;
+                                if (Hotkey_CloseToolbar.Alt) modifier |= 0x1;
+                                if (Hotkey_CloseToolbar.Shift) modifier |= 0x4;
+                                if (Hotkey_CloseToolbar.Win) modifier |= 0x8;
+                RegisterHotKey(IntPtr.Zero, 3, modifier, Hotkey_CloseToolbar.Key);
+                            }
+
+
             modifier = 0;
             if(IsVideoRecordingSelected() && CreateM3U)
             {
@@ -3459,6 +3529,8 @@ namespace gInk
 		{
             try {  UnregisterHotKey(IntPtr.Zero, 0); } catch { }
             try { UnregisterHotKey(IntPtr.Zero, 1); } catch { }
+            try { UnregisterHotKey(IntPtr.Zero, 2); } catch { }
+            try { UnregisterHotKey(IntPtr.Zero, 3); } catch { }
         }
 
         public void ChangeLanguage(string filename)

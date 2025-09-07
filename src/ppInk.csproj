@@ -410,6 +410,8 @@
     <None Include="Resources\PRpenS_col.png" />
     <None Include="PageNext.png" />
     <None Include="PagePrev.png" />
+    <Content Include="name.png" />
+    <Content Include="name.svg" />
     <Content Include="tool_edit.png" />
     <Content Include="tool_edit_act.png" />
     <Content Include="tool_enAr.png" />

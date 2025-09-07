@@ -177,6 +177,8 @@ namespace gInk
         public string OptionsGoHotkeys_ShowBlack;
         public string OptionsGoHotkeys_HideWhite;
         public string OptionsGoHotkeys_HideBlack;
+        public string OptionsGoHotkeys_OpenToolbar;
+        public string OptionsGoHotkeys_CloseToolbar;
 
         public string OptionsGeneralLanguage;
         public string OptionsGeneralToolBarColorText;
@@ -327,6 +329,10 @@ namespace gInk
             OptionsTagCirclePerc = "Stone diameter (%) :";
             OptionsTagSizePerc = "Number size (%) :";
             OptionsTagNumberOpacityPerc = "Number opacity (%) :";
+
+            // Nouveaux libellés (valeurs par défaut EN)
+            OptionsGoHotkeys_OpenToolbar = "Open toolbar (no-op if already open)";
+            OptionsGoHotkeys_CloseToolbar = "Close toolbar (no-op if already closed)";
 
             // nouveau : valeur par défaut pour l'étiquette d'épaisseur des contours
             OptionsGoStrokeThickness = "Stroke thickness :";
