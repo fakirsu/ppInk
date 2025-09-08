@@ -21,73 +21,186 @@ namespace gInk
         bool Saved_White;
         bool Saved_Black;
 
+        //public FormInput(string caption, string label, string txt, bool ML, gInk.Root rt = null, Microsoft.Ink.Stroke stk = null)
+        //{
+        //    InitializeComponent();
 
-        public FormInput(string caption,string label, string txt, bool ML, gInk.Root rt = null, Microsoft.Ink.Stroke stk = null)
+        //    // Rendre la fenêtre transparente
+        //    this.BackColor = Color.FromArgb(1, 1, 1); // Couleur proche de noir mais pas exactement
+        //    this.TransparencyKey = this.BackColor;
+        //    this.FormBorderStyle = FormBorderStyle.None;
+
+        //    // local
+        //    this.btOK.Visible = false; // Cacher les boutons puisqu'on utilisera ENTRÉE
+        //    this.btCancel.Visible = false;
+        //    this.FontBtn.Visible = false;
+        //    this.ColorBtn.Visible = false;
+        //    this.boxingCb.Visible = false;
+        //    this.captionLbl.Visible = false;
+
+        //    Text = caption;
+        //    if (ML)
+        //    {
+        //        InputML.Visible = true;
+        //        InputML.BackColor = Color.FromArgb(10, 10, 10);
+        //        InputML.ForeColor = Color.White;
+        //        txt = txt.Replace("\r\n", "\n").Replace("\n", "\r\n");
+        //        InputML.Text = txt;
+        //        ActiveControl = InputML;
+        //    }
+        //    else
+        //    {
+        //        InputSL.Visible = true;
+        //        InputSL.BackColor = Color.FromArgb(10, 10, 10);
+        //        InputSL.ForeColor = Color.White;
+        //        InputSL.Text = txt;
+        //        ActiveControl = InputSL;
+        //    }
+
+        //    Root = rt;
+        //    stroke = stk;
+        //    if (stroke != null)
+        //    {
+        //        Saved_Txt = ML ? InputML.Text : InputSL.Text;
+        //        Saved_Da = stk.DrawingAttributes.Clone();
+        //        if (stk.ExtendedProperties.Contains(Root.TEXTFONT_GUID))
+        //        {
+        //            Saved_Font = new Font(
+        //                (string)stk.ExtendedProperties[Root.TEXTFONT_GUID].Data,
+        //                (float)(double)stk.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+        //                (System.Drawing.FontStyle)stk.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data);
+        //        }
+        //        Saved_Frame = stk.ExtendedProperties.Contains(Root.ISSTROKE_GUID);
+        //        Saved_White = stk.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID);
+        //        Saved_Black = stk.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID);
+
+        //        if (ML)
+        //        {
+        //            InputML.TextChanged += new System.EventHandler(this.InputML_TextChanged);
+        //            InputML.SelectAll();
+        //        }
+        //        else
+        //        {
+        //            InputSL.TextChanged += new System.EventHandler(this.InputML_TextChanged);
+        //            InputSL.SelectAll();
+        //        }
+        //    }
+
+        //    // Ajuster la taille en fonction du contrôle visible
+        //    if (ML)
+        //    {
+        //        this.Width = InputML.Width + 10;
+        //        this.Height = InputML.Height + 10;
+        //        InputML.Left = 5;
+        //        InputML.Top = 5;
+        //    }
+        //    else
+        //    {
+        //        this.Width = InputSL.Width + 10;
+        //        this.Height = InputSL.Height + 10;
+        //        InputSL.Left = 5;
+        //        InputSL.Top = 5;
+        //    }
+        //}
+
+        public FormInput(string caption, string label, string txt, bool ML, gInk.Root rt = null, Microsoft.Ink.Stroke stk = null)
         {
             InitializeComponent();
-            
+
+            // Rendre la fenêtre transparente
+            this.BackColor = Color.FromArgb(1, 1, 1); // Couleur proche de noir mais pas exactement
+            this.TransparencyKey = this.BackColor;
+            this.FormBorderStyle = FormBorderStyle.None;
+
             // local
-            this.btOK.Text = rt.Local.ButtonOkText;
-            this.btCancel.Text = rt.Local.ButtonCancelText;
-            this.FontBtn.Text = rt.Local.ButtonFontText;
-            this.ColorBtn.Text = rt.Local.OptionsPensColor;
-            boxingCb.Items.AddRange(rt.Local.TextFramingText.Split(';'));
+            this.btOK.Visible = false; // Cacher les boutons puisqu'on utilisera ENTRÉE
+            this.btCancel.Visible = false;
+            this.FontBtn.Visible = false;
+            this.ColorBtn.Visible = false;
+            this.boxingCb.Visible = false;
+            this.captionLbl.Visible = false;
 
             Text = caption;
-            captionLbl.Text = label;
             if (ML)
             {
                 InputML.Visible = true;
-                txt = txt.Replace("\r\n", "\n").Replace("\n", "\r\n"); //in order to get multiline text to be correctly editable after restore
-                InputML.Text = txt;
+                InputML.BackColor = Color.FromArgb(10, 10, 10);
+                InputML.ForeColor = Color.White;
+                if (stk == null)
+                {
+                    // nouvelle saisie : champ vide
+                    InputML.Text = "";
+                }
+                else
+                {
+                    // édition d'une stroke existante : conserver le texte fourni
+                    txt = txt.Replace("\r\n", "\n").Replace("\n", "\r\n");
+                    InputML.Text = txt;
+                }
                 ActiveControl = InputML;
             }
             else
             {
                 InputSL.Visible = true;
-                InputSL.Text = txt;
+                InputSL.BackColor = Color.FromArgb(10, 10, 10);
+                InputSL.ForeColor = Color.White;
+                InputSL.Text = (stk == null) ? "" : txt;
                 ActiveControl = InputSL;
             }
+
             Root = rt;
             stroke = stk;
-            if (stroke == null)
+            if (stroke != null)
             {
-                FontBtn.Visible = false;
-                boxingCb.Visible = false;
-            }
-            else
-            {
-                FontBtn.Visible = true;
-                ColorBtn.Visible = true;
-                boxingCb.Visible = true;// !stk.ExtendedProperties.Contains(Root.ISTAG_GUID);
-
-                FontDlg.Font = new Font((string)stk.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)stk.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
-                                        (System.Drawing.FontStyle)stk.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data);
-                InputML.TextChanged += new System.EventHandler(this.InputML_TextChanged);
-                int i = (stk.ExtendedProperties.Contains(Root.ISSTROKE_GUID) ? 1 : 0) +
-                        (stk.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID) ? 2 : 0) +
-                        (stk.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID) ? 4 : 0);
-                boxingCb.Text = boxingCb.Items[i].ToString();
-
-                Saved_Txt = InputML.Text;
+                Saved_Txt = ML ? InputML.Text : InputSL.Text;
                 Saved_Da = stk.DrawingAttributes.Clone();
-                Saved_Font = (Font)FontDlg.Font.Clone();
+                if (stk.ExtendedProperties.Contains(Root.TEXTFONT_GUID))
+                {
+                    Saved_Font = new Font(
+                        (string)stk.ExtendedProperties[Root.TEXTFONT_GUID].Data,
+                        (float)(double)stk.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                        (System.Drawing.FontStyle)stk.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data);
+                }
                 Saved_Frame = stk.ExtendedProperties.Contains(Root.ISSTROKE_GUID);
                 Saved_White = stk.ExtendedProperties.Contains(Root.ISFILLEDWHITE_GUID);
                 Saved_Black = stk.ExtendedProperties.Contains(Root.ISFILLEDBLACK_GUID);
+
                 if (ML)
+                {
+                    InputML.TextChanged += new System.EventHandler(this.InputML_TextChanged);
                     InputML.SelectAll();
+                }
                 else
+                {
+                    InputSL.TextChanged += new System.EventHandler(this.InputML_TextChanged);
                     InputSL.SelectAll();
+                }
+            }
+
+            // Ajuster la taille en fonction du contrôle visible
+            if (ML)
+            {
+                this.Width = InputML.Width + 10;
+                this.Height = InputML.Height + 10;
+                InputML.Left = 5;
+                InputML.Top = 5;
+            }
+            else
+            {
+                this.Width = InputSL.Width + 10;
+                this.Height = InputSL.Height + 10;
+                InputSL.Left = 5;
+                InputSL.Top = 5;
             }
         }
+
 
         public void TextIn(string txt)
         {
             if (InputML.Visible)
-                InputML.Text=txt;
+                InputML.Text = txt;
             else
-                InputSL.Text=txt;
+                InputSL.Text = txt;
         }
 
         public string TextOut()
@@ -98,40 +211,31 @@ namespace gInk
                 return InputSL.Text;
         }
 
+        // Ces méthodes doivent être conservées car elles sont référencées dans le Designer
         private void FontBtn_Click(object sender, EventArgs e)
         {
-            if (FontDlg.ShowDialog() == DialogResult.OK)
-            {
-                stroke.ExtendedProperties.Add(Root.TEXTFONT_GUID, FontDlg.Font.Name);
-                stroke.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)FontDlg.Font.Size);
-                stroke.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, FontDlg.Font.Style);
-                string st=InputML.Text;
-                // to run event for refresh
-                InputML.Text = "";InputML.Text = st;
-            }
+            // Méthode conservée mais vide car le bouton est caché
         }
 
         private void ColorBtn_Click(object sender, EventArgs e)
         {
-            PenModifyDlg dlg = new PenModifyDlg(Root);
-            DrawingAttributes da = stroke.DrawingAttributes.Clone();
-            //dlg.hideWidth();
-            if (dlg.ModifyPen(ref da))
-            {
-                stroke.DrawingAttributes = da;
-                Root.FormDisplay.ClearCanvus();
-                Root.FormDisplay.DrawStrokes();
-                Root.FormDisplay.UpdateFormDisplay(true);
-            }
+            // Méthode conservée mais vide car le bouton est caché
+        }
+
+        private void boxingCb_TextChanged(object sender, EventArgs e)
+        {
+            // Méthode conservée mais vide car le combobox est caché
         }
 
         private void InputML_TextChanged(object sender, EventArgs e)
         {
+            if (stroke == null) return;
+
             string t = ((TextBox)sender).Text;
             if (t.Length == 0) t = " ";
             stroke.ExtendedProperties.Remove(Root.TEXT_GUID);
             stroke.ExtendedProperties.Add(Root.TEXT_GUID, t);
-            if(!stroke.ExtendedProperties.Contains(Root.ISTAG_GUID))
+            if (!stroke.ExtendedProperties.Contains(Root.ISTAG_GUID))
                 Root.FormCollection.ComputeTextBoxSize(ref stroke);
             Root.FormDisplay.ClearCanvus();
             Root.FormDisplay.DrawStrokes();
@@ -145,17 +249,19 @@ namespace gInk
                 (sender as TextBox).SelectAll();
                 e.Handled = true;
             }
-
         }
 
         private void btCancel_Click(object sender, EventArgs e)
         {
-            if(stroke != null )
+            if (stroke != null)
             {
                 InputML.Text = Saved_Txt;
-                stroke.ExtendedProperties.Add(Root.TEXTFONT_GUID, Saved_Font.Name);
-                stroke.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)Saved_Font.Size);
-                stroke.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, Saved_Font.Style);
+                if (Saved_Font != null)
+                {
+                    stroke.ExtendedProperties.Add(Root.TEXTFONT_GUID, Saved_Font.Name);
+                    stroke.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)Saved_Font.Size);
+                    stroke.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, Saved_Font.Style);
+                }
                 Root.FormCollection.ComputeTextBoxSize(ref stroke);
                 stroke.DrawingAttributes = Saved_Da;
                 if (Saved_Frame)
@@ -171,7 +277,7 @@ namespace gInk
                 else if (Saved_White)
                 {
                     try { stroke.ExtendedProperties.Remove(Root.ISFILLEDBLACK_GUID); } catch { }
-                stroke.ExtendedProperties.Add(Root.ISFILLEDWHITE_GUID, true);
+                    stroke.ExtendedProperties.Add(Root.ISFILLEDWHITE_GUID, true);
                 }
                 else
                 {
@@ -181,41 +287,111 @@ namespace gInk
             }
         }
 
-        private void boxingCb_TextChanged(object sender, EventArgs e)
-        {
-            int i = boxingCb.Items.IndexOf(boxingCb.Text);
-            if ((i&1)!=0)
-                stroke.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
-            else
-                try { stroke.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
+        //// Modifier pour permettre la validation avec ENTRÉE simple (sans CTRL)
+        //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        //{
+        //    if (keyData == Keys.Enter || keyData == Keys.Return)
+        //    {
+        //        // Pour TextBox multiline, on autorise les sauts de ligne sauf avec Shift
+        //        if (InputML.Visible && InputML.Multiline && !ModifierKeys.HasFlag(Keys.Shift))
+        //            return false;
 
-            if ((i & 4) != 0)
+        //        this.DialogResult = DialogResult.OK;
+        //        this.Close();
+        //        return true;
+        //    }
+        //    return base.ProcessCmdKey(ref msg, keyData);
+        //}
+
+        //// Garder l'ancienne méthode pour assurer la compatibilité
+        //private void FormInput_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        //{
+        //    if (e.Control && (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return))
+        //    {
+        //        this.DialogResult = DialogResult.OK;
+        //        this.Close();
+        //    }
+        //    else if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
+        //    {
+        //        // Si c'est un TextBox multiline, ne pas intercepter ENTRÉE simple
+        //        // pour permettre les sauts de ligne, sauf si la touche Shift est enfoncée
+        //        if (sender is TextBox textBox && textBox.Multiline && !e.Shift)
+        //        {
+        //            return;
+        //        }
+        //        this.DialogResult = DialogResult.OK;
+        //        this.Close();
+        //    }
+        //}
+
+        // Modifier pour permettre la validation avec ENTRÉE simple (sans CTRL)
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Enter || keyData == Keys.Return)
             {
-                try { stroke.ExtendedProperties.Remove(Root.ISFILLEDWHITE_GUID); } catch { }
-                stroke.ExtendedProperties.Add(Root.ISFILLEDBLACK_GUID, true);
+                // Si multiline et Shift enfoncé => insérer un saut de ligne
+                if (InputML.Visible && InputML.Multiline && ModifierKeys.HasFlag(Keys.Shift))
+                {
+                    try
+                    {
+                        int sel = InputML.SelectionStart;
+                        InputML.Text = InputML.Text.Insert(sel, Environment.NewLine);
+                        InputML.SelectionStart = sel + Environment.NewLine.Length;
+                    }
+                    catch { }
+                    return true;
+                }
+
+                // Valider la saisie sur ENTRÉE
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+                return true;
             }
-            else if ((i & 2) != 0)
+
+            if (keyData == Keys.Escape)
             {
-                try { stroke.ExtendedProperties.Remove(Root.ISFILLEDBLACK_GUID); } catch { }
-                stroke.ExtendedProperties.Add(Root.ISFILLEDWHITE_GUID, true);
+                // Annuler la saisie et déselectionner l'outil texte
+                try { btCancel_Click(null, null); } catch { }
+                try { this.DialogResult = DialogResult.Cancel; } catch { }
+                try { this.Close(); } catch { }
+                try { Root?.FormCollection?.SelectTool(Tools.Hand); } catch { }
+                return true;
             }
-            else
-            {
-                try { stroke.ExtendedProperties.Remove(Root.ISFILLEDBLACK_GUID); } catch { }
-                try { stroke.ExtendedProperties.Remove(Root.ISFILLEDWHITE_GUID); } catch { }
-            }
-            Root.FormDisplay.ClearCanvus();
-            Root.FormDisplay.DrawStrokes();
-            Root.FormDisplay.UpdateFormDisplay(true);
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
+        // Garder l'ancienne méthode PreviewKeyDown mais la mettre en phase avec ProcessCmdKey (gestions rapides)
         private void FormInput_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            if (e.Control && (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return ))
+            if (e.Control && (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return))
             {
                 this.DialogResult = DialogResult.OK;
-                this.Close();                
+                this.Close();
+            }
+            else if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
+            {
+                // Si multiline et SHIFT => insérer saut de ligne
+                if (sender is TextBox textBox && textBox.Multiline && e.Shift)
+                {
+                    int sel = textBox.SelectionStart;
+                    textBox.Text = textBox.Text.Insert(sel, Environment.NewLine);
+                    textBox.SelectionStart = sel + Environment.NewLine.Length;
+                    return;
+                }
+
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                try { btCancel_Click(null, null); } catch { }
+                try { this.DialogResult = DialogResult.Cancel; } catch { }
+                try { this.Close(); } catch { }
+                try { Root?.FormCollection?.SelectTool(Tools.Hand); } catch { }
             }
         }
+
+
     }
 }

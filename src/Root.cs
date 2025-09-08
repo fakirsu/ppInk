@@ -226,8 +226,11 @@ namespace gInk
         public int[] GoTool_Circle_Color = new int[] { 255, 0, 0, 0 };
         public int[] GoTool_Cross_Color = new int[] { 255, 0, 0, 0 };
 
+        public int[] GoTool_Text_Color = new int[4] { 0, 0, 0, 255 }; // Format RGBA (par défaut noir opaque)
+
         public Hotkey Hotkey_HandFilledWhite = new Hotkey();
         public Hotkey Hotkey_HandFilledBlack = new Hotkey();
+
 
 
 
@@ -1446,6 +1449,17 @@ namespace gInk
                                 if (parts.Length >= 4)
                                 {
                                     try { GoTool_Cross_Color = new int[] { int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]), int.Parse(parts[3]) }; }
+                                    catch { }
+                                }
+                            }
+                            break;
+
+                        case "GOTOOL_TEXT_COLOR":
+                            {
+                                var parts = sPara.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray();
+                                if (parts.Length >= 4)
+                                {
+                                    try { GoTool_Text_Color = new int[] { int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]), int.Parse(parts[3]) }; }
                                     catch { }
                                 }
                             }
@@ -3402,6 +3416,9 @@ namespace gInk
                 SetOrReplace(writelines, "GOTOOL_TRIANGLE_COLOR", $"{GoTool_Triangle_Color[0]},{GoTool_Triangle_Color[1]},{GoTool_Triangle_Color[2]},{GoTool_Triangle_Color[3]}");
                 SetOrReplace(writelines, "GOTOOL_CIRCLE_COLOR", $"{GoTool_Circle_Color[0]},{GoTool_Circle_Color[1]},{GoTool_Circle_Color[2]},{GoTool_Circle_Color[3]}");
                 SetOrReplace(writelines, "GOTOOL_CROSS_COLOR", $"{GoTool_Cross_Color[0]},{GoTool_Cross_Color[1]},{GoTool_Cross_Color[2]},{GoTool_Cross_Color[3]}");
+
+                SetOrReplace(writelines, "GOTOOL_TEXT_COLOR", $"{GoTool_Text_Color[0]},{GoTool_Text_Color[1]},{GoTool_Text_Color[2]},{GoTool_Text_Color[3]}");
+
                 SetOrReplace(writelines, "GOSTROKE_THICKNESS", (GoStrokeThickness == 0) ? "Thin" : (GoStrokeThickness == 2) ? "Thick" : "Normal");
 
             }

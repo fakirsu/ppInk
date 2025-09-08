@@ -48,6 +48,10 @@ namespace gInk
         private HotkeyInputBox hiHK_HideWhite;
         private HotkeyInputBox hiHK_HideBlack;
 
+        //Pour la couleur du texte
+        private Button btnGoTextColor;
+        private Label lblGoTextColor;
+
         // Ajout : champs Hotkeys pour les nouveaux tags GO
         private Label lblHK_LetterTag;
         private Label lblHK_SquareTag;
@@ -844,12 +848,24 @@ namespace gInk
                 ScheduleConfigSave();
             };
 
+
+
+            // Couleur du texte (à ajouter après les boutons de couleur tags existants)
+            lblGoTextColor = new Label { Text = Root.Local.GoOptionsTextColor ?? "Couleur du texte :", AutoSize = true, Left = 12, Top = lblGoStrokeThickness.Bottom + 18 };
+            btnGoTextColor = new Button { Left = 220, Top = lblGoTextColor.Top - 3, Width = 80, Height = 24, FlatStyle = FlatStyle.Flat };
+            btnGoTextColor.Click += (s, e2) => EditGoTagColor("Text", btnGoTextColor, Root.GoTool_Text_Color);
+            tabPageGridTags.Controls.Add(lblGoTextColor);
+            tabPageGridTags.Controls.Add(btnGoTextColor);
+
+
+
             // Placement sommaire — calcule une Y libre basée sur lblGridType
             // Remplacer cette ligne :
             //int topArrow = lblGridType.Bottom + 18;
             // Par cette ligne (garantit que les contrôles flèche viennent APRÈS les contrôles Go existants) :
             //int topArrow = Math.Max(lblGoStrokeThickness.Bottom, colorTop + 24) + 18; lblGoArrowColor.Left = 20; lblGoArrowColor.Top = topArrow;
-            int topArrow = Math.Max(lblGoStrokeThickness.Bottom, lblGoStrokeThickness.Top + 21) + 18;
+            //int topArrow = Math.Max(lblGoStrokeThickness.Bottom, lblGoStrokeThickness.Top + 21) + 18;
+            int topArrow = Math.Max(lblGoStrokeThickness.Bottom, lblGoTextColor.Bottom) + 18;
             lblGoArrowColor.Left = 20;
             lblGoArrowColor.Top = topArrow;
 
@@ -1637,6 +1653,56 @@ namespace gInk
             dlg.Dispose();
         }
 
+        //private void EditGoTagColor(string name, Button btn, int[] colorArr)
+        //{
+        //    try
+        //    {
+        //        // Prépare les attributs initiaux en réutilisant la convention existante :
+        //        // colorArr = { A, R, G, B } ; DrawingAttributes.Transparency = 255 - A
+        //        PenModifyDlg dlg = new PenModifyDlg(Root);
+        //        Microsoft.Ink.DrawingAttributes at = new Microsoft.Ink.DrawingAttributes
+        //        {
+        //            Transparency = (byte)(255 - (colorArr.Length > 0 ? colorArr[0] : 255)),
+        //            Color = Color.FromArgb(
+        //                (colorArr.Length > 0 ? colorArr[0] : 255),
+        //                (colorArr.Length > 1 ? colorArr[1] : 0),
+        //                (colorArr.Length > 2 ? colorArr[2] : 0),
+        //                (colorArr.Length > 3 ? colorArr[3] : 0)
+        //            ),
+        //            Width = 0
+        //        };
+
+        //        if (dlg.ModifyPen(ref at))
+        //        {
+        //            // Stocke la couleur choisie dans le tableau (A,R,G,B)
+        //            if (colorArr.Length >= 4)
+        //            {
+        //                colorArr[0] = 255 - at.Transparency;
+        //                colorArr[1] = at.Color.R;
+        //                colorArr[2] = at.Color.G;
+        //                colorArr[3] = at.Color.B;
+        //            }
+
+        //            // Mise à jour visuelle (aperçu — BackColor ignore l'alpha)
+        //            try
+        //            {
+        //                btn.BackColor = Color.FromArgb(
+        //                    (colorArr.Length > 0 ? colorArr[0] : 255),
+        //                    (colorArr.Length > 1 ? colorArr[1] : 0),
+        //                    (colorArr.Length > 2 ? colorArr[2] : 0),
+        //                    (colorArr.Length > 3 ? colorArr[3] : 0)
+        //                );
+        //            }
+        //            catch { }
+
+        //            // Sauvegarde différée
+        //            ScheduleConfigSave();
+        //        }
+        //        dlg.Dispose();
+        //    }
+        //    catch { }
+        //}
+
         private void EditGoTagColor(string name, Button btn, int[] colorArr)
         {
             try
@@ -1653,7 +1719,8 @@ namespace gInk
                         (colorArr.Length > 2 ? colorArr[2] : 0),
                         (colorArr.Length > 3 ? colorArr[3] : 0)
                     ),
-                    Width = 0
+                    // <-- éviter la largeur 0 (message de confirmation). On met 1 par défaut.
+                    Width = 1
                 };
 
                 if (dlg.ModifyPen(ref at))
@@ -1688,11 +1755,39 @@ namespace gInk
         }
 
 
+
+        //private void InitGoTagButtons()
+        //{
+
+
+
+        //    try
+        //    {
+        //        Action<Button, int[]> initBtn = (btn, arr) =>
+        //        {
+        //            try
+        //            {
+        //                if (btn == null || arr == null || arr.Length < 4) return;
+        //                // BackColor n'affiche pas l'alpha, mais donne un aperçu de la couleur
+        //                btn.BackColor = Color.FromArgb(arr[0], arr[1], arr[2], arr[3]);
+        //            }
+        //            catch { }
+        //        };
+
+        //        initBtn(btnGoColor_Letter, Root?.GoTool_Letter_Color);
+        //        initBtn(btnGoColor_Square, Root?.GoTool_Square_Color);
+        //        initBtn(btnGoColor_Triangle, Root?.GoTool_Triangle_Color);
+        //        initBtn(btnGoColor_Circle, Root?.GoTool_Circle_Color);
+        //        initBtn(btnGoColor_Cross, Root?.GoTool_Cross_Color);
+        //    }
+        //    catch { }
+
+        //    initBtn(btnGoTextColor, Root?.GoTool_Text_Color);
+
+        //}
+
         private void InitGoTagButtons()
         {
-            
-            
-            
             try
             {
                 Action<Button, int[]> initBtn = (btn, arr) =>
@@ -1711,9 +1806,13 @@ namespace gInk
                 initBtn(btnGoColor_Triangle, Root?.GoTool_Triangle_Color);
                 initBtn(btnGoColor_Circle, Root?.GoTool_Circle_Color);
                 initBtn(btnGoColor_Cross, Root?.GoTool_Cross_Color);
+
+                // initialiser aussi le bouton de couleur du texte ici (évite erreur de portée de initBtn)
+                initBtn(btnGoTextColor, Root?.GoTool_Text_Color);
             }
             catch { }
         }
+
         private void WsUrlTxt_TextChanged(object sender, EventArgs e) => Root.ObsUrl = WsUrlTxt.Text;
         private void WsPwdTxt_TextChanged(object sender, EventArgs e) => Root.ObsPwd = WsPwdTxt.Text;
         private void FfmpegCmdTxt_TextChanged(object sender, EventArgs e) => Root.FFMpegCmd = FfmpegCmdTxt.Text;
