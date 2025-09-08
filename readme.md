@@ -97,7 +97,8 @@ Il est possible d'utiliser goInk avec des raccourcis clavier, mais également av
 
 Pour ma part j'utilise Rest API, car cela évite des conflits potentiels de raccourcis clavier avec d'autres applications.
 
-Dans StreamlDeck, il suffit d'appeler une adresse URL précise : 
+Dans StreamlDeck, il suffit d'appeler une adresse du type 
+http://localhost:*le_port_fourni_dans le menu_option*/**le_nom_de_l_action**. Exemple : 
 
 <img src="src/images/rest_api.png" alt="Appel dans StreamDeck" width="500"/>
 
