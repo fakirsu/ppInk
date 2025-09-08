@@ -75,7 +75,7 @@ namespace gInk
             this.InputML.Name = "InputML";
             this.InputML.Size = new System.Drawing.Size(533, 93);
             this.InputML.TabIndex = 2;
-            this.InputML.Text = "inputML\r\nline2";
+            this.InputML.Text = "";
             this.InputML.Visible = false;
             this.InputML.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TB_CtrlAPressed);
             this.InputML.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.FormInput_PreviewKeyDown);
@@ -89,7 +89,7 @@ namespace gInk
             this.InputSL.Name = "InputSL";
             this.InputSL.Size = new System.Drawing.Size(533, 26);
             this.InputSL.TabIndex = 3;
-            this.InputSL.Text = "inputSL";
+            this.InputSL.Text = "";
             this.InputSL.Visible = false;
             this.InputSL.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TB_CtrlAPressed);
             this.InputSL.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.FormInput_PreviewKeyDown);
