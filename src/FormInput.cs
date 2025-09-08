@@ -68,7 +68,7 @@ namespace gInk
                 // même traitement pour la single-line textbox
                 InputSL.BackColor = this.BackColor;
                 InputSL.ForeColor = Color.White;
-                InputSL.ForeColor = this.BackColor; // <- texte transparent
+                //InputSL.ForeColor = this.BackColor; // <- texte transparent
                 InputSL.BorderStyle = BorderStyle.None;
 
                 // Même logique pour la saisie sur une ligne : si nouvelle saisie => vide, sinon conserver txt
@@ -125,29 +125,46 @@ namespace gInk
                 InputSL.Top = 5;
             }
 
-            // Positionner le formulaire avec un petit décalage au-dessus du curseur
+
+
+
+
+
+
+            // Positionner le formulaire dans le coin supérieur gauche de l'écran
             try
             {
-                Point mouse = System.Windows.Forms.Cursor.Position;
-                Rectangle wa = Screen.FromPoint(mouse).WorkingArea;
+                // Obtenir les limites de l'écran actif où se trouve le curseur
+                Point cursorPos = System.Windows.Forms.Cursor.Position;
+                Screen activeScreen = Screen.FromPoint(cursorPos);
+                Rectangle wa = activeScreen.WorkingArea;
 
-                // Positionnement plus agressif avec un décalage supplémentaire vers le haut (-20 pixels)
-                int x = mouse.X - (this.Width / 2); // centré horizontalement
-                int y = mouse.Y - this.Height - 20; // bord inférieur au-dessus du curseur avec marge supplémentaire
+                // Placer le formulaire en haut à gauche de l'écran actif
+                int x = wa.Left;
+                int y = wa.Top;
 
-                // bornes pour rester visible dans le WorkingArea
-                if (x < wa.Left) x = wa.Left;
-                if (y < wa.Top) y = wa.Top;
-                if (x + this.Width > wa.Right) x = wa.Right - this.Width;
-                if (y + this.Height > wa.Bottom) y = wa.Bottom - this.Height;
-
+                // Définir la position manuellement
                 this.StartPosition = FormStartPosition.Manual;
                 this.Location = new Point(x, y);
+
+                // Forcer la mise à jour immédiate de la position
+                this.BeginInvoke(new Action(() => {
+                    this.Location = new Point(x, y);
+                }));
             }
             catch
             {
                 // fallback silencieux : laisse la position définie ailleurs
             }
+
+
+
+
+
+
+
+
+
         }
 
         private void FormInput_Shown(object sender, EventArgs e)
