@@ -255,6 +255,42 @@ namespace gInk
                 LocalCopyInk?.Dispose();
                 LocalCopyInk = null;
             }
+
+
+
+            // Masquer les 5 boutons de tags dans la barre d'outils
+            if (Root?.FormCollection?.gpButtons != null)
+            {
+                foreach (Control c in Root.FormCollection.gpButtons.Controls)
+                {
+                    if (c is Button btn && btn.Tag != null)
+                    {
+                        if (int.TryParse(btn.Tag.ToString(), out int toolId))
+                        {
+                            if (toolId == Tools.LetterTag ||
+                                toolId == Tools.SquareTag ||
+                                toolId == Tools.TriangleTag ||
+                                toolId == Tools.CircleTag ||
+                                toolId == Tools.CrossTag)
+                            {
+                                btn.Visible = false;
+                                btn.Enabled = false; // désactive aussi pour sécurité
+                            }
+                        }
+                    }
+                }
+
+                // Forcer rafraîchissement si nécessaire
+                Root.FormCollection.gpButtons.Refresh();
+            }
+
+
+
+
+
+
+
+
         }
 
         public void ToTopMostThrough()
@@ -2173,7 +2209,7 @@ namespace gInk
                             }
                         }
                         else
-                        {1
+                        {
                             int cfgA = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 0) ? Root.GoTool_Text_Color[0] : 255;
                             int cfgR = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 1) ? Root.GoTool_Text_Color[1] : 0;
                             int cfgG = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 2) ? Root.GoTool_Text_Color[2] : 0;

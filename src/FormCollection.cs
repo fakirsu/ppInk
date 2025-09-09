@@ -2327,6 +2327,18 @@ namespace gInk
         private void ComputeToolbarDimensions(out int dim, out int dim1, out int dim1s, out int dim2,
                                       out int dim2s, out int dim3, out int dim4, out int dim4s)
         {
+
+            // Liste des outils à ne pas afficher dans la barre d'outils
+            int[] hiddenTools = new int[]
+            {
+    Tools.LetterTag,   // Masquer "Ajout de lettres"
+    Tools.SquareTag,   // Masquer "Ajout de carrés"
+    Tools.TriangleTag, // Masquer "Ajout de triangles"
+    Tools.CircleTag,   // Masquer "Ajout de cercles"
+    Tools.CrossTag     // Masquer "Ajout de croix"
+            };
+
+
             // DPI scale safe try
             float dpiScale = 1.0f;
             try
@@ -11685,6 +11697,17 @@ btArrow.BackgroundImage = BuildArrowBtn(Root.ArrowHead[Root.CurrentArrow], Root.
 
         public void btTool_Click(object sender, EventArgs e)
         {
+
+            // Vérifier si cet outil est caché dans la barre d'outils
+            // Les boutons cachés continueront de fonctionner via raccourcis clavier
+            int tool = Convert.ToInt32((sender as Control).Tag);
+            bool isHiddenTool = tool == Tools.LetterTag ||
+                                tool == Tools.SquareTag ||
+                                tool == Tools.TriangleTag ||
+                                tool == Tools.CircleTag ||
+                                tool == Tools.CrossTag;
+
+
 
             // Gestion directe des boutons HandFilled (préférer avant le test "Contains(\"Hand\")")
             if (((Button)sender).Name.Contains("HandWhite"))
