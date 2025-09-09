@@ -948,6 +948,223 @@ namespace gInk
                     //    g.ResetTransform();
                     //}
 
+                    //if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
+                    //{
+                    //    Point pt = new Point((int)(double)st.ExtendedProperties[Root.TEXTX_GUID].Data, (int)(double)st.ExtendedProperties[Root.TEXTY_GUID].Data);
+                    //    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pt);
+                    //    System.Drawing.StringFormat stf = new System.Drawing.StringFormat(System.Drawing.StringFormatFlags.NoClip);
+                    //    stf.Alignment = (System.Drawing.StringAlignment)(st.ExtendedProperties[Root.TEXTHALIGN_GUID].Data);
+                    //    stf.LineAlignment = (System.Drawing.StringAlignment)(st.ExtendedProperties[Root.TEXTVALIGN_GUID].Data);
+                    //    g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+                    //    if (st.ExtendedProperties.Contains(Root.ROTATION_GUID))
+                    //    {
+                    //        Double Rotation = (double)st.ExtendedProperties[Root.ROTATION_GUID].Data;
+                    //        int W = 0, H = 0;
+                    //        g.TranslateTransform(pt.X + W / 2, pt.Y + H / 2);
+                    //        g.RotateTransform((float)Rotation);
+                    //        g.TranslateTransform(-pt.X - W / 2, -pt.Y - H / 2);
+                    //    }
+
+                    //    // 1) couleur par stroke si disponible
+                    //    //Color c;
+                    //    //if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                    //    //{
+                    //    //    try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
+                    //    //    catch { c = Color.FromArgb(255, 0, 0, 0); }
+                    //    //}
+                    //    //else
+                    //    //{
+                    //    //    // 2) fallback: couleur globale configurée (A,R,G,B)
+                    //    //    int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
+                    //    //    int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
+                    //    //    int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
+                    //    //    int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
+                    //    //    c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                    //    //}
+                    //    // Remplacer le bloc de sélection de la couleur (à la place de "Color c; ... else { c = Color.FromArgb(...); }")
+                    //    Color c;
+                    //    if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                    //    {
+                    //        try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
+                    //        catch { c = Color.FromArgb(255, 0, 0, 0); }
+                    //    }
+                    //    //else if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                    //    //{
+                    //    //    // Pastilles numérotées : gris moyen fixe (indépendant de Text_Color global)
+                    //    //    c = Color.FromArgb(255, 128, 128, 128);
+                    //    //}
+
+                    //    // Par ce nouveau bloc qui distingue les lettres:
+                    //    //else if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                    //    //{
+                    //    //    // Récupérer le texte pour déterminer si c'est une lettre ou un chiffre
+                    //    //    string textContent = "";
+                    //    //    try
+                    //    //    {
+                    //    //        if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
+                    //    //            textContent = st.ExtendedProperties[Root.TEXT_GUID].Data as string;
+                    //    //    }
+                    //    //    catch { }
+
+                    //    //    // Si c'est une lettre A-Z, utiliser la couleur dédiée aux lettres depuis les options
+                    //    //    if (!string.IsNullOrEmpty(textContent) && textContent.Length == 1 && char.IsLetter(textContent[0]))
+                    //    //    {
+                    //    //        // Utiliser la couleur de lettres des options (ajuster selon votre code existant)
+                    //    //        int cfgA = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 0) ? Root.GoTool_Letter_Color[0] : 255;
+                    //    //        int cfgR = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 1) ? Root.GoTool_Letter_Color[1] : 0;
+                    //    //        int cfgG = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 2) ? Root.GoTool_Letter_Color[2] : 0;
+                    //    //        int cfgB = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 3) ? Root.GoTool_Letter_Color[3] : 0;
+                    //    //        c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                    //    //    }
+                    //    //    //else if (!string.IsNullOrEmpty(textContent) && textContent.Length == 1 &&
+                    //    //    //         (textContent[0] == '■' || textContent[0] == '▲' ||
+                    //    //    //          textContent[0] == '●' || textContent[0] == '✖'))
+                    //    //    //{
+                    //    //    //    // Pour les formes (carré, triangle, cercle, croix), utiliser la couleur correspondante
+                    //    //    //    // Adapter selon votre implémentation des couleurs pour les formes
+                    //    //    //    int cfgA = (Root.GoTool_Shape_Color != null && Root.GoTool_Shape_Color.Length > 0) ? Root.GoTool_Shape_Color[0] : 255;
+                    //    //    //    int cfgR = (Root.GoTool_Shape_Color != null && Root.GoTool_Shape_Color.Length > 1) ? Root.GoTool_Shape_Color[1] : 0;
+                    //    //    //    int cfgG = (Root.GoTool_Shape_Color != null && Root.GoTool_Shape_Color.Length > 2) ? Root.GoTool_Shape_Color[2] : 0;
+                    //    //    //    int cfgB = (Root.GoTool_Shape_Color != null && Root.GoTool_Shape_Color.Length > 3) ? Root.GoTool_Shape_Color[3] : 0;
+                    //    //    //    c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                    //    //    //}
+
+                    //    //    else if (!string.IsNullOrEmpty(textContent) && textContent.Length == 1)
+                    //    //    {
+                    //    //        // Pour les formes, identifier le caractère et utiliser la couleur correspondante
+                    //    //        int[] colorArray = null;
+
+                    //    //        switch (textContent[0])
+                    //    //        {
+                    //    //            case '■':
+                    //    //                colorArray = Root.GoTool_Square_Color;
+                    //    //                break;
+                    //    //            case '▲':
+                    //    //                colorArray = Root.GoTool_Triangle_Color;
+                    //    //                break;
+                    //    //            case '●':
+                    //    //                colorArray = Root.GoTool_Circle_Color;
+                    //    //                break;
+                    //    //            case '✖':
+                    //    //                colorArray = Root.GoTool_Cross_Color;
+                    //    //                break;
+                    //    //            default:
+                    //    //                // Fallback à la couleur grise pour les numéros
+                    //    //                c = Color.FromArgb(255, 128, 128, 128);
+                    //    //                break;
+                    //    //        }
+
+                    //    //        if (colorArray != null)
+                    //    //        {
+                    //    //            int cfgA = (colorArray.Length > 0) ? colorArray[0] : 255;
+                    //    //            int cfgR = (colorArray.Length > 1) ? colorArray[1] : 0;
+                    //    //            int cfgG = (colorArray.Length > 2) ? colorArray[2] : 0;
+                    //    //            int cfgB = (colorArray.Length > 3) ? colorArray[3] : 0;
+                    //    //            c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                    //    //        }
+                    //    //    }
+
+
+                    //    //    else
+                    //    //    {
+                    //    //        // Numéros (défaut) - gris fixe pour les pastilles numérotées
+                    //    //        c = Color.FromArgb(255, 128, 128, 128);
+                    //    //    }
+                    //    //}
+
+                    //    // Dans le bloc else if (st.ExtendedProperties.Contains(Root.ISTAG_GUID)), il faut ajouter 
+                    //    // une initialisation par défaut pour c
+
+                    //    else if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                    //    {
+                    //        // Récupérer le texte pour déterminer si c'est une lettre ou un chiffre
+                    //        string textContent = "";
+                    //        try
+                    //        {
+                    //            if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
+                    //                textContent = st.ExtendedProperties[Root.TEXT_GUID].Data as string;
+                    //        }
+                    //        catch { }
+
+                    //        // Si c'est une lettre A-Z, utiliser la couleur dédiée aux lettres depuis les options
+                    //        if (!string.IsNullOrEmpty(textContent) && textContent.Length == 1 && char.IsLetter(textContent[0]))
+                    //        {
+                    //            // Utiliser la couleur de lettres des options (ajuster selon votre code existant)
+                    //            int cfgA = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 0) ? Root.GoTool_Letter_Color[0] : 255;
+                    //            int cfgR = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 1) ? Root.GoTool_Letter_Color[1] : 0;
+                    //            int cfgG = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 2) ? Root.GoTool_Letter_Color[2] : 0;
+                    //            int cfgB = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 3) ? Root.GoTool_Letter_Color[3] : 0;
+                    //            c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                    //        }
+                    //        else if (!string.IsNullOrEmpty(textContent) && textContent.Length == 1)
+                    //        {
+                    //            // Pour les formes, identifier le caractère et utiliser la couleur correspondante
+                    //            int[] colorArray = null;
+
+                    //            switch (textContent[0])
+                    //            {
+                    //                case '■':
+                    //                    colorArray = Root.GoTool_Square_Color;
+                    //                    break;
+                    //                case '▲':
+                    //                    colorArray = Root.GoTool_Triangle_Color;
+                    //                    break;
+                    //                case '●':
+                    //                    colorArray = Root.GoTool_Circle_Color;
+                    //                    break;
+                    //                case '✖':
+                    //                    colorArray = Root.GoTool_Cross_Color;
+                    //                    break;
+                    //                default:
+                    //                    // Fallback à la couleur grise pour les numéros
+                    //                    c = Color.FromArgb(255, 128, 128, 128);
+                    //                    break;
+                    //            }
+
+                    //            if (colorArray != null)
+                    //            {
+                    //                int cfgA = (colorArray.Length > 0) ? colorArray[0] : 255;
+                    //                int cfgR = (colorArray.Length > 1) ? colorArray[1] : 0;
+                    //                int cfgG = (colorArray.Length > 2) ? colorArray[2] : 0;
+                    //                int cfgB = (colorArray.Length > 3) ? colorArray[3] : 0;
+                    //                c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                    //            }
+                    //        }
+                    //        else
+                    //        {
+                    //            // Cas par défaut si aucune condition n'est satisfaite
+                    //            c = Color.FromArgb(255, 128, 128, 128);
+                    //        }
+                    //    }
+
+
+
+                    //    else
+                    //    {
+                    //        int cfgA = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 0) ? Root.GoTool_Text_Color[0] : 255;
+                    //        int cfgR = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 1) ? Root.GoTool_Text_Color[1] : 0;
+                    //        int cfgG = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 2) ? Root.GoTool_Text_Color[2] : 0;
+                    //        int cfgB = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 3) ? Root.GoTool_Text_Color[3] : 0;
+                    //        c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                    //    }
+
+                    //    // Appliquer la règle d’opacité pour numéros si ISTAG
+                    //    int baseAlpha = c.A;
+                    //    int finalAlpha = st.ExtendedProperties.Contains(Root.ISTAG_GUID)
+                    //        ? Math.Max(0, Math.Min(255, (int)Math.Round(baseAlpha * (Root.TagNumberOpacityPercent / 100.0))))
+                    //        : baseAlpha;
+
+                    //    using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(finalAlpha, c.R, c.G, c.B)))
+                    //    {
+                    //        g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+                    //                     new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                    //                        (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
+                    //                     txtBru, pt.X, pt.Y, stf);
+                    //    }
+                    //    g.ResetTransform();
+                    //}
+
+
                     if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
                     {
                         Point pt = new Point((int)(double)st.ExtendedProperties[Root.TEXTX_GUID].Data, (int)(double)st.ExtendedProperties[Root.TEXTY_GUID].Data);
@@ -965,33 +1182,74 @@ namespace gInk
                             g.TranslateTransform(-pt.X - W / 2, -pt.Y - H / 2);
                         }
 
-                        // 1) couleur par stroke si disponible
-                        //Color c;
-                        //if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
-                        //{
-                        //    try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
-                        //    catch { c = Color.FromArgb(255, 0, 0, 0); }
-                        //}
-                        //else
-                        //{
-                        //    // 2) fallback: couleur globale configurée (A,R,G,B)
-                        //    int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
-                        //    int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
-                        //    int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
-                        //    int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
-                        //    c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
-                        //}
-                        // Remplacer le bloc de sélection de la couleur (à la place de "Color c; ... else { c = Color.FromArgb(...); }")
-                        Color c;
+                        // Initialiser la couleur avec une valeur par défaut (noir) pour éviter l'erreur CS0165
+                        Color c = Color.FromArgb(255, 0, 0, 0);
+
                         if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
                         {
                             try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
-                            catch { c = Color.FromArgb(255, 0, 0, 0); }
+                            catch { /* Conservation de la couleur par défaut */ }
                         }
                         else if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
                         {
-                            // Pastilles numérotées : gris moyen fixe (indépendant de Text_Color global)
-                            c = Color.FromArgb(255, 128, 128, 128);
+                            // Récupérer le texte pour déterminer si c'est une lettre ou un chiffre
+                            string textContent = "";
+                            try
+                            {
+                                if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
+                                    textContent = st.ExtendedProperties[Root.TEXT_GUID].Data as string;
+                            }
+                            catch { }
+
+                            // Si c'est une lettre A-Z, utiliser la couleur dédiée aux lettres depuis les options
+                            if (!string.IsNullOrEmpty(textContent) && textContent.Length == 1 && char.IsLetter(textContent[0]))
+                            {
+                                // Utiliser la couleur de lettres des options
+                                int cfgA = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 0) ? Root.GoTool_Letter_Color[0] : 255;
+                                int cfgR = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 1) ? Root.GoTool_Letter_Color[1] : 0;
+                                int cfgG = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 2) ? Root.GoTool_Letter_Color[2] : 0;
+                                int cfgB = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 3) ? Root.GoTool_Letter_Color[3] : 0;
+                                c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                            }
+                            else if (!string.IsNullOrEmpty(textContent) && textContent.Length == 1)
+                            {
+                                // Pour les formes, identifier le caractère et utiliser la couleur correspondante
+                                int[] colorArray = null;
+
+                                switch (textContent[0])
+                                {
+                                    case '■':
+                                        colorArray = Root.GoTool_Square_Color;
+                                        break;
+                                    case '▲':
+                                        colorArray = Root.GoTool_Triangle_Color;
+                                        break;
+                                    case '●':
+                                        colorArray = Root.GoTool_Circle_Color;
+                                        break;
+                                    case '✖':
+                                        colorArray = Root.GoTool_Cross_Color;
+                                        break;
+                                    default:
+                                        // Fallback à la couleur grise pour les numéros
+                                        c = Color.FromArgb(255, 128, 128, 128);
+                                        break;
+                                }
+
+                                if (colorArray != null)
+                                {
+                                    int cfgA = (colorArray.Length > 0) ? colorArray[0] : 255;
+                                    int cfgR = (colorArray.Length > 1) ? colorArray[1] : 0;
+                                    int cfgG = (colorArray.Length > 2) ? colorArray[2] : 0;
+                                    int cfgB = (colorArray.Length > 3) ? colorArray[3] : 0;
+                                    c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                                }
+                            }
+                            else
+                            {
+                                // Cas par défaut si aucune condition n'est satisfaite
+                                c = Color.FromArgb(255, 128, 128, 128);
+                            }
                         }
                         else
                         {
@@ -1002,7 +1260,6 @@ namespace gInk
                             c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
                         }
 
-                        // Appliquer la règle d’opacité pour numéros si ISTAG
                         int baseAlpha = c.A;
                         int finalAlpha = st.ExtendedProperties.Contains(Root.ISTAG_GUID)
                             ? Math.Max(0, Math.Min(255, (int)Math.Round(baseAlpha * (Root.TagNumberOpacityPercent / 100.0))))
@@ -1017,7 +1274,12 @@ namespace gInk
                         }
                         g.ResetTransform();
                     }
+
+
+
+
                 }
+
             }
         }
 
@@ -1676,6 +1938,154 @@ namespace gInk
                     //}
 
                     // ... dans DrawStrokes(Bitmap bmp, ...) bloc TEXT_GUID
+                    //if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
+                    //{
+                    //    Point pt = new Point((int)(double)st.ExtendedProperties[Root.TEXTX_GUID].Data, (int)(double)st.ExtendedProperties[Root.TEXTY_GUID].Data);
+                    //    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pt);
+                    //    System.Drawing.StringFormat stf = new System.Drawing.StringFormat(System.Drawing.StringFormatFlags.NoClip);
+                    //    stf.Alignment = (System.Drawing.StringAlignment)(st.ExtendedProperties[Root.TEXTHALIGN_GUID].Data);
+                    //    stf.LineAlignment = (System.Drawing.StringAlignment)(st.ExtendedProperties[Root.TEXTVALIGN_GUID].Data);
+                    //    g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+                    //    if (st.ExtendedProperties.Contains(Root.ROTATION_GUID))
+                    //    {
+                    //        Double Rotation = (double)st.ExtendedProperties[Root.ROTATION_GUID].Data;
+                    //        int W = 0, H = 0;
+                    //        g.TranslateTransform(pt.X + W / 2, pt.Y + H / 2);
+                    //        g.RotateTransform((float)Rotation);
+                    //        g.TranslateTransform(-pt.X - W / 2, -pt.Y - H / 2);
+                    //    }
+
+                    //    //Color c;
+                    //    //if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                    //    //{
+                    //    //    try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
+                    //    //    catch { c = Color.FromArgb(255, 0, 0, 0); }
+                    //    //}
+                    //    //else
+                    //    //{
+                    //    //    int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
+                    //    //    int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
+                    //    //    int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
+                    //    //    int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
+                    //    //    c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                    //    //}
+
+                    //    // Remplacer le bloc de sélection de la couleur (à la place de "Color c; ... else { c = Color.FromArgb(...); }")
+                    //    //Color c;
+                    //    //if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                    //    //{
+                    //    //    try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
+                    //    //    catch { c = Color.FromArgb(255, 0, 0, 0); }
+                    //    //}
+                    //    //else if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                    //    //{
+                    //    //    // Pastilles numérotées : gris moyen fixe (indépendant de Text_Color global)
+                    //    //    c = Color.FromArgb(255, 128, 128, 128);
+                    //    //}
+                    //    //else
+                    //    //{
+                    //    //    int cfgA = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 0) ? Root.GoTool_Text_Color[0] : 255;
+                    //    //    int cfgR = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 1) ? Root.GoTool_Text_Color[1] : 0;
+                    //    //    int cfgG = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 2) ? Root.GoTool_Text_Color[2] : 0;
+                    //    //    int cfgB = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 3) ? Root.GoTool_Text_Color[3] : 0;
+                    //    //    c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                    //    //}
+
+                    //    // Dans la méthode DrawStrokes(Bitmap bmp, bool IgnoreBackground=false)
+                    //    // Remplacer le bloc actuel par celui-ci :
+
+                    //    // Remplacer le bloc de sélection de la couleur (à la place de "Color c; ... else { c = Color.FromArgb(...); }")
+                    //    Color c;
+                    //    if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                    //    {
+                    //        try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
+                    //        catch { c = Color.FromArgb(255, 0, 0, 0); }
+                    //    }
+                    //    else if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                    //    {
+                    //        // Récupérer le texte pour déterminer si c'est une lettre ou un chiffre
+                    //        string textContent = "";
+                    //        try
+                    //        {
+                    //            if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
+                    //                textContent = st.ExtendedProperties[Root.TEXT_GUID].Data as string;
+                    //        }
+                    //        catch { }
+
+                    //        // Si c'est une lettre A-Z, utiliser la couleur dédiée aux lettres depuis les options
+                    //        if (!string.IsNullOrEmpty(textContent) && textContent.Length == 1 && char.IsLetter(textContent[0]))
+                    //        {
+                    //            // Utiliser la couleur de lettres des options (ajuster selon votre code existant)
+                    //            int cfgA = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 0) ? Root.GoTool_Letter_Color[0] : 255;
+                    //            int cfgR = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 1) ? Root.GoTool_Letter_Color[1] : 0;
+                    //            int cfgG = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 2) ? Root.GoTool_Letter_Color[2] : 0;
+                    //            int cfgB = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 3) ? Root.GoTool_Letter_Color[3] : 0;
+                    //            c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                    //        }
+                    //        else if (!string.IsNullOrEmpty(textContent) && textContent.Length == 1)
+                    //        {
+                    //            // Pour les formes, identifier le caractère et utiliser la couleur correspondante
+                    //            int[] colorArray = null;
+
+                    //            switch (textContent[0])
+                    //            {
+                    //                case '■':
+                    //                    colorArray = Root.GoTool_Square_Color;
+                    //                    break;
+                    //                case '▲':
+                    //                    colorArray = Root.GoTool_Triangle_Color;
+                    //                    break;
+                    //                case '●':
+                    //                    colorArray = Root.GoTool_Circle_Color;
+                    //                    break;
+                    //                case '✖':
+                    //                    colorArray = Root.GoTool_Cross_Color;
+                    //                    break;
+                    //                default:
+                    //                    // Fallback à la couleur grise pour les numéros
+                    //                    c = Color.FromArgb(255, 128, 128, 128);
+                    //                    break;
+                    //            }
+
+                    //            if (colorArray != null)
+                    //            {
+                    //                int cfgA = (colorArray.Length > 0) ? colorArray[0] : 255;
+                    //                int cfgR = (colorArray.Length > 1) ? colorArray[1] : 0;
+                    //                int cfgG = (colorArray.Length > 2) ? colorArray[2] : 0;
+                    //                int cfgB = (colorArray.Length > 3) ? colorArray[3] : 0;
+                    //                c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                    //            }
+                    //        }
+                    //        else
+                    //        {
+                    //            // Cas par défaut si aucune condition n'est satisfaite
+                    //            c = Color.FromArgb(255, 128, 128, 128);
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        int cfgA = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 0) ? Root.GoTool_Text_Color[0] : 255;
+                    //        int cfgR = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 1) ? Root.GoTool_Text_Color[1] : 0;
+                    //        int cfgG = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 2) ? Root.GoTool_Text_Color[2] : 0;
+                    //        int cfgB = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 3) ? Root.GoTool_Text_Color[3] : 0;
+                    //        c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                    //    }
+
+
+                    //    int baseAlpha = c.A;
+                    //    int finalAlpha = st.ExtendedProperties.Contains(Root.ISTAG_GUID)
+                    //        ? Math.Max(0, Math.Min(255, (int)Math.Round(baseAlpha * (Root.TagNumberOpacityPercent / 100.0))))
+                    //        : baseAlpha;
+
+                    //    using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(finalAlpha, c.R, c.G, c.B)))
+                    //    {
+                    //        g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+                    //                     new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                    //                        (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
+                    //                     txtBru, pt.X, pt.Y, stf);
+                    //    }
+                    //    g.ResetTransform();
+                    //}
                     if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
                     {
                         Point pt = new Point((int)(double)st.ExtendedProperties[Root.TEXTX_GUID].Data, (int)(double)st.ExtendedProperties[Root.TEXTY_GUID].Data);
@@ -1693,42 +2103,83 @@ namespace gInk
                             g.TranslateTransform(-pt.X - W / 2, -pt.Y - H / 2);
                         }
 
-                        //Color c;
-                        //if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
-                        //{
-                        //    try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
-                        //    catch { c = Color.FromArgb(255, 0, 0, 0); }
-                        //}
-                        //else
-                        //{
-                        //    int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
-                        //    int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
-                        //    int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
-                        //    int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
-                        //    c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
-                        //}
+                        // Initialiser la couleur avec une valeur par défaut (noir) pour éviter l'erreur CS0165
+                        Color c = Color.FromArgb(255, 0, 0, 0);
 
-                        // Remplacer le bloc de sélection de la couleur (à la place de "Color c; ... else { c = Color.FromArgb(...); }")
-                        Color c;
                         if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
                         {
                             try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
-                            catch { c = Color.FromArgb(255, 0, 0, 0); }
+                            catch { /* Conservation de la couleur par défaut */ }
                         }
                         else if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
                         {
-                            // Pastilles numérotées : gris moyen fixe (indépendant de Text_Color global)
-                            c = Color.FromArgb(255, 128, 128, 128);
+                            // Récupérer le texte pour déterminer si c'est une lettre ou un chiffre
+                            string textContent = "";
+                            try
+                            {
+                                if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
+                                    textContent = st.ExtendedProperties[Root.TEXT_GUID].Data as string;
+                            }
+                            catch { }
+
+                            // Si c'est une lettre A-Z, utiliser la couleur dédiée aux lettres depuis les options
+                            if (!string.IsNullOrEmpty(textContent) && textContent.Length == 1 && char.IsLetter(textContent[0]))
+                            {
+                                // Utiliser la couleur de lettres des options
+                                int cfgA = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 0) ? Root.GoTool_Letter_Color[0] : 255;
+                                int cfgR = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 1) ? Root.GoTool_Letter_Color[1] : 0;
+                                int cfgG = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 2) ? Root.GoTool_Letter_Color[2] : 0;
+                                int cfgB = (Root.GoTool_Letter_Color != null && Root.GoTool_Letter_Color.Length > 3) ? Root.GoTool_Letter_Color[3] : 0;
+                                c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                            }
+                            else if (!string.IsNullOrEmpty(textContent) && textContent.Length == 1)
+                            {
+                                // Pour les formes, identifier le caractère et utiliser la couleur correspondante
+                                int[] colorArray = null;
+
+                                switch (textContent[0])
+                                {
+                                    case '■':
+                                        colorArray = Root.GoTool_Square_Color;
+                                        break;
+                                    case '▲':
+                                        colorArray = Root.GoTool_Triangle_Color;
+                                        break;
+                                    case '●':
+                                        colorArray = Root.GoTool_Circle_Color;
+                                        break;
+                                    case '✖':
+                                        colorArray = Root.GoTool_Cross_Color;
+                                        break;
+                                    default:
+                                        // Fallback à la couleur grise pour les numéros
+                                        c = Color.FromArgb(255, 128, 128, 128);
+                                        break;
+                                }
+
+                                if (colorArray != null)
+                                {
+                                    int cfgA = (colorArray.Length > 0) ? colorArray[0] : 255;
+                                    int cfgR = (colorArray.Length > 1) ? colorArray[1] : 0;
+                                    int cfgG = (colorArray.Length > 2) ? colorArray[2] : 0;
+                                    int cfgB = (colorArray.Length > 3) ? colorArray[3] : 0;
+                                    c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                                }
+                            }
+                            else
+                            {
+                                // Cas par défaut si aucune condition n'est satisfaite
+                                c = Color.FromArgb(255, 128, 128, 128);
+                            }
                         }
                         else
-                        {
+                        {1
                             int cfgA = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 0) ? Root.GoTool_Text_Color[0] : 255;
                             int cfgR = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 1) ? Root.GoTool_Text_Color[1] : 0;
                             int cfgG = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 2) ? Root.GoTool_Text_Color[2] : 0;
                             int cfgB = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 3) ? Root.GoTool_Text_Color[3] : 0;
                             c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
                         }
-
 
                         int baseAlpha = c.A;
                         int finalAlpha = st.ExtendedProperties.Contains(Root.ISTAG_GUID)
@@ -1744,7 +2195,6 @@ namespace gInk
                         }
                         g.ResetTransform();
                     }
-
 
                 }
             }

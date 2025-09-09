@@ -31,6 +31,10 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormCollection));
             this.gpButtons = new System.Windows.Forms.Panel();
+            // ...
+            // IMPORTANT: assure une couleur de texte par défaut lisible pour les enfants texte
+            this.gpButtons.ForeColor = System.Drawing.SystemColors.ControlText;
+            // ...
             this.btPageNext = new System.Windows.Forms.Button();
             this.btPagePrev = new System.Windows.Forms.Button();
             this.btExtraPens = new System.Windows.Forms.Button();
@@ -72,7 +76,13 @@
                 b.BackColor = System.Drawing.Color.Transparent;
                 b.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
                 b.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-                b.Visible = false; // elles seront positionnées plus tard dans Initialize()
+                // RENDRE LE TEXTE VISIBLE
+                b.ForeColor = System.Drawing.SystemColors.ControlText;
+                // laissons-les visibles ; le code d'initialisation se chargera de les positionner
+                b.Visible = true;
+                // taille cohérente avec les autres
+                b.Size = new System.Drawing.Size(46, 46);
+                //b.Visible = false; // elles seront positionnées plus tard dans Initialize()
                 this.gpButtons.Controls.Add(b);
             }
 
@@ -1190,7 +1200,9 @@
             this.Controls.Add(this.gpSubTools);
             this.Controls.Add(this.gpPenWidth);
             this.Controls.Add(this.gpButtons);
-            this.ForeColor = System.Drawing.Color.Transparent;
+            // NE PAS METTRE ForeColor global Transparent : il rend les textes invisibles par héritage
+            this.ForeColor = System.Drawing.SystemColors.ControlText;
+            //this.ForeColor = System.Drawing.Color.Transparent;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -1202,6 +1214,34 @@
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormCollection_FormClosing);
             this.gpButtons.ResumeLayout(false);
+
+
+            // ...
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormCollection_FormClosing);
+            this.gpButtons.ResumeLayout(false);
+
+            // Ajuste la taille du panel après la mise en page, pour éviter la barre tronquée
+            try
+            {
+                int right = 0, bottom = 0;
+                foreach (System.Windows.Forms.Control c in this.gpButtons.Controls)
+                {
+                    if (!c.Visible) continue;
+                    right = System.Math.Max(right, c.Right);
+                    bottom = System.Math.Max(bottom, c.Bottom);
+                }
+                this.gpButtons.Width = System.Math.Max(this.gpButtons.Width, right + 4);
+                this.gpButtons.Height = System.Math.Max(this.gpButtons.Height, bottom + 4);
+            }
+            catch { }
+
+            this.gpPenWidth.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pboxPenWidthIndicator)).EndInit();
+            this.gpSubTools.ResumeLayout(false);
+            this.ResumeLayout(false);
+            // ...
+
+
             this.gpPenWidth.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pboxPenWidthIndicator)).EndInit();
             this.gpSubTools.ResumeLayout(false);
