@@ -232,7 +232,11 @@ namespace gInk
         public Hotkey Hotkey_HandFilledBlack = new Hotkey();
 
 
-
+        public static readonly Guid TEXTCOLOR_GUID = new Guid("2b2e0a64-2b15-46f0-8d2f-5a7a7b59b2a4");
+        // 0 = non défini, sinon ARGB de la couleur active pour les prochains textes
+        public int ActiveTextColorARGB = 0;
+        // Indique un alignement forcé à la prochaine création de texte (consommé puis remis à null)
+        public StringAlignment? ForcedTextAlign = null;
 
         //public Guid TYPE_GUID = new Guid(10, 11, 12, 10, 0, 0, 0, 0, 0, 0, 0);
         public static readonly Guid TEXT_GUID = new Guid(10, 11, 12, 10, 0, 0, 0, 0, 0, 0, 1);

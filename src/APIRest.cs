@@ -214,6 +214,67 @@ namespace gInk
                     }
 
 
+
+
+
+
+                    else if (req.Url.AbsolutePath == "/Text_Color" ||
+         req.Url.AbsolutePath == "/Text_White" ||
+         req.Url.AbsolutePath == "/Text_Black")
+                    {
+                        if (!(Root.FormDisplay.Visible || Root.FormCollection.Visible))
+                        {
+                            resp.StatusCode = 409;
+                            ret = "!!!!! Not in Inking mode";
+                        }
+                        else
+                        {
+                            try
+                            {
+                                string s; int f = Root.TextBackground;
+                                if (query.TryGetValue("F", out s) && int.TryParse(s, out f) && f >= -1 && f <= Filling.Modulo)
+                                    if (f >= 0) Root.TextBackground = f;
+
+                                // Couleur active pour les prochaines strokes (figée dans TEXTCOLOR_GUID)
+                                if (req.Url.AbsolutePath == "/Text_White")
+                                    Root.ActiveTextColorARGB = Color.FromArgb(255, 255, 255, 255).ToArgb();
+                                else if (req.Url.AbsolutePath == "/Text_Black")
+                                    Root.ActiveTextColorARGB = Color.FromArgb(255, 0, 0, 0).ToArgb();
+                                else
+                                {
+                                    int a = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
+                                    int r = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
+                                    int g = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
+                                    int b = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
+                                    Root.ActiveTextColorARGB = Color.FromArgb(a, r, g, b).ToArgb();
+                                }
+
+                                // HINT: forcer l’alignement gauche à la prochaine création de texte
+                                Root.ForcedTextAlign = StringAlignment.Near;
+
+                                Root.FormCollection.SelectTool(Tools.txtLeftAligned, Root.TextBackground);
+                                Root.UponButtonsUpdate |= 0x2;
+                                Root.UponAllDrawingUpdate = true;
+
+                                var c = Color.FromArgb(Root.ActiveTextColorARGB);
+                                ret = string.Format("{{ \"OK\": true, \"Tool\": \"{0}\", \"Filling\": {1}, \"ColorA\": {2}, \"ColorR\": {3}, \"ColorG\": {4}, \"ColorB\": {5} }}",
+                                    Tools.Names[Array.IndexOf(Tools.All, Tools.txtLeftAligned)],
+                                    Root.TextBackground, c.A, c.R, c.G, c.B);
+                            }
+                            catch (Exception e)
+                            {
+                                resp.StatusCode = 500;
+                                ret = string.Format("!!!! Exception: {0}", e.Message);
+                            }
+                        }
+                    }
+
+
+
+
+
+
+
                     else if (req.Url.AbsolutePath == "/PenDef")
                     {
                         string s;

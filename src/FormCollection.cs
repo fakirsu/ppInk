@@ -5533,71 +5533,191 @@ namespace gInk
         //}
 
 
+        //private Stroke AddTextStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt, StringAlignment Align, int fil_in = -1)
+        //{
+        //    // Si un alignement a été forcé via REST, l’utiliser et le consommer
+        //    if (Root.ForcedTextAlign.HasValue)
+        //    {
+        //        Align = Root.ForcedTextAlign.Value;
+        //        Root.ForcedTextAlign = null;
+        //    }
+
+
+        //    // 1) Mesurer rapidement la hauteur de ligne pour calibrer l’offset
+        //    float measuredHeightPx = 0f;
+        //    try
+        //    {
+        //        var style = (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular);
+        //        using (var f = new Font(TextFont, (float)TextSize, style))
+        //        {
+        //            // Mesure simple (évite multi-lignes) sur le même Graphics que le rendu
+        //            var stf = new StringFormat(StringFormatFlags.NoClip) { Alignment = Align, LineAlignment = StringAlignment.Near };
+        //            var size = Root.FormDisplay.gOneStrokeCanvus.MeasureString(string.IsNullOrEmpty(txt) ? "Xg" : txt, f, new SizeF(2000f, 2000f), stf);
+        //            measuredHeightPx = size.Height;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        measuredHeightPx = 10f; // fallback raisonnable
+        //    }
+
+        //    // 2) Offsets demandés: vertical deux fois plus petit que précédemment, et horizontal de même ordre
+        //    //    Si auparavant on utilisait ~ -height, on passe à ~ -height/2
+        //    int offsetY = -(int)Math.Round(measuredHeightPx / 2.0f);
+        //    int offsetX = +(int)Math.Round(measuredHeightPx / -2.0f); // même magnitude à droite; ajustez le signe si souhaité
+
+        //    // 3) Appliquer l’offset en PIXELS avant conversion en InkSpace
+        //    Point ptPixel = new Point(CursorX0 + offsetX, CursorY0 + offsetY);
+
+        //    // 4) Convertir en InkSpace avant création/stocker TEXTX/TEXTY
+        //    Point pt = ptPixel;
+        //    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+        //    Point[] pts = new Point[9] { pt, pt, pt, pt, pt, pt, pt, pt, pt };
+
+        //    Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
+        //    st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+        //    st.DrawingAttributes.Width = 100; // cacher le point
+        //    st.DrawingAttributes.FitToCurve = false;
+
+        //    st.ExtendedProperties.Add(Root.TEXT_GUID, txt ?? "");
+        //    st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
+        //    st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
+        //    st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, Align);
+        //    st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Near);
+        //    st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TextFont);
+        //    st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)TextSize);
+        //    st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular));
+        //    st.ExtendedProperties.Add(Root.ROTATION_GUID, TextTheta);
+
+        //    int fil;
+        //    if (fil_in < 0)
+        //        fil_in = Root.TextBackground;
+        //    switch (fil_in / 2)
+        //    {
+        //        case 1: fil = Filling.WhiteFilled; break;
+        //        case 2: fil = Filling.BlackFilled; break;
+        //        default: fil = Filling.Empty; break;
+        //    }
+        //    setStrokeProperties(ref st, fil);
+        //    try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
+        //    if ((fil_in % 2) == 1)
+        //        st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
+
+        //    Root.FormCollection.IC.Ink.Strokes.Add(st);
+        //    if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+        //        FadingList.Add(st);
+        //    return st;
+        //}
+
+
         private Stroke AddTextStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt, StringAlignment Align, int fil_in = -1)
         {
-            // 1) Mesurer rapidement la hauteur de ligne pour calibrer l’offset
-            float measuredHeightPx = 0f;
+            // --- 1) calculer un offset en pixels (vertical & horizontal) basé sur la hauteur approximative de la police ---
+            int offsetX = 0;
+            int offsetY = 0;
             try
             {
                 var style = (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular);
-                using (var f = new Font(TextFont, (float)TextSize, style))
+                using (var f = new Font(TextFont ?? Root.TextFont, (float)(TextSize > 0 ? TextSize : Root.TextSize), style))
                 {
-                    // Mesure simple (évite multi-lignes) sur le même Graphics que le rendu
-                    var stf = new StringFormat(StringFormatFlags.NoClip) { Alignment = Align, LineAlignment = StringAlignment.Near };
-                    var size = Root.FormDisplay.gOneStrokeCanvus.MeasureString(string.IsNullOrEmpty(txt) ? "Xg" : txt, f, new SizeF(2000f, 2000f), stf);
-                    measuredHeightPx = size.Height;
+                    var stf = new StringFormat(StringFormatFlags.MeasureTrailingSpaces);
+                    // mesurer une ligne simple
+                    SizeF measured = Root.FormDisplay.gOneStrokeCanvus.MeasureString(string.IsNullOrEmpty(txt) ? "Mg" : txt, f, new SizeF(2000f, 2000f), stf);
+                    // vertical : demi-hauteur de ligne (demande utilisateur : "deux fois plus petit")
+                    offsetY = -(int)Math.Round(measured.Height / 2.0f);
+                    // horizontal : magnitude similaire (décalage vers la droite)
+                    offsetX = (int)Math.Round(measured.Height / -2.0f);
                 }
             }
             catch
             {
-                measuredHeightPx = 10f; // fallback raisonnable
+                // fallback raisonnable
+                offsetY = -6;
+                offsetX = 4;
             }
 
-            // 2) Offsets demandés: vertical deux fois plus petit que précédemment, et horizontal de même ordre
-            //    Si auparavant on utilisait ~ -height, on passe à ~ -height/2
-            int offsetY = -(int)Math.Round(measuredHeightPx / 2.0f);
-            int offsetX = +(int)Math.Round(measuredHeightPx / -2.0f); // même magnitude à droite; ajustez le signe si souhaité
+            // --- 2) consommer un éventuel alignement forcé venant du REST ---
+            if (Root.ForcedTextAlign.HasValue)
+            {
+                Align = Root.ForcedTextAlign.Value;
+                Root.ForcedTextAlign = null;
+            }
 
-            // 3) Appliquer l’offset en PIXELS avant conversion en InkSpace
+            // --- 3) appliquer l'offset en PIXELS avant conversion ---
             Point ptPixel = new Point(CursorX0 + offsetX, CursorY0 + offsetY);
 
-            // 4) Convertir en InkSpace avant création/stocker TEXTX/TEXTY
+            // convertir pixel -> InkSpace
             Point pt = ptPixel;
-            IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+            try
+            {
+                IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+            }
+            catch
+            {
+                // fallback : utiliser CursorX0/CursorY0 transformés
+                pt = new Point(CursorX0, CursorY0);
+                try { IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt); } catch { }
+            }
+
+            // --- 4) créer la stroke autour du point (9 points identiques comme le format existant) ---
             Point[] pts = new Point[9] { pt, pt, pt, pt, pt, pt, pt, pt, pt };
 
-            Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
-            st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
-            st.DrawingAttributes.Width = 100; // cacher le point
+            Stroke st = IC.Ink.CreateStroke(pts);
+            st.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
+            st.DrawingAttributes.Width = 100; // masquer le point
             st.DrawingAttributes.FitToCurve = false;
 
-            st.ExtendedProperties.Add(Root.TEXT_GUID, txt ?? "");
-            st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
-            st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
-            st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, Align);
-            st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Near);
-            st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TextFont);
-            st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)TextSize);
-            st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular));
-            st.ExtendedProperties.Add(Root.ROTATION_GUID, TextTheta);
+            // --- 5) propriétés texte ---
+            try { st.ExtendedProperties.Add(Root.TEXT_GUID, txt ?? ""); } catch { }
+            try { st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X); } catch { }
+            try { st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y); } catch { }
+            try { st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, Align); } catch { }
+            try { st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Near); } catch { }
 
+            // police / taille / style / rotation
+            try { st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TextFont ?? Root.TextFont); } catch { }
+            try { st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)(TextSize > 0 ? TextSize : Root.TextSize)); } catch { }
+            try { st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular)); } catch { }
+            try { st.ExtendedProperties.Add(Root.ROTATION_GUID, TextTheta); } catch { }
+
+            // --- 6) figer la couleur active pour cette stroke (si définie) pour éviter recoloration rétroactive ---
+            try
+            {
+                if (Root.ActiveTextColorARGB != 0 && !st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                    st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Root.ActiveTextColorARGB);
+            }
+            catch { }
+
+            // --- 7) filling / frame / propriétés stroke (logique existante) ---
             int fil;
             if (fil_in < 0)
                 fil_in = Root.TextBackground;
             switch (fil_in / 2)
             {
-                case 1: fil = Filling.WhiteFilled; break;
-                case 2: fil = Filling.BlackFilled; break;
-                default: fil = Filling.Empty; break;
+                case 1:
+                    fil = Filling.WhiteFilled;
+                    break;
+                case 2:
+                    fil = Filling.BlackFilled;
+                    break;
+                default:
+                    fil = Filling.Empty;
+                    break;
             }
             setStrokeProperties(ref st, fil);
             try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
             if ((fil_in % 2) == 1)
-                st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
+                try { st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true); } catch { }
 
-            Root.FormCollection.IC.Ink.Strokes.Add(st);
-            if (st.ExtendedProperties.Contains(Root.FADING_PEN))
-                FadingList.Add(st);
+            // --- 8) ajout à l'encre et gestion fading list ---
+            try { IC.Ink.Strokes.Add(st); } catch { }
+            try
+            {
+                if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+                    FadingList.Add(st);
+            }
+            catch { }
+
             return st;
         }
 

@@ -218,6 +218,21 @@ namespace gInk
             // Méthode conservée mais vide car le combobox est caché
         }
 
+        //private void InputML_TextChanged(object sender, EventArgs e)
+        //{
+        //    if (stroke == null) return;
+
+        //    string t = ((TextBox)sender).Text;
+        //    if (t.Length == 0) t = " ";
+        //    stroke.ExtendedProperties.Remove(Root.TEXT_GUID);
+        //    stroke.ExtendedProperties.Add(Root.TEXT_GUID, t);
+        //    if (!stroke.ExtendedProperties.Contains(Root.ISTAG_GUID))
+        //        Root.FormCollection.ComputeTextBoxSize(ref stroke);
+        //    Root.FormDisplay.ClearCanvus();
+        //    Root.FormDisplay.DrawStrokes();
+        //    Root.FormDisplay.UpdateFormDisplay(true);
+        //}
+
         private void InputML_TextChanged(object sender, EventArgs e)
         {
             if (stroke == null) return;
@@ -226,12 +241,36 @@ namespace gInk
             if (t.Length == 0) t = " ";
             stroke.ExtendedProperties.Remove(Root.TEXT_GUID);
             stroke.ExtendedProperties.Add(Root.TEXT_GUID, t);
+
+            // Figé par stroke: couleur du texte une fois pour toutes
+            try
+            {
+                if (!stroke.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                {
+                    // 1) couleur active (définie par REST /Text_*)
+                    int argb = Root.ActiveTextColorARGB;
+                    if (argb == 0)
+                    {
+                        // 2) sinon, couleur configurée globale (A,R,G,B)
+                        int a = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 0) ? Root.GoTool_Text_Color[0] : 255;
+                        int r = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 1) ? Root.GoTool_Text_Color[1] : 0;
+                        int g = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 2) ? Root.GoTool_Text_Color[2] : 0;
+                        int b = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 3) ? Root.GoTool_Text_Color[3] : 0;
+                        argb = Color.FromArgb(a, r, g, b).ToArgb();
+                    }
+                    stroke.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, argb);
+                }
+            }
+            catch { }
+
             if (!stroke.ExtendedProperties.Contains(Root.ISTAG_GUID))
                 Root.FormCollection.ComputeTextBoxSize(ref stroke);
             Root.FormDisplay.ClearCanvus();
             Root.FormDisplay.DrawStrokes();
             Root.FormDisplay.UpdateFormDisplay(true);
         }
+
+
 
         private void TB_CtrlAPressed(object sender, KeyPressEventArgs e)
         {

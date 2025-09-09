@@ -895,6 +895,59 @@ namespace gInk
                     //    g.ResetTransform();
                     //}
 
+                    //if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
+                    //{
+                    //    Point pt = new Point((int)(double)st.ExtendedProperties[Root.TEXTX_GUID].Data, (int)(double)st.ExtendedProperties[Root.TEXTY_GUID].Data);
+                    //    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pt);
+                    //    System.Drawing.StringFormat stf = new System.Drawing.StringFormat(System.Drawing.StringFormatFlags.NoClip);
+                    //    stf.Alignment = (System.Drawing.StringAlignment)(st.ExtendedProperties[Root.TEXTHALIGN_GUID].Data);
+                    //    stf.LineAlignment = (System.Drawing.StringAlignment)(st.ExtendedProperties[Root.TEXTVALIGN_GUID].Data);
+                    //    g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+                    //    if (st.ExtendedProperties.Contains(Root.ROTATION_GUID))
+                    //    {
+                    //        Double Rotation = (double)st.ExtendedProperties[Root.ROTATION_GUID].Data;
+                    //        int W = 0, H = 0;
+                    //        g.TranslateTransform(pt.X + W / 2, pt.Y + H / 2);
+                    //        g.RotateTransform((float)Rotation);
+                    //        g.TranslateTransform(-pt.X - W / 2, -pt.Y - H / 2);
+                    //    }
+
+                    //    // couleur configurée (A,R,G,B)
+                    //    int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
+                    //    int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
+                    //    int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
+                    //    int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
+
+                    //    // Utiliser directement l'alpha configuré pour le rendu du texte.
+                    //    int finalBase = Math.Max(0, Math.Min(255, cfgA));
+
+                    //    if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                    //    {
+                    //        // numéro : appliquer en plus le facteur TagNumberOpacityPercent
+                    //        int alphaNumber = Math.Max(0, Math.Min(255, (int)Math.Round(finalBase * (Root.TagNumberOpacityPercent / 100.0))));
+                    //        using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(alphaNumber, cfgR, cfgG, cfgB)))
+                    //        {
+                    //            g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+                    //                         new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                    //                            (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
+                    //                         txtBru, pt.X, pt.Y, stf);
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        int finalAlpha = finalBase;
+                    //        using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(finalAlpha, cfgR, cfgG, cfgB)))
+                    //        {
+                    //            g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+                    //                         new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                    //                            (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
+                    //                         txtBru, pt.X, pt.Y, stf);
+                    //        }
+                    //    }
+
+                    //    g.ResetTransform();
+                    //}
+
                     if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
                     {
                         Point pt = new Point((int)(double)st.ExtendedProperties[Root.TEXTX_GUID].Data, (int)(double)st.ExtendedProperties[Root.TEXTY_GUID].Data);
@@ -912,43 +965,38 @@ namespace gInk
                             g.TranslateTransform(-pt.X - W / 2, -pt.Y - H / 2);
                         }
 
-                        // couleur configurée (A,R,G,B)
-                        int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
-                        int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
-                        int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
-                        int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
-
-                        // Utiliser directement l'alpha configuré pour le rendu du texte.
-                        int finalBase = Math.Max(0, Math.Min(255, cfgA));
-
-                        if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                        // 1) couleur par stroke si disponible
+                        Color c;
+                        if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
                         {
-                            // numéro : appliquer en plus le facteur TagNumberOpacityPercent
-                            int alphaNumber = Math.Max(0, Math.Min(255, (int)Math.Round(finalBase * (Root.TagNumberOpacityPercent / 100.0))));
-                            using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(alphaNumber, cfgR, cfgG, cfgB)))
-                            {
-                                g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
-                                             new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
-                                                (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
-                                             txtBru, pt.X, pt.Y, stf);
-                            }
+                            try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
+                            catch { c = Color.FromArgb(255, 0, 0, 0); }
                         }
                         else
                         {
-                            int finalAlpha = finalBase;
-                            using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(finalAlpha, cfgR, cfgG, cfgB)))
-                            {
-                                g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
-                                             new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
-                                                (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
-                                             txtBru, pt.X, pt.Y, stf);
-                            }
+                            // 2) fallback: couleur globale configurée (A,R,G,B)
+                            int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
+                            int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
+                            int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
+                            int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
+                            c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
                         }
 
+                        // Appliquer la règle d’opacité pour numéros si ISTAG
+                        int baseAlpha = c.A;
+                        int finalAlpha = st.ExtendedProperties.Contains(Root.ISTAG_GUID)
+                            ? Math.Max(0, Math.Min(255, (int)Math.Round(baseAlpha * (Root.TagNumberOpacityPercent / 100.0))))
+                            : baseAlpha;
+
+                        using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(finalAlpha, c.R, c.G, c.B)))
+                        {
+                            g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+                                         new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                                            (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
+                                         txtBru, pt.X, pt.Y, stf);
+                        }
                         g.ResetTransform();
                     }
-
-
                 }
             }
         }
@@ -1555,6 +1603,59 @@ namespace gInk
                     //    g.ResetTransform();
                     //}
 
+                    //if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
+                    //{
+                    //    Point pt = new Point((int)(double)st.ExtendedProperties[Root.TEXTX_GUID].Data, (int)(double)st.ExtendedProperties[Root.TEXTY_GUID].Data);
+                    //    Root.FormCollection.IC.Renderer.InkSpaceToPixel(gOneStrokeCanvus, ref pt);
+                    //    System.Drawing.StringFormat stf = new System.Drawing.StringFormat(System.Drawing.StringFormatFlags.NoClip);
+                    //    stf.Alignment = (System.Drawing.StringAlignment)(st.ExtendedProperties[Root.TEXTHALIGN_GUID].Data);
+                    //    stf.LineAlignment = (System.Drawing.StringAlignment)(st.ExtendedProperties[Root.TEXTVALIGN_GUID].Data);
+                    //    g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+                    //    if (st.ExtendedProperties.Contains(Root.ROTATION_GUID))
+                    //    {
+                    //        Double Rotation = (double)st.ExtendedProperties[Root.ROTATION_GUID].Data;
+                    //        int W = 0, H = 0;
+                    //        g.TranslateTransform(pt.X + W / 2, pt.Y + H / 2);
+                    //        g.RotateTransform((float)Rotation);
+                    //        g.TranslateTransform(-pt.X - W / 2, -pt.Y - H / 2);
+                    //    }
+
+                    //    // couleur configurée (A,R,G,B)
+                    //    int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
+                    //    int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
+                    //    int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
+                    //    int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
+
+                    //    // Utiliser directement l'alpha configuré pour le rendu du texte.
+                    //    int finalBase = Math.Max(0, Math.Min(255, cfgA));
+
+                    //    if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                    //    {
+                    //        int alphaNumber = Math.Max(0, Math.Min(255, (int)Math.Round(finalBase * (Root.TagNumberOpacityPercent / 100.0))));
+                    //        using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(alphaNumber, cfgR, cfgG, cfgB)))
+                    //        {
+                    //            g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+                    //                         new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                    //                            (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
+                    //                         txtBru, pt.X, pt.Y, stf);
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        int finalAlpha = finalBase;
+                    //        using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(finalAlpha, cfgR, cfgG, cfgB)))
+                    //        {
+                    //            g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+                    //                         new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                    //                            (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
+                    //                         txtBru, pt.X, pt.Y, stf);
+                    //        }
+                    //    }
+
+                    //    g.ResetTransform();
+                    //}
+
+                    // ... dans DrawStrokes(Bitmap bmp, ...) bloc TEXT_GUID
                     if (st.ExtendedProperties.Contains(Root.TEXT_GUID))
                     {
                         Point pt = new Point((int)(double)st.ExtendedProperties[Root.TEXTX_GUID].Data, (int)(double)st.ExtendedProperties[Root.TEXTY_GUID].Data);
@@ -1572,42 +1673,35 @@ namespace gInk
                             g.TranslateTransform(-pt.X - W / 2, -pt.Y - H / 2);
                         }
 
-                        // couleur configurée (A,R,G,B)
-                        int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
-                        int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
-                        int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
-                        int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
-
-                        // Utiliser directement l'alpha configuré pour le rendu du texte.
-                        int finalBase = Math.Max(0, Math.Min(255, cfgA));
-
-                        if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                        Color c;
+                        if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
                         {
-                            int alphaNumber = Math.Max(0, Math.Min(255, (int)Math.Round(finalBase * (Root.TagNumberOpacityPercent / 100.0))));
-                            using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(alphaNumber, cfgR, cfgG, cfgB)))
-                            {
-                                g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
-                                             new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
-                                                (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
-                                             txtBru, pt.X, pt.Y, stf);
-                            }
+                            try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
+                            catch { c = Color.FromArgb(255, 0, 0, 0); }
                         }
                         else
                         {
-                            int finalAlpha = finalBase;
-                            using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(finalAlpha, cfgR, cfgG, cfgB)))
-                            {
-                                g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
-                                             new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
-                                                (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
-                                             txtBru, pt.X, pt.Y, stf);
-                            }
+                            int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
+                            int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
+                            int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
+                            int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
+                            c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
                         }
 
+                        int baseAlpha = c.A;
+                        int finalAlpha = st.ExtendedProperties.Contains(Root.ISTAG_GUID)
+                            ? Math.Max(0, Math.Min(255, (int)Math.Round(baseAlpha * (Root.TagNumberOpacityPercent / 100.0))))
+                            : baseAlpha;
+
+                        using (SolidBrush txtBru = new SolidBrush(Color.FromArgb(finalAlpha, c.R, c.G, c.B)))
+                        {
+                            g.DrawString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+                                         new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+                                            (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data),
+                                         txtBru, pt.X, pt.Y, stf);
+                        }
                         g.ResetTransform();
                     }
-
-
 
 
                 }
