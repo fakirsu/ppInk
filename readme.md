@@ -164,6 +164,19 @@ http://localhost:*le_port_fourni_dans le menu_option*/**le_nom_de_l_action**. Ex
   Description : Ajout de croix  
   "http://localhost:1234/CrossTag"
 
+- /Text_Color
+  Description : Outil texte avec couleur spécifique (paramétrable dans le menu Options)  
+  "http://localhost:1234/Text_Color"
+
+- /Text_White
+  Description : Outil texte avec couleur blanche  
+  "http://localhost:1234/Text_White"
+
+- /Text_Black
+  Description : Outil texte avec couleur noire  
+  "http://localhost:1234/Text_Black"
+
+
 Remarques générales
 - Remplacer http://localhost:1234 par l'URL de base configurée dans votre menu Options (onglet Général)
 - Beaucoup d’actions ne fonctionneront pas si l'application n'est pas en mode inking (barre d'outils ouverte) : la réponse sera 409 "Not in Inking mode".

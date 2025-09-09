@@ -5410,19 +5410,168 @@ namespace gInk
 
 
         double TextTheta = 0.0;
-        private Stroke AddTextStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt, StringAlignment Align, int  fil_in = -1)
-        // arrow at starting point
+
+
+        //private Stroke AddTextStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt, StringAlignment Align, int  fil_in = -1)
+        //// arrow at starting point
+        //{
+        //    Point pt = new Point(CursorX0, CursorY0);
+        //    //IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+        //    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+        //    Point[] pts = new Point[9] { pt, pt, pt, pt, pt, pt, pt, pt, pt };
+
+        //    Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
+        //    st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+        //    st.DrawingAttributes.Width = 100; // no width to hide the point;
+        //    st.DrawingAttributes.FitToCurve = false;
+        //    st.ExtendedProperties.Add(Root.TEXT_GUID, txt);
+        //    st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
+        //    st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
+        //    st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, Align);
+        //    st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Near);
+        //    st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TextFont);
+        //    st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)TextSize);
+        //    st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular));
+        //    st.ExtendedProperties.Add(Root.ROTATION_GUID, TextTheta);
+        //    int fil;
+        //    if (fil_in < 0)
+        //        fil_in = Root.TextBackground;
+        //    switch (fil_in / 2)
+        //    {
+        //        case 1:
+        //            fil = Filling.WhiteFilled;
+        //            break;
+        //        case 2:
+        //            fil = Filling.BlackFilled;
+        //            break;
+        //        default:
+        //            fil = Filling.Empty;
+        //            break;
+        //    };
+        //    setStrokeProperties(ref st, fil);
+        //    try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
+        //    if ((fil_in % 2) == 1)
+        //        st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
+        //    Root.FormCollection.IC.Ink.Strokes.Add(st);
+        //    if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+        //        FadingList.Add(st);
+        //    return st;
+        //}
+
+
+        //private Stroke AddTextStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt, StringAlignment Align, int fil_in = -1)
+        //{
+        //    // 1) Calculer un décalage vertical en pixels (au-dessus)
+        //    int offsetPixels = -6; // valeur fixe par défaut
+        //    try
+        //    {
+        //        // Mesurer précisément la hauteur de la police configurée
+        //        using (var f = new Font(TextFont,
+        //                                (float)TextSize,
+        //                                (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular)))
+        //        {
+        //            SizeF layout = new SizeF(2000f, 2000f);
+        //            var stf = new StringFormat(StringFormatFlags.NoClip)
+        //            {
+        //                Alignment = Align,
+        //                LineAlignment = StringAlignment.Near
+        //            };
+        //            // Mesure par le même Graphics que le rendu
+        //            layout = Root.FormDisplay.gOneStrokeCanvus.MeasureString(string.IsNullOrEmpty(txt) ? "Xg" : txt, f, layout, stf);
+        //            // Décaler d’une hauteur de ligne environ (+ petite marge)
+        //            offsetPixels = -(int)Math.Ceiling(layout.Height) - 2;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        // fallback: petit décalage standard
+        //        offsetPixels = -10;
+        //    }
+
+        //    // 2) Appliquer ce décalage en PIXELS (coordonnées virtuelles souris)
+        //    Point ptPixel = new Point(CursorX0, CursorY0 + offsetPixels);
+
+        //    // 3) Convertir ces pixels en InkSpace AVANT création de la stroke
+        //    Point pt = ptPixel;
+        //    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+
+        //    // 4) Créer la stroke autour de ce point décalé
+        //    Point[] pts = new Point[9] { pt, pt, pt, pt, pt, pt, pt, pt, pt };
+
+        //    Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
+        //    st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+        //    st.DrawingAttributes.Width = 100; // pas de largeur pour cacher le point
+        //    st.DrawingAttributes.FitToCurve = false;
+
+        //    st.ExtendedProperties.Add(Root.TEXT_GUID, txt ?? "");
+        //    st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
+        //    st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
+        //    st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, Align);
+        //    st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Near);
+        //    st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TextFont);
+        //    st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)TextSize);
+        //    st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID,
+        //        (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular));
+        //    st.ExtendedProperties.Add(Root.ROTATION_GUID, TextTheta);
+
+        //    int fil;
+        //    if (fil_in < 0) fil_in = Root.TextBackground;
+        //    switch (fil_in / 2)
+        //    {
+        //        case 1: fil = Filling.WhiteFilled; break;
+        //        case 2: fil = Filling.BlackFilled; break;
+        //        default: fil = Filling.Empty; break;
+        //    }
+        //    setStrokeProperties(ref st, fil);
+        //    try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
+        //    if ((fil_in % 2) == 1) st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
+
+        //    Root.FormCollection.IC.Ink.Strokes.Add(st);
+        //    if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st);
+
+        //    return st;
+        //}
+
+
+        private Stroke AddTextStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt, StringAlignment Align, int fil_in = -1)
         {
-            Point pt = new Point(CursorX0, CursorY0);
-            //IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+            // 1) Mesurer rapidement la hauteur de ligne pour calibrer l’offset
+            float measuredHeightPx = 0f;
+            try
+            {
+                var style = (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular);
+                using (var f = new Font(TextFont, (float)TextSize, style))
+                {
+                    // Mesure simple (évite multi-lignes) sur le même Graphics que le rendu
+                    var stf = new StringFormat(StringFormatFlags.NoClip) { Alignment = Align, LineAlignment = StringAlignment.Near };
+                    var size = Root.FormDisplay.gOneStrokeCanvus.MeasureString(string.IsNullOrEmpty(txt) ? "Xg" : txt, f, new SizeF(2000f, 2000f), stf);
+                    measuredHeightPx = size.Height;
+                }
+            }
+            catch
+            {
+                measuredHeightPx = 10f; // fallback raisonnable
+            }
+
+            // 2) Offsets demandés: vertical deux fois plus petit que précédemment, et horizontal de même ordre
+            //    Si auparavant on utilisait ~ -height, on passe à ~ -height/2
+            int offsetY = -(int)Math.Round(measuredHeightPx / 2.0f);
+            int offsetX = +(int)Math.Round(measuredHeightPx / -2.0f); // même magnitude à droite; ajustez le signe si souhaité
+
+            // 3) Appliquer l’offset en PIXELS avant conversion en InkSpace
+            Point ptPixel = new Point(CursorX0 + offsetX, CursorY0 + offsetY);
+
+            // 4) Convertir en InkSpace avant création/stocker TEXTX/TEXTY
+            Point pt = ptPixel;
             IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
             Point[] pts = new Point[9] { pt, pt, pt, pt, pt, pt, pt, pt, pt };
 
             Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
             st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
-            st.DrawingAttributes.Width = 100; // no width to hide the point;
+            st.DrawingAttributes.Width = 100; // cacher le point
             st.DrawingAttributes.FitToCurve = false;
-            st.ExtendedProperties.Add(Root.TEXT_GUID, txt);
+
+            st.ExtendedProperties.Add(Root.TEXT_GUID, txt ?? "");
             st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
             st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
             st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, Align);
@@ -5431,30 +5580,31 @@ namespace gInk
             st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)TextSize);
             st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular));
             st.ExtendedProperties.Add(Root.ROTATION_GUID, TextTheta);
+
             int fil;
             if (fil_in < 0)
                 fil_in = Root.TextBackground;
             switch (fil_in / 2)
             {
-                case 1:
-                    fil = Filling.WhiteFilled;
-                    break;
-                case 2:
-                    fil = Filling.BlackFilled;
-                    break;
-                default:
-                    fil = Filling.Empty;
-                    break;
-            };
+                case 1: fil = Filling.WhiteFilled; break;
+                case 2: fil = Filling.BlackFilled; break;
+                default: fil = Filling.Empty; break;
+            }
             setStrokeProperties(ref st, fil);
             try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
             if ((fil_in % 2) == 1)
                 st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
+
             Root.FormCollection.IC.Ink.Strokes.Add(st);
             if (st.ExtendedProperties.Contains(Root.FADING_PEN))
                 FadingList.Add(st);
             return st;
         }
+
+
+
+
+
 
         bool TextEdited = false;    // used to prevent random toolbar closing when using esc in a dialog box
                                     //private DialogResult ModifyTextInStroke(Stroke stk, string txt)
@@ -5493,67 +5643,92 @@ namespace gInk
         //    return ret;
         //}
         // used to prevent random toolbar closing when using esc in a dialog box
+        //private DialogResult ModifyTextInStroke(Stroke stk, string txt)
+        //{
+        //    // required to access the dialog box
+        //    AllowInteractions(true);
+
+        //    FormInput inp = new FormInput(Root.Local.DlgTextCaption, Root.Local.DlgTextLabel, txt, true, Root, stk);
+
+        //    // Positionner la boîte de saisie dans le coin supérieur gauche de l’écran actif
+        //    try
+        //    {
+        //        Screen scr = Screen.FromPoint(System.Windows.Forms.Cursor.Position);
+        //        Rectangle wa = scr.WorkingArea;
+        //        inp.StartPosition = FormStartPosition.Manual;
+        //        inp.Left = wa.Left;
+        //        inp.Top = wa.Top;
+        //    }
+        //    catch { }
+
+        //    DialogResult ret = inp.ShowDialog();  // cancellation process is within the cancel button
+        //    TextEdited = true;
+        //    AllowInteractions(false);
+        //    try
+        //    {
+        //        IC.Cursor = cursorred;
+        //    }
+        //    catch
+        //    {
+        //        IC.Cursor = getCursFromDiskOrRes(Root.cursorarrowFileName, System.Windows.Forms.Cursors.NoMove2D);
+        //    }
+        //    System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
+
+        //    // Optionnel : placer aussi le texte édité dans le coin supérieur gauche de l’écran actif
+        //    try
+        //    {
+        //        if (ret == DialogResult.OK && stk != null)
+        //        {
+        //            Screen scr2 = Screen.FromPoint(System.Windows.Forms.Cursor.Position);
+        //            Rectangle wa2 = scr2.WorkingArea;
+
+        //            // petit décalage pour éviter le coin exact
+        //            Point ptTL = new Point(wa2.Left + 5, wa2.Top + 5);
+
+        //            // Convertir en InkSpace avant d’écrire TEXTX/TEXTY
+        //            IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref ptTL);
+
+        //            try { stk.ExtendedProperties.Remove(Root.TEXTX_GUID); } catch { }
+        //            try { stk.ExtendedProperties.Remove(Root.TEXTY_GUID); } catch { }
+        //            stk.ExtendedProperties.Add(Root.TEXTX_GUID, (double)ptTL.X);
+        //            stk.ExtendedProperties.Add(Root.TEXTY_GUID, (double)ptTL.Y);
+
+        //            // Recalculer la boîte et redessiner
+        //            ComputeTextBoxSize(ref stk);
+        //            Root.FormDisplay.ClearCanvus();
+        //            Root.FormDisplay.DrawStrokes();
+        //            Root.FormDisplay.UpdateFormDisplay(true);
+        //        }
+        //    }
+        //    catch { }
+
+        //    return ret;
+        //}
+
         private DialogResult ModifyTextInStroke(Stroke stk, string txt)
         {
-            // required to access the dialog box
+            // Accès au dialogue
             AllowInteractions(true);
 
+            // Ne PAS repositionner ici: on laisse FormInput choisir (haut-gauche)
             FormInput inp = new FormInput(Root.Local.DlgTextCaption, Root.Local.DlgTextLabel, txt, true, Root, stk);
 
-            // Positionner la boîte de saisie dans le coin supérieur gauche de l’écran actif
-            try
-            {
-                Screen scr = Screen.FromPoint(System.Windows.Forms.Cursor.Position);
-                Rectangle wa = scr.WorkingArea;
-                inp.StartPosition = FormStartPosition.Manual;
-                inp.Left = wa.Left;
-                inp.Top = wa.Top;
-            }
-            catch { }
-
-            DialogResult ret = inp.ShowDialog();  // cancellation process is within the cancel button
+            DialogResult ret = inp.ShowDialog();  // l’annulation est gérée dans le bouton Cancel
             TextEdited = true;
             AllowInteractions(false);
-            try
-            {
-                IC.Cursor = cursorred;
-            }
-            catch
-            {
-                IC.Cursor = getCursFromDiskOrRes(Root.cursorarrowFileName, System.Windows.Forms.Cursors.NoMove2D);
-            }
-            System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
+            try { IC.Cursor = cursorred; }
+            catch { IC.Cursor = getCursFromDiskOrRes(Root.cursorarrowFileName, System.Windows.Forms.Cursors.NoMove2D); }
 
-            // Optionnel : placer aussi le texte édité dans le coin supérieur gauche de l’écran actif
-            try
-            {
-                if (ret == DialogResult.OK && stk != null)
-                {
-                    Screen scr2 = Screen.FromPoint(System.Windows.Forms.Cursor.Position);
-                    Rectangle wa2 = scr2.WorkingArea;
+            // Stabiliser le curseur (comme avant)
+            System.Windows.Forms.Cursor.Position = new Point(
+                System.Windows.Forms.Cursor.Position.X,
+                System.Windows.Forms.Cursor.Position.Y
+            );
 
-                    // petit décalage pour éviter le coin exact
-                    Point ptTL = new Point(wa2.Left + 5, wa2.Top + 5);
-
-                    // Convertir en InkSpace avant d’écrire TEXTX/TEXTY
-                    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref ptTL);
-
-                    try { stk.ExtendedProperties.Remove(Root.TEXTX_GUID); } catch { }
-                    try { stk.ExtendedProperties.Remove(Root.TEXTY_GUID); } catch { }
-                    stk.ExtendedProperties.Add(Root.TEXTX_GUID, (double)ptTL.X);
-                    stk.ExtendedProperties.Add(Root.TEXTY_GUID, (double)ptTL.Y);
-
-                    // Recalculer la boîte et redessiner
-                    ComputeTextBoxSize(ref stk);
-                    Root.FormDisplay.ClearCanvus();
-                    Root.FormDisplay.DrawStrokes();
-                    Root.FormDisplay.UpdateFormDisplay(true);
-                }
-            }
-            catch { }
-
+            // Ne PAS toucher à TEXTX/TEXTY ici: pas de “saut” après validation
             return ret;
         }
+
 
 
         private float NearestStroke(Point pt, bool ptInPixel, out Stroke minStroke, out float pos, bool Search4Text = true, bool butLast = false, bool Magnet = true)
