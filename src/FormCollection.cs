@@ -281,7 +281,7 @@ namespace gInk
         {
             // comportement historique : conserve l'ancienne taille basée sur TagSize
             int diameter = Math.Max(10, (int)Math.Round(TagSize * 0.8));
-            return AddShapeTagStroke(xCenter, yCenter, txt, diameter);
+            return AddShapeTagStroke(xCenter, yCenter, txt, diameter, null);
         }
 
         // Nouvelle surcharge : création de la pastille (disque) + texte centré, taille explicitement fournie en pixels (diamètre)
@@ -1583,7 +1583,7 @@ namespace gInk
         //    }
         //}
 
-        private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx)
+        private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx, Stroke st = null)
         {
             // clamp minimal
             int diameter = Math.Max(6, diameterPx);
@@ -1654,7 +1654,15 @@ namespace gInk
                         // appliquer couleur/opacité configurée pour le tag Lettre
                         ApplyGoTagColorToDrawingAttributes(stTxt.DrawingAttributes, Root.GoTool_Letter_Color);
 
-                        try { stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
+                        try { stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                            try
+                            {
+                                if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                    st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                            }
+                            catch { }
+
+                        } catch { }
                         ComputeTextBoxSize(ref stTxt);
                     }
                     catch { }
@@ -1686,6 +1694,12 @@ namespace gInk
                                     rect.DrawingAttributes.Width = shapePenWidthHiMetric;
                                     setStrokeProperties(ref rect, Filling.Empty);
                                     rect.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                    try
+                                    {
+                                        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                    }
+                                    catch { }
                                 }
                                 catch { }
                             }
@@ -1705,6 +1719,19 @@ namespace gInk
                                     circ.DrawingAttributes.Width = shapePenWidthHiMetric;
                                     setStrokeProperties(ref circ, Filling.Empty);
                                     circ.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                    try
+                                    {
+                                        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                    }
+                                    catch { }
+
+                                    try
+                                    {
+                                        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                    }
+                                    catch { }
                                 }
                                 catch { }
                             }
@@ -1723,19 +1750,31 @@ namespace gInk
                             // conversion pixel -> inkspace
                             IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
 
-                            Stroke st = IC.Ink.CreateStroke(pts);
-                            st.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
-                            st.DrawingAttributes.AntiAliased = true;
-                            st.DrawingAttributes.FitToCurve = false;
-                            // appliquer couleur/opacité configurée pour le tag Triangle
-                            ApplyGoTagColorToDrawingAttributes(st.DrawingAttributes, Root.GoTool_Triangle_Color);
+                            //Stroke st = IC.Ink.CreateStroke(pts);
+                            Stroke st2 = IC.Ink.CreateStroke(pts);
 
-                            st.DrawingAttributes.Width = shapePenWidthHiMetric;
-                            setStrokeProperties(ref st, Filling.Empty);
-                            try { st.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
-                            IC.Ink.Strokes.Add(st);
-                            if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st);
-                            return st;
+                            st2.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
+                            st2.DrawingAttributes.AntiAliased = true;
+                            st2.DrawingAttributes.FitToCurve = false;
+                            // appliquer couleur/opacité configurée pour le tag Triangle
+                            ApplyGoTagColorToDrawingAttributes(st2.DrawingAttributes, Root.GoTool_Triangle_Color);
+
+                            st2.DrawingAttributes.Width = shapePenWidthHiMetric;
+                            setStrokeProperties(ref st2, Filling.Empty);
+                            try { st2.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+
+
+                                try
+                                {
+                                    if (!st2.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                        st2.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                }
+                                catch { }
+                            
+                            } catch { }
+                            IC.Ink.Strokes.Add(st2);
+                            if (st2.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st2);
+                            return st2;
                         }
 
                     case Tools.CrossTag:
@@ -1758,6 +1797,12 @@ namespace gInk
                                     s1.DrawingAttributes.Width = shapePenWidthHiMetric;
                                     setStrokeProperties(ref s1, Filling.Empty);
                                     s1.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                    try
+                                    {
+                                        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                    }
+                                    catch { }
                                 }
                                 catch { }
                             }
@@ -1769,6 +1814,12 @@ namespace gInk
                                     s2.DrawingAttributes.Width = shapePenWidthHiMetric;
                                     setStrokeProperties(ref s2, Filling.Empty);
                                     s2.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                    try
+                                    {
+                                        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                    }
+                                    catch { }
                                 }
                                 catch { }
                             }
@@ -1784,6 +1835,12 @@ namespace gInk
                                 {
                                     stTxt.DrawingAttributes.Color = Color.Black;
                                     stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                    try
+                                    {
+                                        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                    }
+                                    catch { }
                                     double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
                                     double fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0)) * 1.20;
                                     stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
@@ -1806,6 +1863,13 @@ namespace gInk
                     {
                         stTxt.DrawingAttributes.Color = Color.Black;
                         stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                        try
+                        {
+                            if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                        }
+                        catch { }
+
                         ComputeTextBoxSize(ref stTxt);
                     }
                     return stTxt;
@@ -5364,6 +5428,24 @@ namespace gInk
             catch { }
 
             st.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+            try
+            {
+                if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                    st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+            }
+            catch { }
+
+
+            // Coller juste après que la stroke ait été marquée ISTAG_GUID et après l'ajout des propriétés texte
+            try
+            {
+                // Si la stroke n'a pas déjà une couleur texte fixe, définir gris moyen pour les numéros
+                if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                    st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+            }
+            catch { }
+
+
             Point pt = new Point(CursorX0, CursorY0);
             try { IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt); } catch { }
 
@@ -6741,7 +6823,7 @@ namespace gInk
                         int diameterPx = Math.Max(6, (int)Math.Round(baseDiameter * (circlePct / 100.0)));
 
                         // Création de la pastille centée sur la cellule snap
-                        AddShapeTagStroke(snapClient.X, snapClient.Y, txt, diameterPx);
+                        AddShapeTagStroke(snapClient.X, snapClient.Y, txt, diameterPx, null);
                         SaveUndoStrokes();
                     }
                     // sinon : clic ignoré (comme NumberTag)

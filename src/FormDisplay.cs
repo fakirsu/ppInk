@@ -966,19 +966,39 @@ namespace gInk
                         }
 
                         // 1) couleur par stroke si disponible
+                        //Color c;
+                        //if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                        //{
+                        //    try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
+                        //    catch { c = Color.FromArgb(255, 0, 0, 0); }
+                        //}
+                        //else
+                        //{
+                        //    // 2) fallback: couleur globale configurée (A,R,G,B)
+                        //    int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
+                        //    int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
+                        //    int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
+                        //    int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
+                        //    c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                        //}
+                        // Remplacer le bloc de sélection de la couleur (à la place de "Color c; ... else { c = Color.FromArgb(...); }")
                         Color c;
                         if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
                         {
                             try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
                             catch { c = Color.FromArgb(255, 0, 0, 0); }
                         }
+                        else if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                        {
+                            // Pastilles numérotées : gris moyen fixe (indépendant de Text_Color global)
+                            c = Color.FromArgb(255, 128, 128, 128);
+                        }
                         else
                         {
-                            // 2) fallback: couleur globale configurée (A,R,G,B)
-                            int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
-                            int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
-                            int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
-                            int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
+                            int cfgA = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 0) ? Root.GoTool_Text_Color[0] : 255;
+                            int cfgR = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 1) ? Root.GoTool_Text_Color[1] : 0;
+                            int cfgG = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 2) ? Root.GoTool_Text_Color[2] : 0;
+                            int cfgB = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 3) ? Root.GoTool_Text_Color[3] : 0;
                             c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
                         }
 
@@ -1673,20 +1693,42 @@ namespace gInk
                             g.TranslateTransform(-pt.X - W / 2, -pt.Y - H / 2);
                         }
 
+                        //Color c;
+                        //if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                        //{
+                        //    try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
+                        //    catch { c = Color.FromArgb(255, 0, 0, 0); }
+                        //}
+                        //else
+                        //{
+                        //    int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
+                        //    int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
+                        //    int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
+                        //    int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
+                        //    c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
+                        //}
+
+                        // Remplacer le bloc de sélection de la couleur (à la place de "Color c; ... else { c = Color.FromArgb(...); }")
                         Color c;
                         if (st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
                         {
                             try { c = Color.FromArgb((int)st.ExtendedProperties[Root.TEXTCOLOR_GUID].Data); }
                             catch { c = Color.FromArgb(255, 0, 0, 0); }
                         }
+                        else if (st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                        {
+                            // Pastilles numérotées : gris moyen fixe (indépendant de Text_Color global)
+                            c = Color.FromArgb(255, 128, 128, 128);
+                        }
                         else
                         {
-                            int cfgA = Root.GoTool_Text_Color.Length > 0 ? Root.GoTool_Text_Color[0] : 255;
-                            int cfgR = Root.GoTool_Text_Color.Length > 1 ? Root.GoTool_Text_Color[1] : 0;
-                            int cfgG = Root.GoTool_Text_Color.Length > 2 ? Root.GoTool_Text_Color[2] : 0;
-                            int cfgB = Root.GoTool_Text_Color.Length > 3 ? Root.GoTool_Text_Color[3] : 0;
+                            int cfgA = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 0) ? Root.GoTool_Text_Color[0] : 255;
+                            int cfgR = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 1) ? Root.GoTool_Text_Color[1] : 0;
+                            int cfgG = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 2) ? Root.GoTool_Text_Color[2] : 0;
+                            int cfgB = (Root.GoTool_Text_Color != null && Root.GoTool_Text_Color.Length > 3) ? Root.GoTool_Text_Color[3] : 0;
                             c = Color.FromArgb(cfgA, cfgR, cfgG, cfgB);
                         }
+
 
                         int baseAlpha = c.A;
                         int finalAlpha = st.ExtendedProperties.Contains(Root.ISTAG_GUID)
