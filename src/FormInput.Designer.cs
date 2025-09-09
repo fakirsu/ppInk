@@ -49,6 +49,7 @@ namespace gInk
             this.btOK.TabIndex = 0;
             this.btOK.Text = "&OK";
             this.btOK.UseVisualStyleBackColor = true;
+            this.btOK.Visible = false;
             // 
             // btCancel
             // 
@@ -60,32 +61,38 @@ namespace gInk
             this.btCancel.TabIndex = 1;
             this.btCancel.Text = "&Cancel";
             this.btCancel.UseVisualStyleBackColor = true;
+            this.btCancel.Visible = false;
             this.btCancel.Click += new System.EventHandler(this.btCancel_Click);
             // 
             // InputML
             // 
             this.InputML.AcceptsReturn = true;
+            this.InputML.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(10)))));
             this.InputML.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InputML.Location = new System.Drawing.Point(18, 26);
+            this.InputML.ForeColor = System.Drawing.Color.White;
+            this.InputML.Location = new System.Drawing.Point(5, 5);
             this.InputML.Multiline = true;
             this.InputML.Name = "InputML";
             this.InputML.Size = new System.Drawing.Size(533, 93);
             this.InputML.TabIndex = 2;
-            this.InputML.Text = "inputML\r\nline2";
+            this.InputML.Text = "";
             this.InputML.Visible = false;
             this.InputML.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TB_CtrlAPressed);
             this.InputML.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.FormInput_PreviewKeyDown);
             // 
             // InputSL
             // 
+            this.InputSL.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(10)))));
             this.InputSL.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InputSL.Location = new System.Drawing.Point(18, 62);
+            this.InputSL.ForeColor = System.Drawing.Color.White;
+            this.InputSL.Location = new System.Drawing.Point(5, 5);
             this.InputSL.Name = "InputSL";
             this.InputSL.Size = new System.Drawing.Size(533, 26);
             this.InputSL.TabIndex = 3;
-            this.InputSL.Text = "inputSL";
+            this.InputSL.Text = "";
             this.InputSL.Visible = false;
             this.InputSL.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TB_CtrlAPressed);
+            this.InputSL.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.FormInput_PreviewKeyDown);
             // 
             // captionLbl
             // 
@@ -96,6 +103,7 @@ namespace gInk
             this.captionLbl.Size = new System.Drawing.Size(45, 16);
             this.captionLbl.TabIndex = 4;
             this.captionLbl.Text = "label1";
+            this.captionLbl.Visible = false;
             // 
             // FontBtn
             // 
@@ -141,8 +149,9 @@ namespace gInk
             this.AcceptButton = this.btOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(1)))), ((int)(((byte)(1)))), ((int)(((byte)(1)))));
             this.CancelButton = this.btCancel;
-            this.ClientSize = new System.Drawing.Size(563, 179);
+            this.ClientSize = new System.Drawing.Size(543, 103);
             this.Controls.Add(this.boxingCb);
             this.Controls.Add(this.ColorBtn);
             this.Controls.Add(this.FontBtn);
@@ -151,12 +160,13 @@ namespace gInk
             this.Controls.Add(this.InputML);
             this.Controls.Add(this.btCancel);
             this.Controls.Add(this.btOK);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FormInput";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Input";
             this.TopMost = true;
+            this.TransparencyKey = System.Drawing.Color.FromArgb(((int)(((byte)(1)))), ((int)(((byte)(1)))), ((int)(((byte)(1)))));
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -166,9 +176,9 @@ namespace gInk
 
         private System.Windows.Forms.Button btOK;
         private System.Windows.Forms.Button btCancel;
-        public  System.Windows.Forms.TextBox InputML;
-        public  System.Windows.Forms.TextBox InputSL;
-        public  System.Windows.Forms.Label captionLbl;
+        public System.Windows.Forms.TextBox InputML;
+        public System.Windows.Forms.TextBox InputSL;
+        public System.Windows.Forms.Label captionLbl;
         public System.Windows.Forms.Button FontBtn;
         public System.Windows.Forms.FontDialog FontDlg;
         public System.Windows.Forms.Button ColorBtn;

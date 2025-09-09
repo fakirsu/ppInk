@@ -37,6 +37,7 @@ GoOptionsArrowThicknessItems = "Thin;Medium;Thick"
 GoOptionsArrowLengthItems = "Short;Medium;Long"
 OptionsGoHotkeys_OpenToolbar = "Open toolbar (no-op if already open)"
 OptionsGoHotkeys_CloseToolbar = "Close toolbar (no-op if already closed)"
+GoOptionsTextColor = "Text color:"
 # -> End of entries for Go game
 
 ButtonNamePen0 = "Pen 0"

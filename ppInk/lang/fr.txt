@@ -37,6 +37,7 @@ GoOptionsArrowThicknessItems = "Flèches > épaisseur (Fin;Moyen;Épais)"
 GoOptionsArrowLengthItems = "Courte;Moyenne;Longue"
 OptionsGoHotkeys_OpenToolbar = "Ouvrir la barre d'outils (ne fait rien si déjà ouverte)"
 OptionsGoHotkeys_CloseToolbar = "Fermer la barre d'outils (ne fait rien si déjà fermée)"
+GoOptionsTextColor = "Couleur du texte :"
 # -> Fin des entrées pour jeu de go ###
 
 ButtonNamePen0 = "Stylo 0"

@@ -25,9 +25,10 @@
 - [Lien avec OBS](#lien-avec-obs)
 - [goInk et StreamDeck](#goink-et-streamdeck)
   - [Pour les outils spécifiques au jeu de go](#pour-les-outils-spécifiques-au-jeu-de-go)
-  - [Tous les autres endpoints](#liste-des-autres-endpoints-rest-disponibles-résumé-fonctionnel-du-fichier-apirestcs)
   - [Prédéfinir vos gobans](#prédéfinir-vos-gobans)
-
+- [Vigilance concernant les outils Texte](#vigilance-concernant-les-outils-texte)
+- [Icônes StreamDeck](#icônes-streamdeck)
+- [Tous les autres endpoints API](#liste-des-autres-endpoints-rest-disponibles-résumé-fonctionnel-du-fichier-apirestcs)
 
 ## Avertissements
 Ce fork a été exclusivement réalisé avec l'aide d'une IA, car je ne suis pas du tout développeur de code. 
@@ -105,71 +106,132 @@ http://localhost:*le_port_fourni_dans le menu_option*/**le_nom_de_l_action**. Ex
 ## Pour les outils spécifiques au jeu de go
 
 - /OpenToolbar
-  Description : Ouvrir la barre d'outils (si pas déjà ouverte)  
-  "http://localhost:1234/OpenToolbar"
+  <br>Description : Ouvrir la barre d'outils (si pas déjà ouverte)
+  <br>"http://localhost:1234/OpenToolbar"
 
   /CloseToolbar
-  Description : Fermer la barre d'outils (si pas déjà fermée)
-  "http://localhost:1234/CloseToolbar"
+  <br>Description : Fermer la barre d'outils (si pas déjà fermée)
+  <br>"http://localhost:1234/CloseToolbar"
 
-- /RectTool  
-  Description : Outil "Set goban" pour définir les dimensions du goban  
-  "http://localhost:1234/RectTool"
+- /RectTool
+  <br>Description : Outil "Set goban" pour définir les dimensions du goban
+  <br>"http://localhost:1234/RectTool"
 
-- /NTag_Show_White  
-  Description : Pierres numérotées (première pierre blanche)  
-  "http://localhost:1234/NTag_Show_White"  
+- /NTag_Show_White
+  <br>Description : Pierres numérotées (première pierre blanche)
+  <br>"http://localhost:1234/NTag_Show_White"
 
-- /NTag_Show_Black  
-  Description : Pierres numérotées (première pierre noire)  
-  "http://localhost:1234/NTag_Show_Black"
+- /NTag_Show_Black
+  <br>Description : Pierres numérotées (première pierre noire)
+  <br>"http://localhost:1234/NTag_Show_Black"
 
-- /NTag_Hide_White  
-  Description : Ajout de pierres sans numéros (1ère blanche)  
-  "http://localhost:1234/NTag_Hide_White"
+- /NTag_Hide_White
+  <br>Description : Ajout de pierres sans numéros (1ère blanche)
+  <br>"http://localhost:1234/NTag_Hide_White"
 
-- /NTag_Hide_Black  
-  Description : Ajout de pierres sans numéros (1ère noire)  
-  "http://localhost:1234/NTag_Hide_Black"
+- /NTag_Hide_Black
+  <br>Description : Ajout de pierres sans numéros (1ère noire)
+  <br>"http://localhost:1234/NTag_Hide_Black"
 
-- /HandFilledWhite  
-  Description : Ajout d'une zone blanche  
-  "http://localhost:1234/HandFilledWhite"
+- /HandFilledWhite
+  <br>Description : Ajout d'une zone blanche
+  <br>"http://localhost:1234/HandFilledWhite"
 
-- /HandFilledBlack  
-  Description : Ajout d'une zone noire  
-  "http://localhost:1234/HandFilledBlack"
+- /HandFilledBlack
+  <br>Description : Ajout d'une zone noire
+  <br>"http://localhost:1234/HandFilledBlack"
 
-- /HandFilledBlack  
-  Description : Ajout d'une flèche 
-  "http://localhost:1234/AddArrow"
+- /HandFilledBlack
+  <br>Description : Ajout d'une flèche
+  <br>"http://localhost:1234/AddArrow"
 
-- /LetterTag  
-  Description : Ajout de lettres (A, B, C, ...)  
-  "http://localhost:1234/LetterTag"
+- /LetterTag
+  <br>Description : Ajout de lettres (A, B, C, ...)
+  <br>"http://localhost:1234/LetterTag"
 
-- /SquareTag  
-  Description : Ajout de carrés  
-  "http://localhost:1234/SquareTag"
+- /SquareTag
+  <br>Description : Ajout de carrés
+  <br>"http://localhost:1234/SquareTag"
 
-- /TriangleTag  
-  Description : Ajout de triangles  
-  "http://localhost:1234/TriangleTag"
+- /TriangleTag
+  <br>Description : Ajout de triangles
+  <br>"http://localhost:1234/TriangleTag"
 
-- /CircleTag  
-  Description : Ajouts de cercles  
-  "http://localhost:1234/CircleTag"
+- /CircleTag
+  <br>Description : Ajouts de cercles
+  <br>"http://localhost:1234/CircleTag"
 
-- /CrossTag  
-  Description : Ajout de croix  
-  "http://localhost:1234/CrossTag"
+- /CrossTag
+  <br>Description : Ajout de croix
+  <br>"http://localhost:1234/CrossTag"
+
+- /Text_Color [lire ceci](#vigilance-concernant-les-outils-texte) 
+  <br>Description : Outil texte avec couleur spécifique (paramétrable dans le menu Options)
+  <br>"http://localhost:1234/Text_Color"
+
+- /Text_White
+  <br>Description : Outil texte avec couleur blanche
+  <br>"http://localhost:1234/Text_White"
+
+- /Text_Black
+  <br>Description : Outil texte avec couleur noire
+  <br>"http://localhost:1234/Text_Black"
+
 
 Remarques générales
 - Remplacer http://localhost:1234 par l'URL de base configurée dans votre menu Options (onglet Général)
 - Beaucoup d’actions ne fonctionneront pas si l'application n'est pas en mode inking (barre d'outils ouverte) : la réponse sera 409 "Not in Inking mode".
+- Il y a beaucoup d'autres endpoints REST disponibles, qui sont décrits dans le fichier APIRest.cs. 
+[Voir ci-dessous.](#liste-des-autres-endpoints-rest-disponibles-résumé-fonctionnel-du-fichier-apirestcs)
 
 
----
+
+## Prédéfinir vos gobans
+Si vous utilisez plusieurs goban de tailles différentes (OGS, KGS, FOX, ...), vous pouvez utiliser le StreamDeck pour "préenregistrer" les dimensions de chacun d'eux.
+
+Je vous conseille l'utilisation de l'extension [BarRaider SuperMacro](https://marketplace.elgato.com/product/supermacro-62195fec-7bcb-403d-b650-c342e9dfec67)
+
+Vous pourrez ensuite créer une multi-action dans StreamDeck, avec les actions suivantes :
+  - Ouvrir la barre d'outils goInk (si pas déjà ouvert)
+  - Attendre 500 ms (pour laisser le temps à goInk de s'ouvrir)
+  - Appeler l'endpoint "http://localhost:1234/RectTool" pour activer l'outil "Set goban"
+  - Attendre 200 ms
+  - Fonction BarRaider avec le code suivant dans Short-Press-Macro :
+	<pre><code>{{MSAVEPOS}}
+	{{MOUSEPOS:30000,15000}}
+	{{MLEFTDOWN}}
+	{{PAUSE:50}}
+	{{MOUSEPOS:50000,45000}}
+	{{PAUSE:50}}
+	{{MLEFTUP}}
+	{{MLOADPOS}} </code></pre>
+	
+Les coordonnées (x,y) dans {{MOUSEPOS:x,y}} sont à adapter en fonction de la position de votre goban sur l'écran. Vous pouvez utiliser l'outil Windows "Capture d'écran et croquis" pour obtenir les coordonnées.
+x et y doivent être entre 0 et 65535 (le point 65535,65535 est tout en bas à droite de votre écran)
+Vous poouvez utiliser des outils tiers pour déterminer les coordonnées x,y de votre souris (par exemple VoiceAttack).
+
+
+## Vigilance concernant les outils Texte
+Il y a 3 outils texte : 
+- /Text_Color : texte avec la couleur courante (paramétrable dans le menu Options)
+- /Text_White : texte blanc
+- /Text_Black : texte noir
+/Text_Color est le seul à bénéficier d'un raccourci clavier. /Text_White et /Text_Black ne sont actionnables que par l'API.  
+
+Quand un outil Texte est activé, une fenêtre de saisie de texte apparaît tout en haut à gauche de l'écran. Cette fenêtre est transparente, de manière à ne pas gêner un enregistrement de l'écran par exemple. 
+Le texte est ensuite à saisir au clavier, puis à valider par la touche Entrée.
+Il est possible d'annuler en appuyant sur ECHAP
+Attention : une fois que l'outil Texte est activé, il n'est pas possible d'utiliser 
+la souris pour cliquer sur un autre outil. Soyez donc vigilant.
+
+
+## Icônes StreamDeck
+
+
+
+
+
+
 
 ## Liste des autres endpoints REST disponibles (résumé fonctionnel du fichier APIRest.cs)
 Tous les endpoints acceptent GET ; la plupart exigent que l'application soit en mode inking (sinon réponse 409).
@@ -274,37 +336,6 @@ Tous les endpoints acceptent GET ; la plupart exigent que l'application soit en 
   - réponse : { "PageNumer": n, "TotalPages": m }
 
 - autres chemins non implémentés -> 404
-
-
-
-## Prédéfinir vos gobans
-Si vous utilisez plusieurs goban de tailles différentes (OGS, KGS, FOX, ...), vous pouvez utiliser le StreamDeck pour "préenregistrer" les dimensions de chacun d'eux.
-
-Je vous conseille l'utilisation de l'extension [BarRaider SuperMacro](https://marketplace.elgato.com/product/supermacro-62195fec-7bcb-403d-b650-c342e9dfec67)
-
-Vous pourrez ensuite créer une multi-action dans StreamDeck, avec les actions suivantes :
-  - Ouvrir la barre d'outils goInk (si pas déjà ouvert)
-  - Attendre 500 ms (pour laisser le temps à goInk de s'ouvrir)
-  - Appeler l'endpoint "http://localhost:1234/RectTool" pour activer l'outil "Set goban"
-  - Attendre 200 ms
-  - Fonction BarRaider avec le code suivant dans Short-Press-Macro :
-	<pre><code>{{MSAVEPOS}}
-	{{MOUSEPOS:30000,15000}}
-	{{MLEFTDOWN}}
-	{{PAUSE:50}}
-	{{MOUSEPOS:50000,45000}}
-	{{PAUSE:50}}
-	{{MLEFTUP}}
-	{{MLOADPOS}} </code></pre>
-	
-Les coordonnées (x,y) dans {{MOUSEPOS:x,y}} sont à adapter en fonction de la position de votre goban sur l'écran. Vous pouvez utiliser l'outil Windows "Capture d'écran et croquis" pour obtenir les coordonnées.
-x et y doivent être entre 0 et 65535 (le point 65535,65535 est tout en bas à droite de votre écran)
-Vous poouvez utiliser des outils tiers pour déterminer les coordonnées x,y de votre souris (par exemple VoiceAttack).
-
-
-## Icônes StreamDeck
-
-
 
 
 

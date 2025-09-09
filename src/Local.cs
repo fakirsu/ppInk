@@ -167,6 +167,10 @@ namespace gInk
 
         // --- Ajout : libellés flèche (onglet Jeu de go)
         public string GoOptionsArrowColor;
+
+        public string GoOptionsTextColor = "Text color:";
+
+
         public string GoOptionsArrowThickness;
         public string GoOptionsArrowThicknessItems; // "Thin;Normal;Thick"
         public string GoOptionsArrowLength;
@@ -487,6 +491,12 @@ namespace gInk
                             ButtonNamePen[penid] = sPara;
                         }
                     }
+
+
+                    // Affectations explicites optionnelles (utile si vous voulez garantir la présence)
+                    if (sName == "GoOptionsArrowColor") GoOptionsArrowColor = sPara;
+                    if (sName == "GoOptionsTextColor") GoOptionsTextColor = sPara;
+
 
                     System.Reflection.FieldInfo fi = typeof(Local).GetField(sName);
                     if (fi != null)

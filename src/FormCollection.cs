@@ -281,7 +281,7 @@ namespace gInk
         {
             // comportement historique : conserve l'ancienne taille basée sur TagSize
             int diameter = Math.Max(10, (int)Math.Round(TagSize * 0.8));
-            return AddShapeTagStroke(xCenter, yCenter, txt, diameter);
+            return AddShapeTagStroke(xCenter, yCenter, txt, diameter, null);
         }
 
         // Nouvelle surcharge : création de la pastille (disque) + texte centré, taille explicitement fournie en pixels (diamètre)
@@ -1583,7 +1583,7 @@ namespace gInk
         //    }
         //}
 
-        private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx)
+        private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx, Stroke st = null)
         {
             // clamp minimal
             int diameter = Math.Max(6, diameterPx);
@@ -1654,7 +1654,15 @@ namespace gInk
                         // appliquer couleur/opacité configurée pour le tag Lettre
                         ApplyGoTagColorToDrawingAttributes(stTxt.DrawingAttributes, Root.GoTool_Letter_Color);
 
-                        try { stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
+                        try { stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                            try
+                            {
+                                if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                    st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                            }
+                            catch { }
+
+                        } catch { }
                         ComputeTextBoxSize(ref stTxt);
                     }
                     catch { }
@@ -1686,6 +1694,12 @@ namespace gInk
                                     rect.DrawingAttributes.Width = shapePenWidthHiMetric;
                                     setStrokeProperties(ref rect, Filling.Empty);
                                     rect.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                    try
+                                    {
+                                        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                    }
+                                    catch { }
                                 }
                                 catch { }
                             }
@@ -1705,6 +1719,19 @@ namespace gInk
                                     circ.DrawingAttributes.Width = shapePenWidthHiMetric;
                                     setStrokeProperties(ref circ, Filling.Empty);
                                     circ.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                    try
+                                    {
+                                        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                    }
+                                    catch { }
+
+                                    try
+                                    {
+                                        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                    }
+                                    catch { }
                                 }
                                 catch { }
                             }
@@ -1723,19 +1750,31 @@ namespace gInk
                             // conversion pixel -> inkspace
                             IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pts);
 
-                            Stroke st = IC.Ink.CreateStroke(pts);
-                            st.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
-                            st.DrawingAttributes.AntiAliased = true;
-                            st.DrawingAttributes.FitToCurve = false;
-                            // appliquer couleur/opacité configurée pour le tag Triangle
-                            ApplyGoTagColorToDrawingAttributes(st.DrawingAttributes, Root.GoTool_Triangle_Color);
+                            //Stroke st = IC.Ink.CreateStroke(pts);
+                            Stroke st2 = IC.Ink.CreateStroke(pts);
 
-                            st.DrawingAttributes.Width = shapePenWidthHiMetric;
-                            setStrokeProperties(ref st, Filling.Empty);
-                            try { st.ExtendedProperties.Add(Root.ISTAG_GUID, true); } catch { }
-                            IC.Ink.Strokes.Add(st);
-                            if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st);
-                            return st;
+                            st2.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
+                            st2.DrawingAttributes.AntiAliased = true;
+                            st2.DrawingAttributes.FitToCurve = false;
+                            // appliquer couleur/opacité configurée pour le tag Triangle
+                            ApplyGoTagColorToDrawingAttributes(st2.DrawingAttributes, Root.GoTool_Triangle_Color);
+
+                            st2.DrawingAttributes.Width = shapePenWidthHiMetric;
+                            setStrokeProperties(ref st2, Filling.Empty);
+                            try { st2.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+
+
+                                try
+                                {
+                                    if (!st2.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                        st2.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                }
+                                catch { }
+                            
+                            } catch { }
+                            IC.Ink.Strokes.Add(st2);
+                            if (st2.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st2);
+                            return st2;
                         }
 
                     case Tools.CrossTag:
@@ -1758,6 +1797,12 @@ namespace gInk
                                     s1.DrawingAttributes.Width = shapePenWidthHiMetric;
                                     setStrokeProperties(ref s1, Filling.Empty);
                                     s1.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                    try
+                                    {
+                                        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                    }
+                                    catch { }
                                 }
                                 catch { }
                             }
@@ -1769,6 +1814,12 @@ namespace gInk
                                     s2.DrawingAttributes.Width = shapePenWidthHiMetric;
                                     setStrokeProperties(ref s2, Filling.Empty);
                                     s2.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                    try
+                                    {
+                                        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                    }
+                                    catch { }
                                 }
                                 catch { }
                             }
@@ -1784,6 +1835,12 @@ namespace gInk
                                 {
                                     stTxt.DrawingAttributes.Color = Color.Black;
                                     stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                                    try
+                                    {
+                                        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                                    }
+                                    catch { }
                                     double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
                                     double fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0)) * 1.20;
                                     stTxt.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
@@ -1806,6 +1863,13 @@ namespace gInk
                     {
                         stTxt.DrawingAttributes.Color = Color.Black;
                         stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                        try
+                        {
+                            if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+                        }
+                        catch { }
+
                         ComputeTextBoxSize(ref stTxt);
                     }
                     return stTxt;
@@ -5364,6 +5428,24 @@ namespace gInk
             catch { }
 
             st.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+            try
+            {
+                if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                    st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+            }
+            catch { }
+
+
+            // Coller juste après que la stroke ait été marquée ISTAG_GUID et après l'ajout des propriétés texte
+            try
+            {
+                // Si la stroke n'a pas déjà une couleur texte fixe, définir gris moyen pour les numéros
+                if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                    st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+            }
+            catch { }
+
+
             Point pt = new Point(CursorX0, CursorY0);
             try { IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt); } catch { }
 
@@ -5410,27 +5492,285 @@ namespace gInk
 
 
         double TextTheta = 0.0;
-        private Stroke AddTextStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt, StringAlignment Align, int  fil_in = -1)
-        // arrow at starting point
+
+
+        //private Stroke AddTextStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt, StringAlignment Align, int  fil_in = -1)
+        //// arrow at starting point
+        //{
+        //    Point pt = new Point(CursorX0, CursorY0);
+        //    //IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+        //    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+        //    Point[] pts = new Point[9] { pt, pt, pt, pt, pt, pt, pt, pt, pt };
+
+        //    Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
+        //    st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+        //    st.DrawingAttributes.Width = 100; // no width to hide the point;
+        //    st.DrawingAttributes.FitToCurve = false;
+        //    st.ExtendedProperties.Add(Root.TEXT_GUID, txt);
+        //    st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
+        //    st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
+        //    st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, Align);
+        //    st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Near);
+        //    st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TextFont);
+        //    st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)TextSize);
+        //    st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular));
+        //    st.ExtendedProperties.Add(Root.ROTATION_GUID, TextTheta);
+        //    int fil;
+        //    if (fil_in < 0)
+        //        fil_in = Root.TextBackground;
+        //    switch (fil_in / 2)
+        //    {
+        //        case 1:
+        //            fil = Filling.WhiteFilled;
+        //            break;
+        //        case 2:
+        //            fil = Filling.BlackFilled;
+        //            break;
+        //        default:
+        //            fil = Filling.Empty;
+        //            break;
+        //    };
+        //    setStrokeProperties(ref st, fil);
+        //    try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
+        //    if ((fil_in % 2) == 1)
+        //        st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
+        //    Root.FormCollection.IC.Ink.Strokes.Add(st);
+        //    if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+        //        FadingList.Add(st);
+        //    return st;
+        //}
+
+
+        //private Stroke AddTextStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt, StringAlignment Align, int fil_in = -1)
+        //{
+        //    // 1) Calculer un décalage vertical en pixels (au-dessus)
+        //    int offsetPixels = -6; // valeur fixe par défaut
+        //    try
+        //    {
+        //        // Mesurer précisément la hauteur de la police configurée
+        //        using (var f = new Font(TextFont,
+        //                                (float)TextSize,
+        //                                (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular)))
+        //        {
+        //            SizeF layout = new SizeF(2000f, 2000f);
+        //            var stf = new StringFormat(StringFormatFlags.NoClip)
+        //            {
+        //                Alignment = Align,
+        //                LineAlignment = StringAlignment.Near
+        //            };
+        //            // Mesure par le même Graphics que le rendu
+        //            layout = Root.FormDisplay.gOneStrokeCanvus.MeasureString(string.IsNullOrEmpty(txt) ? "Xg" : txt, f, layout, stf);
+        //            // Décaler d’une hauteur de ligne environ (+ petite marge)
+        //            offsetPixels = -(int)Math.Ceiling(layout.Height) - 2;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        // fallback: petit décalage standard
+        //        offsetPixels = -10;
+        //    }
+
+        //    // 2) Appliquer ce décalage en PIXELS (coordonnées virtuelles souris)
+        //    Point ptPixel = new Point(CursorX0, CursorY0 + offsetPixels);
+
+        //    // 3) Convertir ces pixels en InkSpace AVANT création de la stroke
+        //    Point pt = ptPixel;
+        //    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+
+        //    // 4) Créer la stroke autour de ce point décalé
+        //    Point[] pts = new Point[9] { pt, pt, pt, pt, pt, pt, pt, pt, pt };
+
+        //    Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
+        //    st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+        //    st.DrawingAttributes.Width = 100; // pas de largeur pour cacher le point
+        //    st.DrawingAttributes.FitToCurve = false;
+
+        //    st.ExtendedProperties.Add(Root.TEXT_GUID, txt ?? "");
+        //    st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
+        //    st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
+        //    st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, Align);
+        //    st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Near);
+        //    st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TextFont);
+        //    st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)TextSize);
+        //    st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID,
+        //        (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular));
+        //    st.ExtendedProperties.Add(Root.ROTATION_GUID, TextTheta);
+
+        //    int fil;
+        //    if (fil_in < 0) fil_in = Root.TextBackground;
+        //    switch (fil_in / 2)
+        //    {
+        //        case 1: fil = Filling.WhiteFilled; break;
+        //        case 2: fil = Filling.BlackFilled; break;
+        //        default: fil = Filling.Empty; break;
+        //    }
+        //    setStrokeProperties(ref st, fil);
+        //    try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
+        //    if ((fil_in % 2) == 1) st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
+
+        //    Root.FormCollection.IC.Ink.Strokes.Add(st);
+        //    if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st);
+
+        //    return st;
+        //}
+
+
+        //private Stroke AddTextStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt, StringAlignment Align, int fil_in = -1)
+        //{
+        //    // Si un alignement a été forcé via REST, l’utiliser et le consommer
+        //    if (Root.ForcedTextAlign.HasValue)
+        //    {
+        //        Align = Root.ForcedTextAlign.Value;
+        //        Root.ForcedTextAlign = null;
+        //    }
+
+
+        //    // 1) Mesurer rapidement la hauteur de ligne pour calibrer l’offset
+        //    float measuredHeightPx = 0f;
+        //    try
+        //    {
+        //        var style = (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular);
+        //        using (var f = new Font(TextFont, (float)TextSize, style))
+        //        {
+        //            // Mesure simple (évite multi-lignes) sur le même Graphics que le rendu
+        //            var stf = new StringFormat(StringFormatFlags.NoClip) { Alignment = Align, LineAlignment = StringAlignment.Near };
+        //            var size = Root.FormDisplay.gOneStrokeCanvus.MeasureString(string.IsNullOrEmpty(txt) ? "Xg" : txt, f, new SizeF(2000f, 2000f), stf);
+        //            measuredHeightPx = size.Height;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        measuredHeightPx = 10f; // fallback raisonnable
+        //    }
+
+        //    // 2) Offsets demandés: vertical deux fois plus petit que précédemment, et horizontal de même ordre
+        //    //    Si auparavant on utilisait ~ -height, on passe à ~ -height/2
+        //    int offsetY = -(int)Math.Round(measuredHeightPx / 2.0f);
+        //    int offsetX = +(int)Math.Round(measuredHeightPx / -2.0f); // même magnitude à droite; ajustez le signe si souhaité
+
+        //    // 3) Appliquer l’offset en PIXELS avant conversion en InkSpace
+        //    Point ptPixel = new Point(CursorX0 + offsetX, CursorY0 + offsetY);
+
+        //    // 4) Convertir en InkSpace avant création/stocker TEXTX/TEXTY
+        //    Point pt = ptPixel;
+        //    IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+        //    Point[] pts = new Point[9] { pt, pt, pt, pt, pt, pt, pt, pt, pt };
+
+        //    Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
+        //    st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
+        //    st.DrawingAttributes.Width = 100; // cacher le point
+        //    st.DrawingAttributes.FitToCurve = false;
+
+        //    st.ExtendedProperties.Add(Root.TEXT_GUID, txt ?? "");
+        //    st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
+        //    st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
+        //    st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, Align);
+        //    st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Near);
+        //    st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TextFont);
+        //    st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)TextSize);
+        //    st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular));
+        //    st.ExtendedProperties.Add(Root.ROTATION_GUID, TextTheta);
+
+        //    int fil;
+        //    if (fil_in < 0)
+        //        fil_in = Root.TextBackground;
+        //    switch (fil_in / 2)
+        //    {
+        //        case 1: fil = Filling.WhiteFilled; break;
+        //        case 2: fil = Filling.BlackFilled; break;
+        //        default: fil = Filling.Empty; break;
+        //    }
+        //    setStrokeProperties(ref st, fil);
+        //    try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
+        //    if ((fil_in % 2) == 1)
+        //        st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
+
+        //    Root.FormCollection.IC.Ink.Strokes.Add(st);
+        //    if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+        //        FadingList.Add(st);
+        //    return st;
+        //}
+
+
+        private Stroke AddTextStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt, StringAlignment Align, int fil_in = -1)
         {
-            Point pt = new Point(CursorX0, CursorY0);
-            //IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
-            IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+            // --- 1) calculer un offset en pixels (vertical & horizontal) basé sur la hauteur approximative de la police ---
+            int offsetX = 0;
+            int offsetY = 0;
+            try
+            {
+                var style = (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular);
+                using (var f = new Font(TextFont ?? Root.TextFont, (float)(TextSize > 0 ? TextSize : Root.TextSize), style))
+                {
+                    var stf = new StringFormat(StringFormatFlags.MeasureTrailingSpaces);
+                    // mesurer une ligne simple
+                    SizeF measured = Root.FormDisplay.gOneStrokeCanvus.MeasureString(string.IsNullOrEmpty(txt) ? "Mg" : txt, f, new SizeF(2000f, 2000f), stf);
+                    // vertical : demi-hauteur de ligne (demande utilisateur : "deux fois plus petit")
+                    offsetY = -(int)Math.Round(measured.Height / 2.0f);
+                    // horizontal : magnitude similaire (décalage vers la droite)
+                    offsetX = (int)Math.Round(measured.Height / -2.0f);
+                }
+            }
+            catch
+            {
+                // fallback raisonnable
+                offsetY = -6;
+                offsetX = 4;
+            }
+
+            // --- 2) consommer un éventuel alignement forcé venant du REST ---
+            if (Root.ForcedTextAlign.HasValue)
+            {
+                Align = Root.ForcedTextAlign.Value;
+                Root.ForcedTextAlign = null;
+            }
+
+            // --- 3) appliquer l'offset en PIXELS avant conversion ---
+            Point ptPixel = new Point(CursorX0 + offsetX, CursorY0 + offsetY);
+
+            // convertir pixel -> InkSpace
+            Point pt = ptPixel;
+            try
+            {
+                IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+            }
+            catch
+            {
+                // fallback : utiliser CursorX0/CursorY0 transformés
+                pt = new Point(CursorX0, CursorY0);
+                try { IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt); } catch { }
+            }
+
+            // --- 4) créer la stroke autour du point (9 points identiques comme le format existant) ---
             Point[] pts = new Point[9] { pt, pt, pt, pt, pt, pt, pt, pt, pt };
 
-            Stroke st = Root.FormCollection.IC.Ink.CreateStroke(pts);
-            st.DrawingAttributes = Root.FormCollection.IC.DefaultDrawingAttributes.Clone();
-            st.DrawingAttributes.Width = 100; // no width to hide the point;
+            Stroke st = IC.Ink.CreateStroke(pts);
+            st.DrawingAttributes = IC.DefaultDrawingAttributes.Clone();
+            st.DrawingAttributes.Width = 100; // masquer le point
             st.DrawingAttributes.FitToCurve = false;
-            st.ExtendedProperties.Add(Root.TEXT_GUID, txt);
-            st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
-            st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
-            st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, Align);
-            st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Near);
-            st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TextFont);
-            st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)TextSize);
-            st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular));
-            st.ExtendedProperties.Add(Root.ROTATION_GUID, TextTheta);
+
+            // --- 5) propriétés texte ---
+            try { st.ExtendedProperties.Add(Root.TEXT_GUID, txt ?? ""); } catch { }
+            try { st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X); } catch { }
+            try { st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y); } catch { }
+            try { st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, Align); } catch { }
+            try { st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Near); } catch { }
+
+            // police / taille / style / rotation
+            try { st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TextFont ?? Root.TextFont); } catch { }
+            try { st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, (double)(TextSize > 0 ? TextSize : Root.TextSize)); } catch { }
+            try { st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, (TextItalic ? FontStyle.Italic : FontStyle.Regular) | (TextBold ? FontStyle.Bold : FontStyle.Regular)); } catch { }
+            try { st.ExtendedProperties.Add(Root.ROTATION_GUID, TextTheta); } catch { }
+
+            // --- 6) figer la couleur active pour cette stroke (si définie) pour éviter recoloration rétroactive ---
+            try
+            {
+                if (Root.ActiveTextColorARGB != 0 && !st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                    st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Root.ActiveTextColorARGB);
+            }
+            catch { }
+
+            // --- 7) filling / frame / propriétés stroke (logique existante) ---
             int fil;
             if (fil_in < 0)
                 fil_in = Root.TextBackground;
@@ -5445,53 +5785,153 @@ namespace gInk
                 default:
                     fil = Filling.Empty;
                     break;
-            };
+            }
             setStrokeProperties(ref st, fil);
             try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
             if ((fil_in % 2) == 1)
-                st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true);
-            Root.FormCollection.IC.Ink.Strokes.Add(st);
-            if (st.ExtendedProperties.Contains(Root.FADING_PEN))
-                FadingList.Add(st);
+                try { st.ExtendedProperties.Add(Root.ISSTROKE_GUID, true); } catch { }
+
+            // --- 8) ajout à l'encre et gestion fading list ---
+            try { IC.Ink.Strokes.Add(st); } catch { }
+            try
+            {
+                if (st.ExtendedProperties.Contains(Root.FADING_PEN))
+                    FadingList.Add(st);
+            }
+            catch { }
+
             return st;
         }
 
+
+
+
+
+
         bool TextEdited = false;    // used to prevent random toolbar closing when using esc in a dialog box
+                                    //private DialogResult ModifyTextInStroke(Stroke stk, string txt)
+                                    //{
+                                    //    // required to access the dialog box
+                                    //    AllowInteractions(true);
+                                    //    //ToThrough();
+
+        //    FormInput inp = new FormInput(Root.Local.DlgTextCaption, Root.Local.DlgTextLabel, txt, true, Root, stk);
+
+        //    Point pt = stk.GetPoint(0);
+        //    IC.Renderer.InkSpaceToPixel(Root.FormDisplay.gOneStrokeCanvus, ref pt);
+        //    pt = PointToScreen(pt);
+        //    inp.Top = pt.Y - inp.Height - 10;// +this.Top ;
+        //    inp.Left = pt.X;// +this.Left;
+        //    //Console.WriteLine("Edit {0},{1}", inp.Left, inp.Top);
+        //    Screen scr = Screen.FromPoint(pt);
+        //    if ((inp.Right >= scr.Bounds.Right) || (inp.Top <= scr.Bounds.Top))
+        //    {   // if the dialog can not be displayed above the text we will display it in the middle of the primary screen
+        //        inp.Top = ((int)(scr.Bounds.Top + scr.Bounds.Bottom - inp.Height) / 2);//System.Windows.SystemParameters.PrimaryScreenHeight)-inp.Height) / 2;
+        //        inp.Left = ((int)(scr.Bounds.Left + scr.Bounds.Right - inp.Width) / 2);// System.Windows.SystemParameters.PrimaryScreenWidth) - inp.Width) / 2;
+        //    }
+        //    DialogResult ret = inp.ShowDialog();  // cancellation process is within the cancel button
+        //    TextEdited = true;
+        //    AllowInteractions(false);
+        //    try
+        //    {
+        //        IC.Cursor = cursorred;
+        //    }
+        //    catch
+        //    {
+        //        IC.Cursor = getCursFromDiskOrRes(Root.cursorarrowFileName, System.Windows.Forms.Cursors.NoMove2D);
+        //    }
+        //    System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
+
+        //    return ret;
+        //}
+        // used to prevent random toolbar closing when using esc in a dialog box
+        //private DialogResult ModifyTextInStroke(Stroke stk, string txt)
+        //{
+        //    // required to access the dialog box
+        //    AllowInteractions(true);
+
+        //    FormInput inp = new FormInput(Root.Local.DlgTextCaption, Root.Local.DlgTextLabel, txt, true, Root, stk);
+
+        //    // Positionner la boîte de saisie dans le coin supérieur gauche de l’écran actif
+        //    try
+        //    {
+        //        Screen scr = Screen.FromPoint(System.Windows.Forms.Cursor.Position);
+        //        Rectangle wa = scr.WorkingArea;
+        //        inp.StartPosition = FormStartPosition.Manual;
+        //        inp.Left = wa.Left;
+        //        inp.Top = wa.Top;
+        //    }
+        //    catch { }
+
+        //    DialogResult ret = inp.ShowDialog();  // cancellation process is within the cancel button
+        //    TextEdited = true;
+        //    AllowInteractions(false);
+        //    try
+        //    {
+        //        IC.Cursor = cursorred;
+        //    }
+        //    catch
+        //    {
+        //        IC.Cursor = getCursFromDiskOrRes(Root.cursorarrowFileName, System.Windows.Forms.Cursors.NoMove2D);
+        //    }
+        //    System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
+
+        //    // Optionnel : placer aussi le texte édité dans le coin supérieur gauche de l’écran actif
+        //    try
+        //    {
+        //        if (ret == DialogResult.OK && stk != null)
+        //        {
+        //            Screen scr2 = Screen.FromPoint(System.Windows.Forms.Cursor.Position);
+        //            Rectangle wa2 = scr2.WorkingArea;
+
+        //            // petit décalage pour éviter le coin exact
+        //            Point ptTL = new Point(wa2.Left + 5, wa2.Top + 5);
+
+        //            // Convertir en InkSpace avant d’écrire TEXTX/TEXTY
+        //            IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref ptTL);
+
+        //            try { stk.ExtendedProperties.Remove(Root.TEXTX_GUID); } catch { }
+        //            try { stk.ExtendedProperties.Remove(Root.TEXTY_GUID); } catch { }
+        //            stk.ExtendedProperties.Add(Root.TEXTX_GUID, (double)ptTL.X);
+        //            stk.ExtendedProperties.Add(Root.TEXTY_GUID, (double)ptTL.Y);
+
+        //            // Recalculer la boîte et redessiner
+        //            ComputeTextBoxSize(ref stk);
+        //            Root.FormDisplay.ClearCanvus();
+        //            Root.FormDisplay.DrawStrokes();
+        //            Root.FormDisplay.UpdateFormDisplay(true);
+        //        }
+        //    }
+        //    catch { }
+
+        //    return ret;
+        //}
+
         private DialogResult ModifyTextInStroke(Stroke stk, string txt)
         {
-            // required to access the dialog box
+            // Accès au dialogue
             AllowInteractions(true);
-            //ToThrough();
 
+            // Ne PAS repositionner ici: on laisse FormInput choisir (haut-gauche)
             FormInput inp = new FormInput(Root.Local.DlgTextCaption, Root.Local.DlgTextLabel, txt, true, Root, stk);
 
-            Point pt = stk.GetPoint(0);
-            IC.Renderer.InkSpaceToPixel(Root.FormDisplay.gOneStrokeCanvus, ref pt);
-            pt = PointToScreen(pt);
-            inp.Top = pt.Y - inp.Height - 10;// +this.Top ;
-            inp.Left = pt.X;// +this.Left;
-            //Console.WriteLine("Edit {0},{1}", inp.Left, inp.Top);
-            Screen scr = Screen.FromPoint(pt);
-            if ((inp.Right >= scr.Bounds.Right) || (inp.Top <= scr.Bounds.Top))
-            {   // if the dialog can not be displayed above the text we will display it in the middle of the primary screen
-                inp.Top = ((int)(scr.Bounds.Top + scr.Bounds.Bottom - inp.Height) / 2);//System.Windows.SystemParameters.PrimaryScreenHeight)-inp.Height) / 2;
-                inp.Left = ((int)(scr.Bounds.Left + scr.Bounds.Right - inp.Width) / 2);// System.Windows.SystemParameters.PrimaryScreenWidth) - inp.Width) / 2;
-            }
-            DialogResult ret = inp.ShowDialog();  // cancellation process is within the cancel button
+            DialogResult ret = inp.ShowDialog();  // l’annulation est gérée dans le bouton Cancel
             TextEdited = true;
             AllowInteractions(false);
-            try
-            {
-                IC.Cursor = cursorred;
-            }
-            catch
-            {
-                IC.Cursor = getCursFromDiskOrRes(Root.cursorarrowFileName, System.Windows.Forms.Cursors.NoMove2D);
-            }
-            System.Windows.Forms.Cursor.Position = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
+            try { IC.Cursor = cursorred; }
+            catch { IC.Cursor = getCursFromDiskOrRes(Root.cursorarrowFileName, System.Windows.Forms.Cursors.NoMove2D); }
 
+            // Stabiliser le curseur (comme avant)
+            System.Windows.Forms.Cursor.Position = new Point(
+                System.Windows.Forms.Cursor.Position.X,
+                System.Windows.Forms.Cursor.Position.Y
+            );
+
+            // Ne PAS toucher à TEXTX/TEXTY ici: pas de “saut” après validation
             return ret;
         }
+
+
 
         private float NearestStroke(Point pt, bool ptInPixel, out Stroke minStroke, out float pos, bool Search4Text = true, bool butLast = false, bool Magnet = true)
         {
@@ -6383,7 +6823,7 @@ namespace gInk
                         int diameterPx = Math.Max(6, (int)Math.Round(baseDiameter * (circlePct / 100.0)));
 
                         // Création de la pastille centée sur la cellule snap
-                        AddShapeTagStroke(snapClient.X, snapClient.Y, txt, diameterPx);
+                        AddShapeTagStroke(snapClient.X, snapClient.Y, txt, diameterPx, null);
                         SaveUndoStrokes();
                     }
                     // sinon : clic ignoré (comme NumberTag)
@@ -6632,6 +7072,43 @@ namespace gInk
         }
 
 
+        //public void ComputeTextBoxSize(ref Stroke st)
+        //{
+        //    System.Drawing.StringFormat stf = new System.Drawing.StringFormat(System.Drawing.StringFormatFlags.NoClip);
+        //    stf.Alignment = (System.Drawing.StringAlignment)(st.ExtendedProperties[Root.TEXTHALIGN_GUID].Data);
+        //    stf.LineAlignment = (System.Drawing.StringAlignment)(st.ExtendedProperties[Root.TEXTVALIGN_GUID].Data);
+        //    SizeF layoutSize = new SizeF(2000.0F, 2000.0F);
+        //    layoutSize = Root.FormDisplay.gOneStrokeCanvus.MeasureString((string)(st.ExtendedProperties[Root.TEXT_GUID].Data),
+        //                    new Font((string)st.ExtendedProperties[Root.TEXTFONT_GUID].Data, (float)(double)st.ExtendedProperties[Root.TEXTFONTSIZE_GUID].Data,
+        //                    (System.Drawing.FontStyle)(int)st.ExtendedProperties[Root.TEXTFONTSTYLE_GUID].Data), layoutSize, stf);
+        //    st.ExtendedProperties.Add(Root.TEXTWIDTH_GUID, (double)layoutSize.Width);
+        //    st.ExtendedProperties.Add(Root.TEXTHEIGHT_GUID, (double)layoutSize.Height);
+        //    if (!st.ExtendedProperties.Contains(Root.ISTAG_GUID))
+        //    {
+        //        Point pt = new Point((int)(double)(st.ExtendedProperties[Root.TEXTX_GUID].Data), (int)(double)(st.ExtendedProperties[Root.TEXTY_GUID].Data));
+        //        //IC.Renderer.PixelToInkSpace(IC.Handle, ref pt);
+        //        Point pt2 = new Point((int)layoutSize.Width, (int)layoutSize.Height);
+        //        IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt2);
+        //        if (stf.Alignment == StringAlignment.Near) //align Left
+        //            st.SetPoints(new Point[] { pt, new Point((int)(pt.X+pt2.X / 2),pt.Y+0), new Point((int)(pt.X+pt2.X),pt.Y+0),
+        //                                       new Point((int)(pt.X+pt2.X),(int)(pt.Y+pt2.Y/2)),new Point((int)(pt.X+pt2.X),(int)(pt.Y+pt2.Y)),
+        //                                       new Point((int)(pt.X+pt2.X/2),(int)(pt.Y+pt2.Y)),new Point((int)(pt.X+0),(int)(pt.Y+pt2.Y)),
+        //                                       new Point((int)(pt.X+0),(int)(pt.Y+pt2.Y/2)),pt });
+        //        else //align right
+        //            st.SetPoints(new Point[] { pt, new Point((int)(pt.X-pt2.X / 2),pt.Y+0), new Point((int)(pt.X-pt2.X),pt.Y+0),
+        //                                       new Point((int)(pt.X-pt2.X),(int)(pt.Y+pt2.Y/2)),new Point((int)(pt.X-pt2.X),(int)(pt.Y+pt2.Y)),
+        //                                       new Point((int)(pt.X-pt2.X/2),(int)(pt.Y+pt2.Y)),new Point((int)(pt.X-0),(int)(pt.Y+pt2.Y)),
+        //                                       new Point((int)(pt.X-0),(int)(pt.Y+pt2.Y/2)),pt });
+        //        if (st.ExtendedProperties.Contains(Root.ROTATION_GUID))
+        //        {
+        //            double d = (double)st.ExtendedProperties[Root.ROTATION_GUID].Data;
+        //            st.ExtendedProperties.Add(Root.ROTATION_GUID, 0.0);
+        //            ScaleRotate(null, st, pt.X, pt.Y, 1.0, d);
+        //        }
+        //    }
+        //}
+
+
         public void ComputeTextBoxSize(ref Stroke st)
         {
             System.Drawing.StringFormat stf = new System.Drawing.StringFormat(System.Drawing.StringFormatFlags.NoClip);
@@ -6645,20 +7122,81 @@ namespace gInk
             st.ExtendedProperties.Add(Root.TEXTHEIGHT_GUID, (double)layoutSize.Height);
             if (!st.ExtendedProperties.Contains(Root.ISTAG_GUID))
             {
-                Point pt = new Point((int)(double)(st.ExtendedProperties[Root.TEXTX_GUID].Data), (int)(double)(st.ExtendedProperties[Root.TEXTY_GUID].Data));
-                //IC.Renderer.PixelToInkSpace(IC.Handle, ref pt);
+                Point pt = new Point();
+
+                // Récupérer la position actuelle du clic (point de référence)
+                if (st.ExtendedProperties.Contains(Root.TEXTX_GUID) && st.ExtendedProperties.Contains(Root.TEXTY_GUID))
+                {
+                    pt.X = (int)(double)(st.ExtendedProperties[Root.TEXTX_GUID].Data);
+                    pt.Y = (int)(double)(st.ExtendedProperties[Root.TEXTY_GUID].Data);
+                }
+                else
+                {
+                    // Si pas de coordonnées (cas impossible), utiliser (0,0)
+                    pt = new Point(0, 0);
+                }
+
+                // Mesurer la taille réelle en pixels
                 Point pt2 = new Point((int)layoutSize.Width, (int)layoutSize.Height);
                 IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt2);
-                if (stf.Alignment == StringAlignment.Near) //align Left
-                    st.SetPoints(new Point[] { pt, new Point((int)(pt.X+pt2.X / 2),pt.Y+0), new Point((int)(pt.X+pt2.X),pt.Y+0),
-                                               new Point((int)(pt.X+pt2.X),(int)(pt.Y+pt2.Y/2)),new Point((int)(pt.X+pt2.X),(int)(pt.Y+pt2.Y)),
-                                               new Point((int)(pt.X+pt2.X/2),(int)(pt.Y+pt2.Y)),new Point((int)(pt.X+0),(int)(pt.Y+pt2.Y)),
-                                               new Point((int)(pt.X+0),(int)(pt.Y+pt2.Y/2)),pt });
-                else //align right
-                    st.SetPoints(new Point[] { pt, new Point((int)(pt.X-pt2.X / 2),pt.Y+0), new Point((int)(pt.X-pt2.X),pt.Y+0),
-                                               new Point((int)(pt.X-pt2.X),(int)(pt.Y+pt2.Y/2)),new Point((int)(pt.X-pt2.X),(int)(pt.Y+pt2.Y)),
-                                               new Point((int)(pt.X-pt2.X/2),(int)(pt.Y+pt2.Y)),new Point((int)(pt.X-0),(int)(pt.Y+pt2.Y)),
-                                               new Point((int)(pt.X-0),(int)(pt.Y+pt2.Y/2)),pt });
+
+                // Important: ajuster la position du texte en fonction de l'alignement
+                // Si StringAlignment.Center, le point pt est au centre du texte
+                // Si StringAlignment.Near, le point pt est au coin supérieur gauche
+                // Si StringAlignment.Far, le point pt est au coin supérieur droit
+
+                Point[] points;
+                if (stf.Alignment == StringAlignment.Center)
+                {
+                    // Position centrée: point de référence au centre
+                    int left = pt.X - pt2.X / 2;
+                    int right = pt.X + pt2.X / 2;
+                    points = new Point[] {
+                new Point(left, pt.Y),
+                new Point((left + right) / 2, pt.Y),
+                new Point(right, pt.Y),
+                new Point(right, pt.Y + pt2.Y / 2),
+                new Point(right, pt.Y + pt2.Y),
+                new Point((left + right) / 2, pt.Y + pt2.Y),
+                new Point(left, pt.Y + pt2.Y),
+                new Point(left, pt.Y + pt2.Y / 2),
+                new Point(left, pt.Y)
+            };
+                }
+                else if (stf.Alignment == StringAlignment.Near) // align Left
+                {
+                    // Position à gauche: le point de référence est à gauche
+                    points = new Point[] {
+                pt,
+                new Point((int)(pt.X + pt2.X / 2), pt.Y),
+                new Point((int)(pt.X + pt2.X), pt.Y),
+                new Point((int)(pt.X + pt2.X), (int)(pt.Y + pt2.Y / 2)),
+                new Point((int)(pt.X + pt2.X), (int)(pt.Y + pt2.Y)),
+                new Point((int)(pt.X + pt2.X / 2), (int)(pt.Y + pt2.Y)),
+                new Point((int)(pt.X), (int)(pt.Y + pt2.Y)),
+                new Point((int)(pt.X), (int)(pt.Y + pt2.Y / 2)),
+                pt
+            };
+                }
+                else // align right/far
+                {
+                    // Position à droite: le point de référence est à droite
+                    points = new Point[] {
+                pt,
+                new Point((int)(pt.X - pt2.X / 2), pt.Y),
+                new Point((int)(pt.X - pt2.X), pt.Y),
+                new Point((int)(pt.X - pt2.X), (int)(pt.Y + pt2.Y / 2)),
+                new Point((int)(pt.X - pt2.X), (int)(pt.Y + pt2.Y)),
+                new Point((int)(pt.X - pt2.X / 2), (int)(pt.Y + pt2.Y)),
+                new Point((int)(pt.X), (int)(pt.Y + pt2.Y)),
+                new Point((int)(pt.X), (int)(pt.Y + pt2.Y / 2)),
+                pt
+            };
+                }
+
+                st.SetPoints(points);
+
+                // Appliquer la rotation si nécessaire
                 if (st.ExtendedProperties.Contains(Root.ROTATION_GUID))
                 {
                     double d = (double)st.ExtendedProperties[Root.ROTATION_GUID].Data;
@@ -6667,6 +7205,7 @@ namespace gInk
                 }
             }
         }
+
 
         private void SaveUndoStrokes()
         {
