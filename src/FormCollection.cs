@@ -2472,6 +2472,12 @@ namespace gInk
         public void Initialize()
         {
 
+            // accélère/ralentit l'animation : plus petit => plus rapide
+            try { tiSlide.Interval = 0; } catch { }
+
+            // ... le reste de l'initialisation ...
+
+
             if (Root.FormOptions?.Visible ?? false)
             {
                 // this is to validate the active field if the options are open. Not the best solution but nothing else found 

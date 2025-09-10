@@ -914,7 +914,9 @@
             // 
             // tiSlide
             // 
-            this.tiSlide.Interval = 15;
+            //this.tiSlide.Interval = 15;
+            this.tiSlide.Interval = 1;
+
             this.tiSlide.Tick += new System.EventHandler(this.tiSlide_Tick);
             // 
             // Btn_SubTool1
