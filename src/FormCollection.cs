@@ -5384,6 +5384,124 @@ namespace gInk
         }
 
         /// ################ goInk - START ####################
+        //private Stroke AddNumberTagStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt)
+        //{
+        //    // choix du remplissage (comme avant)
+        //    int filling = (Root.FilledSelected == Filling.PenColorFilled) ? 0 : Root.FilledSelected;
+
+        //    // calculer la taille de la pastille en pixels (base)
+        //    int baseDiameter;
+        //    if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+        //    {
+        //        int rows = (Root.GridRows >= 2) ? Root.GridRows : 19;
+        //        int cols = (Root.GridCols >= 2) ? Root.GridCols : 19;
+
+        //        cols = Math.Max(2, cols);
+        //        rows = Math.Max(2, rows);
+
+        //        double stepX = (double)this.GridRect.Width / (cols - 1);
+        //        double stepY = (double)this.GridRect.Height / (rows - 1);
+        //        double cellStep = Math.Min(stepX, stepY);
+
+        //        const double fillFactor = 0.85;
+        //        const int paddingPx = 2;
+        //        int cand = Math.Max(10, (int)Math.Round(cellStep * fillFactor) - paddingPx);
+        //        int increased = (int)Math.Round(cand * 1.10);
+        //        int maxAllowed = Math.Max(10, (int)Math.Round(cellStep) - paddingPx);
+        //        baseDiameter = Math.Min(increased, maxAllowed);
+        //        baseDiameter = Math.Max(baseDiameter, 10);
+        //    }
+        //    else
+        //    {
+        //        baseDiameter = (int)Math.Round(TagSize * 1.2);
+        //        baseDiameter = Math.Max(baseDiameter, 10);
+        //    }
+
+        //    double circlePct = (Root.TagCirclePercent <= 0.0) ? 100.0 : Root.TagCirclePercent;
+        //    int diameterPx = Math.Max(6, (int)Math.Round(baseDiameter * (circlePct / 100.0)));
+
+        //    int half = Math.Max(1, diameterPx / 2);
+        //    int left = CursorX0;
+        //    int top = CursorY0;
+        //    int right = CursorX0 + half;
+        //    int bottom = CursorY0 + half;
+        //    Stroke st = AddEllipseStroke(left, top, right, bottom, filling);
+
+        //    try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
+
+        //    // appliquer couleur/opacité stone si nécessaire
+        //    try
+        //    {
+        //        double op = (Root.TagStoneOpacityPercent <= 0.0) ? 0.0 : Math.Max(0.0, Math.Min(100.0, Root.TagStoneOpacityPercent));
+        //        byte transparencyByte = (byte)Math.Round(255.0 * (1.0 - op / 100.0));
+        //        st.DrawingAttributes.Color = Color.FromArgb(128, 128, 128);
+        //        st.DrawingAttributes.Transparency = transparencyByte;
+        //    }
+        //    catch { }
+
+        //    st.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+        //    try
+        //    {
+        //        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+        //            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+        //    }
+        //    catch { }
+
+
+        //    // Coller juste après que la stroke ait été marquée ISTAG_GUID et après l'ajout des propriétés texte
+        //    try
+        //    {
+        //        // Si la stroke n'a pas déjà une couleur texte fixe, définir gris moyen pour les numéros
+        //        if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+        //            st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
+        //    }
+        //    catch { }
+
+
+        //    Point pt = new Point(CursorX0, CursorY0);
+        //    try { IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt); } catch { }
+
+        //    // n'ajoute le texte que si l'option est active
+        //    if (NumberTag_ShowNumber && !string.IsNullOrEmpty(txt))
+        //    {
+        //        st.ExtendedProperties.Add(Root.TEXT_GUID, txt);
+        //        st.ExtendedProperties.Add(Root.TEXTX_GUID, (double)pt.X);
+        //        st.ExtendedProperties.Add(Root.TEXTY_GUID, (double)pt.Y);
+        //        st.ExtendedProperties.Add(Root.TEXTHALIGN_GUID, StringAlignment.Center);
+        //        st.ExtendedProperties.Add(Root.TEXTVALIGN_GUID, StringAlignment.Center);
+        //        st.ExtendedProperties.Add(Root.TEXTFONT_GUID, TagFont);
+
+        //        double sizePct = (Root.TagSizePercent <= 0.0) ? 100.0 : Root.TagSizePercent;
+        //        double fontSize;
+        //        if (this.GridRectDefined && this.GridRect.Width > 0 && this.GridRect.Height > 0)
+        //            fontSize = Math.Max(6.0, diameterPx * 0.54 * (sizePct / 100.0));
+        //        else
+        //            fontSize = Math.Max(6.0, (double)TagSize * (sizePct / 100.0));
+
+        //        double maxFromCircle = Math.Max(6.0, diameterPx * 0.75);
+        //        if (fontSize > maxFromCircle)
+        //            fontSize = maxFromCircle;
+
+        //        st.ExtendedProperties.Add(Root.TEXTFONTSIZE_GUID, fontSize);
+        //        System.Drawing.FontStyle style = TagItalic ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular;
+        //        st.ExtendedProperties.Add(Root.TEXTFONTSTYLE_GUID, style);
+        //    }
+
+        //    st.ExtendedProperties.Add(Root.ROTATION_GUID, 0.0);
+
+        //    try { ComputeTextBoxSize(ref st); } catch { }
+        //    try { if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st); } catch { }
+
+        //    // NOTE: on n'incrémente PLUS Root.TagNumbering ici — l'incrément se fait désormais au point de décision d'IC_Stroke (NumberTag_GetAndIncrementText)
+        //    return st;
+        //}
+
+
+
+        /// ################ goInk - START ####################
+        /// 
+
+        /// ################ goInk - START ####################
         private Stroke AddNumberTagStroke(int CursorX0, int CursorY0, int CursorX, int CursorY, string txt)
         {
             // choix du remplissage (comme avant)
@@ -5427,13 +5545,17 @@ namespace gInk
             int bottom = CursorY0 + half;
             Stroke st = AddEllipseStroke(left, top, right, bottom, filling);
 
+            // 1) pas de cadre pour la pierre
             try { st.ExtendedProperties.Remove(Root.ISSTROKE_GUID); } catch { }
+            // 2) contour invisible : largeur à 0 (ne change pas le remplissage)
+            try { st.DrawingAttributes.Width = 0.0f; } catch { }
 
-            // appliquer couleur/opacité stone si nécessaire
+            // optionnel: l'alpha du remplissage peut être géré ailleurs (FillAlphaForStroke)
             try
             {
                 double op = (Root.TagStoneOpacityPercent <= 0.0) ? 0.0 : Math.Max(0.0, Math.Min(100.0, Root.TagStoneOpacityPercent));
                 byte transparencyByte = (byte)Math.Round(255.0 * (1.0 - op / 100.0));
+                // ces propriétés ne concernent que le trait (qui est à Width=0), on les laisse telles quelles si besoin
                 st.DrawingAttributes.Color = Color.FromArgb(128, 128, 128);
                 st.DrawingAttributes.Transparency = transparencyByte;
             }
@@ -5446,17 +5568,6 @@ namespace gInk
                     st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
             }
             catch { }
-
-
-            // Coller juste après que la stroke ait été marquée ISTAG_GUID et après l'ajout des propriétés texte
-            try
-            {
-                // Si la stroke n'a pas déjà une couleur texte fixe, définir gris moyen pour les numéros
-                if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
-                    st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
-            }
-            catch { }
-
 
             Point pt = new Point(CursorX0, CursorY0);
             try { IC.Renderer.PixelToInkSpace(Root.FormDisplay.gOneStrokeCanvus, ref pt); } catch { }
@@ -5492,9 +5603,14 @@ namespace gInk
             try { ComputeTextBoxSize(ref st); } catch { }
             try { if (st.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st); } catch { }
 
-            // NOTE: on n'incrémente PLUS Root.TagNumbering ici — l'incrément se fait désormais au point de décision d'IC_Stroke (NumberTag_GetAndIncrementText)
             return st;
         }
+
+
+
+
+
+
         /// ################ goInk - END ####################
 
 

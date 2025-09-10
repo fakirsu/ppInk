@@ -270,7 +270,41 @@ namespace gInk
                     }
 
 
+                    else if (req.Url.AbsolutePath == "/SaveConfig" || req.Url.AbsolutePath == "/SaveConfiguration")
+                    {
+                        try
+                        {
+                            // Reprend la logique du bouton "Sauver configuration" (FormOptions.SaveConfigBtn_Click)
+                            string config_ini, st;
 
+                            using (var f = new StreamReader(Program.RunningFolder + "config.ini"))
+                                config_ini = f.ReadToEnd();
+                            using (var f = new StreamReader(Program.RunningFolder + "defaults.ini"))
+                                st = Root.CompleteConfig(f.ReadToEnd(), config_ini);
+                            if (st != "")
+                                using (var f = new StreamWriter(Program.RunningFolder + "config.ini"))
+                                    f.Write(config_ini + "\n" + st);
+
+                            using (var f = new StreamReader(Program.RunningFolder + "pens.ini"))
+                                config_ini = f.ReadToEnd();
+                            using (var f = new StreamReader(Program.RunningFolder + "pensdef.ini"))
+                                st = Root.CompleteConfig(f.ReadToEnd(), config_ini);
+                            if (st != "")
+                                using (var f = new StreamWriter(Program.RunningFolder + "pens.ini"))
+                                    f.Write(config_ini + "\n" + st);
+
+                            Root.SaveOptions(Program.RunningFolder + "pens.ini");
+                            Root.SaveOptions(Program.RunningFolder + "config.ini");
+                            Root.SaveOptions(Program.RunningFolder + "hotkeys.ini");
+
+                            ret = "{ \"OK\": true }";
+                        }
+                        catch (Exception e)
+                        {
+                            resp.StatusCode = 500;
+                            ret = string.Format("!!!! Exception: {0}", e.Message);
+                        }
+                    }
 
 
 

@@ -108,86 +108,86 @@ http://localhost:*le_port_fourni_dans le menu_option*/**le_nom_de_l_action**. Ex
 
 - /OpenToolbar
   <br>Description : Ouvrir la barre d'outils (si pas déjà ouverte)
-  <br>"http://localhost:1234/OpenToolbar"
+  <br>"http://localhost:7999/OpenToolbar"
 
   /CloseToolbar
   <br>Description : Fermer la barre d'outils (si pas déjà fermée)
-  <br>"http://localhost:1234/CloseToolbar"
+  <br>"http://localhost:7999/CloseToolbar"
 
 - /RectTool
   <br>Description : Outil "Set goban" pour définir les dimensions du goban
-  <br>"http://localhost:1234/RectTool"
+  <br>"http://localhost:7999/RectTool"
 
 - /NTag_Show_White
   <br>Description : Pierres numérotées (première pierre blanche)
-  <br>"http://localhost:1234/NTag_Show_White"
+  <br>"http://localhost:7999/NTag_Show_White"
 
 - /NTag_Show_Black
   <br>Description : Pierres numérotées (première pierre noire)
-  <br>"http://localhost:1234/NTag_Show_Black"
+  <br>"http://localhost:7999/NTag_Show_Black"
 
 - /NTag_Hide_White
   <br>Description : Ajout de pierres sans numéros (1ère blanche)
-  <br>"http://localhost:1234/NTag_Hide_White"
+  <br>"http://localhost:7999/NTag_Hide_White"
 
 - /NTag_Hide_Black
   <br>Description : Ajout de pierres sans numéros (1ère noire)
-  <br>"http://localhost:1234/NTag_Hide_Black"
+  <br>"http://localhost:7999/NTag_Hide_Black"
 
 - /HandFilledWhite
   <br>Description : Ajout d'une zone blanche
-  <br>"http://localhost:1234/HandFilledWhite"
+  <br>"http://localhost:7999/HandFilledWhite"
 
 - /HandFilledBlack
   <br>Description : Ajout d'une zone noire
-  <br>"http://localhost:1234/HandFilledBlack"
+  <br>"http://localhost:7999/HandFilledBlack"
 
 - /HandFilledBlack
   <br>Description : Ajout d'une flèche
-  <br>"http://localhost:1234/AddArrow"
+  <br>"http://localhost:7999/AddArrow"
 
 - /LetterTag
   <br>Description : Ajout de lettres (A, B, C, ...)
-  <br>"http://localhost:1234/LetterTag"
+  <br>"http://localhost:7999/LetterTag"
 
 - /SquareTag
   <br>Description : Ajout de carrés
-  <br>"http://localhost:1234/SquareTag"
+  <br>"http://localhost:7999/SquareTag"
 
 - /TriangleTag
   <br>Description : Ajout de triangles
-  <br>"http://localhost:1234/TriangleTag"
+  <br>"http://localhost:7999/TriangleTag"
 
 - /CircleTag
   <br>Description : Ajouts de cercles
-  <br>"http://localhost:1234/CircleTag"
+  <br>"http://localhost:7999/CircleTag"
 
 - /CrossTag
   <br>Description : Ajout de croix
-  <br>"http://localhost:1234/CrossTag"
+  <br>"http://localhost:7999/CrossTag"
 
 - /Text_Color [lire ceci](#vigilance-concernant-les-outils-texte) 
   <br>Description : Outil texte avec couleur spécifique (paramétrable dans le menu Options)
-  <br>"http://localhost:1234/Text_Color"
+  <br>"http://localhost:7999/Text_Color"
 
 - /Text_White
   <br>Description : Outil texte avec couleur blanche
-  <br>"http://localhost:1234/Text_White"
+  <br>"http://localhost:7999/Text_White"
 
 - /Text_Black
   <br>Description : Outil texte avec couleur noire
-  <br>"http://localhost:1234/Text_Black"
+  <br>"http://localhost:7999/Text_Black"
 
 - /CurrentPen
   <br>Description : sélectionner stylo courant
-  <br>"http://localhost:1234/CurrentPen?P=3" pour stylo n° 3
+  <br>"http://localhost:7999/CurrentPen?P=3" pour stylo n° 3
 
 - /CurrentTool?T=0&F=0
   <br>Description : sélectionner outil dessin à main levée
-  <br>"http://localhost:1234/CurrentTool?T=0&F=0"
+  <br>"http://localhost:7999/CurrentTool?T=0&F=0"
 
 Remarques générales
-- Remplacer http://localhost:1234 par l'URL de base configurée dans votre menu Options (onglet Général)
+- Remplacer http://localhost:7999 par l'URL de base configurée dans votre menu Options (onglet Général)
 - Beaucoup d’actions ne fonctionneront pas si l'application n'est pas en mode inking (barre d'outils ouverte) : la réponse sera 409 "Not in Inking mode".
 - Il y a beaucoup d'autres endpoints REST disponibles, qui sont décrits dans le fichier APIRest.cs. 
 [Voir ci-dessous.](#liste-des-autres-endpoints-rest-disponibles-résumé-fonctionnel-du-fichier-apirestcs)
@@ -202,7 +202,7 @@ Je vous conseille l'utilisation de l'extension [BarRaider SuperMacro](https://ma
 Vous pourrez ensuite créer une multi-action dans StreamDeck, avec les actions suivantes :
   - Ouvrir la barre d'outils goInk (si pas déjà ouvert)
   - Attendre 500 ms (pour laisser le temps à goInk de s'ouvrir)
-  - Appeler l'endpoint "http://localhost:1234/RectTool" pour activer l'outil "Set goban"
+  - Appeler l'endpoint "http://localhost:7999/RectTool" pour activer l'outil "Set goban"
   - Attendre 200 ms
   - Fonction BarRaider avec le code suivant dans Short-Press-Macro :
 	<pre><code>{{MSAVEPOS}}
@@ -213,6 +213,7 @@ Vous pourrez ensuite créer une multi-action dans StreamDeck, avec les actions s
 	{{PAUSE:50}}
 	{{MLEFTUP}}
 	{{MLOADPOS}} </code></pre>
+  - Appeler "http://localhost:7999/SaveConfig" pour forcer l'enregistrement de la configuration.
 	
 Attention, ce code déclenche des clics de souris, il faut donc que l'outil /RectTool soit activé, faute de quoi cela risque d'ajouter des pierres sur votre goban !
 
