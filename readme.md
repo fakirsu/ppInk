@@ -206,9 +206,18 @@ Vous pourrez ensuite créer une multi-action dans StreamDeck, avec les actions s
 	{{MLEFTUP}}
 	{{MLOADPOS}} </code></pre>
 	
+Attention, ce code déclenche des clics de souris, il faut donc que l'outil /RectTool soit activé, faute de quoi cela risque d'ajouter des pierres sur votre goban !
+
 Les coordonnées (x,y) dans {{MOUSEPOS:x,y}} sont à adapter en fonction de la position de votre goban sur l'écran. Vous pouvez utiliser l'outil Windows "Capture d'écran et croquis" pour obtenir les coordonnées.
 x et y doivent être entre 0 et 65535 (le point 65535,65535 est tout en bas à droite de votre écran)
 Vous poouvez utiliser des outils tiers pour déterminer les coordonnées x,y de votre souris (par exemple VoiceAttack).
+
+
+## Enregistrement des paramètres
+Certains paramètres peuvent être définis dans le menu Options (clic droit sur l'icône de la barre des tâches).
+Il est conseillé de cliquer sur "Sauver configuration" dans le premier onglet du menu Options, comme illustré ci-dessous pour assurer la prise en compte des changements. 
+<img src="src/images/save_options.png" alt="Sauver configuration" width="600"/>
+Parfois, il est nécessaire de rouvrir la barre d'outils pour que les changements soient pris en compte.
 
 
 ## Vigilance concernant les outils Texte

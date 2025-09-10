@@ -31,6 +31,10 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormCollection));
             this.gpButtons = new System.Windows.Forms.Panel();
+            // ...
+            // IMPORTANT: assure une couleur de texte par défaut lisible pour les enfants texte
+            this.gpButtons.ForeColor = System.Drawing.SystemColors.ControlText;
+            // ...
             this.btPageNext = new System.Windows.Forms.Button();
             this.btPagePrev = new System.Windows.Forms.Button();
             this.btExtraPens = new System.Windows.Forms.Button();
@@ -63,7 +67,26 @@
             this.btCircle = new System.Windows.Forms.Button();
             this.btCross = new System.Windows.Forms.Button();
 
-            // Propriétés communes rapides (tu peux affiner après)
+            //// Propriétés communes rapides (tu peux affiner après)
+            //System.Windows.Forms.Button[] _newTagBtns = { btLetter, btSquare, btTriangle, btCircle, btCross };
+            //foreach (var b in _newTagBtns)
+            //{
+            //    b.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            //    b.FlatAppearance.BorderSize = 0;
+            //    b.BackColor = System.Drawing.Color.Transparent;
+            //    b.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            //    b.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            //    // RENDRE LE TEXTE VISIBLE
+            //    b.ForeColor = System.Drawing.SystemColors.ControlText;
+            //    // laissons-les visibles ; le code d'initialisation se chargera de les positionner
+            //    b.Visible = true;
+            //    // taille cohérente avec les autres
+            //    b.Size = new System.Drawing.Size(46, 46);
+            //    //b.Visible = false; // elles seront positionnées plus tard dans Initialize()
+            //    this.gpButtons.Controls.Add(b);
+            //}
+            // Bloc pour les nouveaux boutons de tag (lettre/carré/triangle/cercle/croix)
+            // Bloc pour les nouveaux boutons de tag (lettre/carré/triangle/cercle/croix)
             System.Windows.Forms.Button[] _newTagBtns = { btLetter, btSquare, btTriangle, btCircle, btCross };
             foreach (var b in _newTagBtns)
             {
@@ -72,9 +95,18 @@
                 b.BackColor = System.Drawing.Color.Transparent;
                 b.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
                 b.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-                b.Visible = false; // elles seront positionnées plus tard dans Initialize()
-                this.gpButtons.Controls.Add(b);
+                // Couleur du texte (au cas où) – mais bouton restera caché et inactif
+                b.ForeColor = System.Drawing.SystemColors.ControlText;
+                // Ne pas afficher ni permettre l'interaction avec ces boutons
+                b.Visible = false;
+                b.Enabled = false;
+                // taille cohérente avec les autres
+                b.Size = new System.Drawing.Size(46, 46);
+                // IMPORTANT : NE PAS les ajouter à gpButtons -> ils ne seront ni visibles ni cliquables
+                // this.gpButtons.Controls.Add(b);
             }
+
+
 
             // Textes initiaux
             btLetter.Text = "A";
@@ -453,23 +485,23 @@
 
 
             // Click handlers (ajoutés après avoir défini btAllButtons_MouseDown/Up si déjà existants)
-            btLetter.Click += new System.EventHandler(this.NewTagTool_Click);
-            btSquare.Click += new System.EventHandler(this.NewTagTool_Click);
-            btTriangle.Click += new System.EventHandler(this.NewTagTool_Click);
-            btCircle.Click += new System.EventHandler(this.NewTagTool_Click);
-            btCross.Click += new System.EventHandler(this.NewTagTool_Click);
+            //btLetter.Click += new System.EventHandler(this.NewTagTool_Click);
+            //btSquare.Click += new System.EventHandler(this.NewTagTool_Click);
+            //btTriangle.Click += new System.EventHandler(this.NewTagTool_Click);
+            //btCircle.Click += new System.EventHandler(this.NewTagTool_Click);
+            //btCross.Click += new System.EventHandler(this.NewTagTool_Click);
 
-            btLetter.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
-            btSquare.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
-            btTriangle.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
-            btCircle.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
-            btCross.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
+            //btLetter.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
+            //btSquare.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
+            //btTriangle.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
+            //btCircle.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
+            //btCross.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
 
-            btLetter.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
-            btSquare.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
-            btTriangle.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
-            btCircle.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
-            btCross.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
+            //btLetter.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
+            //btSquare.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
+            //btTriangle.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
+            //btCircle.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
+            //btCross.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
 
             // btVideo
             // 
@@ -1190,7 +1222,9 @@
             this.Controls.Add(this.gpSubTools);
             this.Controls.Add(this.gpPenWidth);
             this.Controls.Add(this.gpButtons);
-            this.ForeColor = System.Drawing.Color.Transparent;
+            // NE PAS METTRE ForeColor global Transparent : il rend les textes invisibles par héritage
+            this.ForeColor = System.Drawing.SystemColors.ControlText;
+            //this.ForeColor = System.Drawing.Color.Transparent;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -1202,6 +1236,34 @@
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormCollection_FormClosing);
             this.gpButtons.ResumeLayout(false);
+
+
+            // ...
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormCollection_FormClosing);
+            this.gpButtons.ResumeLayout(false);
+
+            // Ajuste la taille du panel après la mise en page, pour éviter la barre tronquée
+            try
+            {
+                int right = 0, bottom = 0;
+                foreach (System.Windows.Forms.Control c in this.gpButtons.Controls)
+                {
+                    if (!c.Visible) continue;
+                    right = System.Math.Max(right, c.Right);
+                    bottom = System.Math.Max(bottom, c.Bottom);
+                }
+                this.gpButtons.Width = System.Math.Max(this.gpButtons.Width, right + 4);
+                this.gpButtons.Height = System.Math.Max(this.gpButtons.Height, bottom + 4);
+            }
+            catch { }
+
+            this.gpPenWidth.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pboxPenWidthIndicator)).EndInit();
+            this.gpSubTools.ResumeLayout(false);
+            this.ResumeLayout(false);
+            // ...
+
+
             this.gpPenWidth.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pboxPenWidthIndicator)).EndInit();
             this.gpSubTools.ResumeLayout(false);
