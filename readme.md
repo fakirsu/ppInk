@@ -142,7 +142,7 @@ http://localhost:*le_port_fourni_dans le menu_option*/**le_nom_de_l_action**. Ex
   <br>Description : Ajout d'une zone noire
   <br>"http://localhost:7999/HandFilledBlack"
 
-- /HandArrow
+- /AddArrow
   <br>Description : Ajout d'une flèche
   <br>"http://localhost:7999/AddArrow"
 
