@@ -93,6 +93,12 @@ namespace gInk
 
         // Facteur global d'ajustement du gabarit des flèches (1.0 = inchangé)
         private const float ArrowSizeMultiplier = 2.50f;
+        // Multiplicateur appliqué à la longueur configurée de la pointe (1.0 = inchangé)
+        private const float ArrowLengthMultiplier = 0.25f; // régler 0.5..2.0 selon besoin
+        // Taille relative de la base de la tête (plus grand => tête plus plate)
+        private const float ArrowHeadBaseFactor = 2.1f; // ajustez 1.0..4.0 selon besoin
+
+
 
 
         // http://www.csharp411.com/hide-form-from-alttab/
@@ -720,8 +726,11 @@ namespace gInk
                             float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()) * scale);
                             float halfStem = widthPx * 0.5f;
 
-                            float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx() * scale);
-                            float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
+                            //float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx() * scale);
+                            //float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
+
+                            float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx() * scale * ArrowLengthMultiplier);
+                            float headLen = (float)Math.Min(wantHeadLen, len * 0.6f);
 
                             PointF headBase = new PointF(
                                 (float)(tip.X - ux * headLen),
@@ -729,7 +738,8 @@ namespace gInk
 
                             // Pointe plus plate
                             const float HeadBaseFactor = 2.2f;
-                            float headBaseHalf = halfStem * HeadBaseFactor;
+                            //float headBaseHalf = halfStem * HeadBaseFactor;
+                            float headBaseHalf = halfStem * ArrowHeadBaseFactor;
 
                             PointF p0 = new PointF((float)(start.X + vx * halfStem), (float)(start.Y + vy * halfStem));
                             PointF p1 = new PointF((float)(headBase.X + vx * halfStem), (float)(headBase.Y + vy * halfStem));
@@ -2454,136 +2464,6 @@ namespace gInk
             p.Dispose();
         }
 
-        //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
-        //{
-        //    Point[] pts = new Point[5];
-        //    double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
-        //    Pen p = PenForDrawOn(dr, st);
-
-        //    double l = Root.FormCollection.ArrowVarLen();
-
-        //    gOutCanvus.DrawLine(p,CursorX0, CursorY0, (int)(CursorX0 + Math.Cos(theta + Root.ArrowAngle) * l), (int)(CursorY0 + Math.Sin(theta + Root.ArrowAngle) * l));
-        //    gOutCanvus.DrawLine(p, CursorX0, CursorY0, (int)(CursorX0 + Math.Cos(theta - Root.ArrowAngle) * l), (int)(CursorY0 + Math.Sin(theta - Root.ArrowAngle) * l));
-        //    gOutCanvus.DrawLine(p, CursorX0, CursorY0, CursorX,CursorY);
-
-        //    p.Dispose();
-        //}
-
-        //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
-        //{
-        //    // Forcer couleur/épaisseur de la flèche depuis Root (persistés via options)
-        //    DrawingAttributes da = new DrawingAttributes();
-        //    try
-        //    {
-        //        da.Color = Root.GetArrowColor();
-        //    }
-        //    catch
-        //    {
-        //        da.Color = Color.Red;
-        //    }
-        //    da.Transparency = 0; // pleine opacité pour la flèche
-        //    da.Width = Root.GetArrowWidthHiMetric(); // width attendu en HiMetric
-
-        //    // Pen construit à partir des attributs forcés
-        //    Pen p = PenForDrawOn(da, st);
-
-        //    // angle de la flèche et longueur forcée (en pixels)
-        //    double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
-        //    double l = Root.GetFixedArrowLengthPx();
-
-        //    // dessiner les deux "ailes" de la tête d'arrow à partir du point de départ
-        //    gOutCanvus.DrawLine(p,
-        //                        CursorX0,
-        //                        CursorY0,
-        //                        (int)(CursorX0 + Math.Cos(theta + Root.ArrowAngle) * l),
-        //                        (int)(CursorY0 + Math.Sin(theta + Root.ArrowAngle) * l));
-        //    gOutCanvus.DrawLine(p,
-        //                        CursorX0,
-        //                        CursorY0,
-        //                        (int)(CursorX0 + Math.Cos(theta - Root.ArrowAngle) * l),
-        //                        (int)(CursorY0 + Math.Sin(theta - Root.ArrowAngle) * l));
-
-        //    // dessiner la hampe principale jusqu'à la position courante du curseur
-        //    gOutCanvus.DrawLine(p, CursorX0, CursorY0, CursorX, CursorY);
-
-        //    p.Dispose();
-        //}
-        //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
-        //{
-        //    // Forcer couleur/épaisseur de la flèche depuis Root (persistés via options)
-        //    DrawingAttributes da = new DrawingAttributes();
-        //    try
-        //    {
-        //        da.Color = Root.GetArrowColor();
-        //    }
-        //    catch
-        //    {
-        //        da.Color = Color.Red;
-        //    }
-        //    // Utiliser l'alpha enregistré (Color.A) : DrawingAttributes.Transparency = 255 - alpha
-        //    da.Transparency = (byte)(255 - da.Color.A);
-        //    da.Width = Root.GetArrowWidthHiMetric(); // width attendu en HiMetric
-
-        //    // Pen construit à partir des attributs forcés
-        //    Pen p = PenForDrawOn(da, st);
-
-        //    // angle de la flèche et longueur forcée (en pixels)
-        //    double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
-        //    double l = Root.GetFixedArrowLengthPx();
-
-        //    // dessiner les deux "ailes" de la tête d'arrow à partir du point de départ
-        //    gOutCanvus.DrawLine(p,
-        //                        CursorX0,
-        //                        CursorY0,
-        //                        (int)(CursorX0 + Math.Cos(theta + Root.ArrowAngle) * l),
-        //                        (int)(CursorY0 + Math.Sin(theta + Root.ArrowAngle) * l));
-        //    gOutCanvus.DrawLine(p,
-        //                        CursorX0,
-        //                        CursorY0,
-        //                        (int)(CursorX0 + Math.Cos(theta - Root.ArrowAngle) * l),
-        //                        (int)(CursorY0 + Math.Sin(theta - Root.ArrowAngle) * l));
-
-        //    // dessiner la hampe principale jusqu'à la position courante du curseur
-        //    gOutCanvus.DrawLine(p, CursorX0, CursorY0, CursorX, CursorY);
-
-        //    p.Dispose();
-        //}
-
-        //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
-        //{
-        //    // Couleur/épaisseur configurées
-        //    DrawingAttributes da = new DrawingAttributes();
-        //    try
-        //    {
-        //        da.Color = Root.GetArrowColor();
-        //    }
-        //    catch
-        //    {
-        //        da.Color = Color.Red;
-        //    }
-        //    // alpha depuis Color.A
-        //    da.Transparency = (byte)(255 - da.Color.A);
-        //    da.Width = Root.GetArrowWidthHiMetric(); // HiMetric
-
-        //    using (var p = PenForDrawOn(da, st))
-        //    {
-        //        // Direction du trait
-        //        double theta = Math.Atan2(CursorY - CursorY0, CursorX - CursorX0);
-        //        double l = Root.GetFixedArrowLengthPx();
-
-        //        // Tête AU POINT DE FIN (CursorX, CursorY)
-        //        int hx1 = (int)(CursorX - Math.Cos(theta + Root.ArrowAngle) * l);
-        //        int hy1 = (int)(CursorY - Math.Sin(theta + Root.ArrowAngle) * l);
-        //        int hx2 = (int)(CursorX - Math.Cos(theta - Root.ArrowAngle) * l);
-        //        int hy2 = (int)(CursorY - Math.Sin(theta - Root.ArrowAngle) * l);
-
-        //        // Hampe
-        //        gOutCanvus.DrawLine(p, CursorX0, CursorY0, CursorX, CursorY);
-        //        // Deux ailes de la tête au bout
-        //        gOutCanvus.DrawLine(p, CursorX, CursorY, hx1, hy1);
-        //        gOutCanvus.DrawLine(p, CursorX, CursorY, hx2, hy2);
-        //    }
-        //}
 
 
         public void DrawCustomOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY)
@@ -2608,50 +2488,6 @@ namespace gInk
                 DrawArrowOnGraphic(g, CursorX0, CursorY0, CursorX, CursorY);
             }
         }
-        //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
-        //{
-        //    if (CursorX0 == int.MinValue && CursorY0 == int.MinValue)
-        //        return;
-
-        //    if (g == null)
-        //        g = gOutCanvus;
-
-        //    // Préparer DrawingAttributes (priorité à dr si fourni)
-        //    DrawingAttributes da;
-        //    if (dr != null)
-        //        da = dr.Clone();
-        //    else
-        //    {
-        //        da = Root.FormCollection?.IC?.DefaultDrawingAttributes?.Clone() ?? new DrawingAttributes();
-        //        try { da.Color = Root.GetArrowColor(); } catch { }
-        //        da.Transparency = (byte)(255 - da.Color.A);
-        //        da.Width = Root.GetArrowWidthHiMetric();
-        //    }
-
-        //    // Rien à dessiner si pas de mouvement
-        //    double dx = CursorX - CursorX0;
-        //    double dy = CursorY - CursorY0;
-        //    if (Math.Abs(dx) < 1e-6 && Math.Abs(dy) < 1e-6)
-        //        return;
-
-        //    using (var pen = PenForDrawOn(da, st))
-        //    {
-        //        // Hampe
-        //        g.DrawLine(pen, CursorX0, CursorY0, CursorX, CursorY);
-
-        //        // Calcul de la tête (toujours au point de fin)
-        //        double theta = Math.Atan2(dy, dx);
-        //        double headLen = Root.GetFixedArrowLengthPx();
-        //        int hx1 = (int)Math.Round(CursorX - Math.Cos(theta + Root.ArrowAngle) * headLen);
-        //        int hy1 = (int)Math.Round(CursorY - Math.Sin(theta + Root.ArrowAngle) * headLen);
-        //        int hx2 = (int)Math.Round(CursorX - Math.Cos(theta - Root.ArrowAngle) * headLen);
-        //        int hy2 = (int)Math.Round(CursorY - Math.Sin(theta - Root.ArrowAngle) * headLen);
-
-        //        g.DrawLine(pen, CursorX, CursorY, hx1, hy1);
-        //        g.DrawLine(pen, CursorX, CursorY, hx2, hy2);
-        //    }
-        //}
-
 
         //public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
         //{
@@ -2661,40 +2497,76 @@ namespace gInk
         //    if (g == null)
         //        g = gOutCanvus;
 
-        //    // Préparer les DrawingAttributes (priorité à dr si fourni)
-        //    DrawingAttributes da = dr?.Clone() ?? Root.FormCollection?.IC?.DefaultDrawingAttributes?.Clone() ?? new DrawingAttributes();
-        //    try { da.Color = Root.GetArrowColor(); } catch { }
-        //    da.Transparency = (byte)(255 - da.Color.A);
-        //    da.Width = Root.GetArrowWidthHiMetric();
-
-        //    // Calcul de l'angle et de la longueur de la tête de flèche
         //    double dx = CursorX - CursorX0;
         //    double dy = CursorY - CursorY0;
-        //    if (Math.Abs(dx) < 1e-6 && Math.Abs(dy) < 1e-6)
-        //        return; // Pas de mouvement, rien à dessiner
+        //    double len = Math.Sqrt(dx * dx + dy * dy);
+        //    if (len <= 2.0)
+        //        return;
 
-        //    double theta = Math.Atan2(dy, dx);
-        //    double headLen = Root.GetFixedArrowLengthPx();
+        //    double ux = dx / len;
+        //    double uy = dy / len;
+        //    double vx = -uy;
+        //    double vy = ux;
 
-        //    // Calcul des points de la tête de flèche (au point d'arrivée)
-        //    int hx1 = (int)Math.Round(CursorX - Math.Cos(theta + Root.ArrowAngle) * headLen);
-        //    int hy1 = (int)Math.Round(CursorY - Math.Sin(theta + Root.ArrowAngle) * headLen);
-        //    int hx2 = (int)Math.Round(CursorX - Math.Cos(theta - Root.ArrowAngle) * headLen);
-        //    int hy2 = (int)Math.Round(CursorY - Math.Sin(theta - Root.ArrowAngle) * headLen);
+        //    //float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()));
+        //    //float halfStem = widthPx * 0.5f;
 
-        //    using (var pen = PenForDrawOn(da, st))
-        //    {
-        //        // Dessiner la hampe de la flèche
-        //        g.DrawLine(pen, CursorX0, CursorY0, CursorX, CursorY);
+        //    //float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx());
+        //    //float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
 
-        //        // Dessiner les deux ailes de la tête de flèche
-        //        g.DrawLine(pen, CursorX, CursorY, hx1, hy1);
-        //        g.DrawLine(pen, CursorX, CursorY, hx2, hy2);
-        //    }
+        //    //PointF start = new PointF(CursorX0, CursorY0);
+        //    //PointF tip = new PointF(CursorX, CursorY);
+        //    //PointF headBase = new PointF(
+        //    //    (float)(tip.X - ux * headLen),
+        //    //    (float)(tip.Y - uy * headLen));
+
+        //    //const float HeadBaseFactor = 2.2f; // était 1.6f
+        //    //float headBaseHalf = halfStem * HeadBaseFactor;
+
+        //    // FACTEUR GRID
+        //    //float scale = GetArrowGridScale();
+        //    float scale = GetArrowGridScale() * ArrowSizeMultiplier;
+
+        //    // Options -> dimensions (échelle appliquée)
+        //    float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()) * scale);
+        //    float halfStem = widthPx * 0.5f;
+
+        //    //float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx() * scale);
+        //    //float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
+
+        //    float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx() * scale);
+        //    float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
+
+        //    // Points géométriques
+        //    PointF start = new PointF(CursorX0, CursorY0);
+        //    PointF tip = new PointF(CursorX, CursorY);
+        //    PointF headBase = new PointF(
+        //        (float)(tip.X - ux * headLen),
+        //        (float)(tip.Y - uy * headLen));
+        //    //const float HeadBaseFactor = 2.2f; // pointe plus plate
+        //    //const float HeadBaseFactor = 4.0f; // pointe beaucoup plus plate
+        //    //float headBaseHalf = halfStem * HeadBaseFactor;
+        //    float headBaseHalf = halfStem * ArrowHeadBaseFactor;
+
+        //    PointF p0 = new PointF((float)(start.X + vx * halfStem), (float)(start.Y + vy * halfStem));
+        //    PointF p1 = new PointF((float)(headBase.X + vx * halfStem), (float)(headBase.Y + vy * halfStem));
+        //    PointF p2 = new PointF((float)(headBase.X + vx * headBaseHalf), (float)(headBase.Y + vy * headBaseHalf));
+        //    PointF p3 = tip;
+        //    PointF p4 = new PointF((float)(headBase.X - vx * headBaseHalf), (float)(headBase.Y - vy * headBaseHalf));
+        //    PointF p5 = new PointF((float)(headBase.X - vx * halfStem), (float)(headBase.Y - vy * halfStem));
+        //    PointF p6 = new PointF((float)(start.X - vx * halfStem), (float)(start.Y - vy * halfStem));
+        //    PointF[] arrowPoly = new[] { p0, p1, p2, p3, p4, p5, p6 };
+
+        //    var oldSmo = g.SmoothingMode;
+        //    g.SmoothingMode = SmoothingMode.AntiAlias;
+
+        //    using (var brush = new SolidBrush(Root.GetArrowColor()))
+        //        g.FillPolygon(brush, arrowPoly);
+
+        //    g.SmoothingMode = oldSmo;
         //}
 
 
-        // Remplacez entièrement DrawArrowOnGraphic par :
         public void DrawArrowOnGraphic(Graphics g, int CursorX0, int CursorY0, int CursorX, int CursorY, DrawingAttributes dr = null, DashStyle st = DashStyle.Solid)
         {
             if (CursorX0 == int.MinValue && CursorY0 == int.MinValue)
@@ -2714,30 +2586,15 @@ namespace gInk
             double vx = -uy;
             double vy = ux;
 
-            //float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()));
-            //float halfStem = widthPx * 0.5f;
-
-            //float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx());
-            //float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
-
-            //PointF start = new PointF(CursorX0, CursorY0);
-            //PointF tip = new PointF(CursorX, CursorY);
-            //PointF headBase = new PointF(
-            //    (float)(tip.X - ux * headLen),
-            //    (float)(tip.Y - uy * headLen));
-
-            //const float HeadBaseFactor = 2.2f; // était 1.6f
-            //float headBaseHalf = halfStem * HeadBaseFactor;
-
             // FACTEUR GRID
-            //float scale = GetArrowGridScale();
             float scale = GetArrowGridScale() * ArrowSizeMultiplier;
 
             // Options -> dimensions (échelle appliquée)
             float widthPx = Math.Max(1f, Root.HiMetricToPixel(Root.GetArrowWidthHiMetric()) * scale);
             float halfStem = widthPx * 0.5f;
 
-            float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx() * scale);
+            // appliquer ArrowLengthMultiplier ici pour que l'aperçu corresponde au rendu final
+            float wantHeadLen = Math.Max(1f, Root.GetFixedArrowLengthPx() * scale * ArrowLengthMultiplier);
             float headLen = (float)Math.Min(wantHeadLen, len * 0.6);
 
             // Points géométriques
@@ -2746,9 +2603,8 @@ namespace gInk
             PointF headBase = new PointF(
                 (float)(tip.X - ux * headLen),
                 (float)(tip.Y - uy * headLen));
-            const float HeadBaseFactor = 2.2f; // pointe plus plate
-            float headBaseHalf = halfStem * HeadBaseFactor;
 
+            float headBaseHalf = halfStem * ArrowHeadBaseFactor;
 
             PointF p0 = new PointF((float)(start.X + vx * halfStem), (float)(start.Y + vy * halfStem));
             PointF p1 = new PointF((float)(headBase.X + vx * halfStem), (float)(headBase.Y + vy * halfStem));
