@@ -5583,8 +5583,21 @@ btArrow.BackgroundImage = BuildArrowBtn(Root.ArrowHead[Root.CurrentArrow], Root.
                     btHand.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledB", ImageExts);
                 else if (Root.FilledSelected == Filling.Outside)
                     btHand.BackgroundImage = getImgFromDiskOrRes("tool_hand_out", ImageExts);
+
                 if (gpSubTools.Visible && subTools_title.Contains("Hand"))
                     changeActiveTool(Root.FilledSelected, false, 1);
+
+                // RESTAURATION DA <- stylo courant (dé-couple Hand des modes HandFilled*)
+                try
+                {
+                    if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
+                    {
+                        IC.DefaultDrawingAttributes.Color = Root.PenAttr[Root.CurrentPen].Color;
+                        IC.DefaultDrawingAttributes.Transparency = Root.PenAttr[Root.CurrentPen].Transparency;
+                        SetPenTipCursor();
+                    }
+                }
+                catch { }
             }
             else if ((tool == Tools.Line) || (tool == Tools.Poly))
             { if (filled >= Filling.Empty)
@@ -5629,63 +5642,41 @@ btArrow.BackgroundImage = BuildArrowBtn(Root.ArrowHead[Root.CurrentArrow], Root.
             }
 
             // --- START ajout SelectTool pour HandFilledWhite / HandFilledBlack ---
+            // HandFilledWhite: n'impacte plus Root.PenAttr
             else if (tool == Tools.HandFilledWhite)
             {
-                
-                
-                
-                
-                // Forcer état de remplissage et attributs par défaut (blanc semi‑transparent)
                 Root.FilledSelected = Filling.WhiteFilled;
-                
-                
 
-                //  HandFilledWhite
                 try
                 {
+                    // on force juste la DA pour dessiner en blanc à l’écran
                     IC.DefaultDrawingAttributes.Color = Color.White;
                     IC.DefaultDrawingAttributes.Transparency = (byte)(255 - (Root.GoFillOpacityPercent * 255 / 100));
-                    if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
-                    {
-                        Root.PenAttr[Root.CurrentPen].Color = Color.White;
-                        Root.PenAttr[Root.CurrentPen].Transparency = IC.DefaultDrawingAttributes.Transparency;
-                    }
                     SetPenTipCursor();
                 }
                 catch { }
 
-
-               
-
-
-                // Met à jour l'icône pour retour visuel si souhaité
                 try { btHandWhite.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledW", ImageExts); } catch { }
                 Root.ToolSelected = tool;
             }
+
+            // HandFilledBlack: n'impacte plus Root.PenAttr
             else if (tool == Tools.HandFilledBlack)
             {
                 Root.FilledSelected = Filling.BlackFilled;
 
-
-                try { btHandBlack.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledB", ImageExts); } catch { }
-                Root.ToolSelected = tool;
-
-                // Dans SelectTool -> bloc HandFilledWhite
                 try
                 {
+                    // on force juste la DA pour dessiner en noir à l’écran
                     IC.DefaultDrawingAttributes.Color = Color.Black;
                     IC.DefaultDrawingAttributes.Transparency = (byte)(255 - (Root.GoFillOpacityPercent * 255 / 100));
-                    if (Root.CurrentPen >= 0 && Root.PenAttr[Root.CurrentPen] != null)
-                    {
-                        Root.PenAttr[Root.CurrentPen].Color = Color.Black;
-                        Root.PenAttr[Root.CurrentPen].Transparency = IC.DefaultDrawingAttributes.Transparency;
-                    }
                     SetPenTipCursor();
                 }
                 catch { }
 
-            }
-            // --- END ajout SelectTool ---
+                try { btHandBlack.BackgroundImage = getImgFromDiskOrRes("tool_hand_filledB", ImageExts); } catch { }
+                Root.ToolSelected = tool;
+            }            // --- END ajout SelectTool ---
 
 
 
