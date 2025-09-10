@@ -850,13 +850,28 @@ namespace gInk
 
 
 
+            //// Couleur du texte (à ajouter après les boutons de couleur tags existants)
+            //lblGoTextColor = new Label { Text = Root.Local.GoOptionsTextColor ?? "Couleur du texte :", AutoSize = true, Left = 12, Top = lblGoStrokeThickness.Bottom + 18 };
+            //btnGoTextColor = new Button { Left = 220, Top = lblGoTextColor.Top - 3, Width = 80, Height = 24, FlatStyle = FlatStyle.Flat };
+            //btnGoTextColor.Click += (s, e2) => EditGoTagColor("Text", btnGoTextColor, Root.GoTool_Text_Color);
+            //tabPageGridTags.Controls.Add(lblGoTextColor);
+            //tabPageGridTags.Controls.Add(btnGoTextColor);
+
             // Couleur du texte (à ajouter après les boutons de couleur tags existants)
             lblGoTextColor = new Label { Text = Root.Local.GoOptionsTextColor ?? "Couleur du texte :", AutoSize = true, Left = 12, Top = lblGoStrokeThickness.Bottom + 18 };
             btnGoTextColor = new Button { Left = 220, Top = lblGoTextColor.Top - 3, Width = 80, Height = 24, FlatStyle = FlatStyle.Flat };
+
+            // INITIALISATION BACKCOLOR POUR L'APERÇU DÈS LA PREMIÈRE OUVERTURE
+            btnGoTextColor.BackColor = Color.FromArgb(
+                Root.GoTool_Text_Color[0],
+                Root.GoTool_Text_Color[1],
+                Root.GoTool_Text_Color[2],
+                Root.GoTool_Text_Color[3]
+            );
+
             btnGoTextColor.Click += (s, e2) => EditGoTagColor("Text", btnGoTextColor, Root.GoTool_Text_Color);
             tabPageGridTags.Controls.Add(lblGoTextColor);
             tabPageGridTags.Controls.Add(btnGoTextColor);
-
 
 
             // Placement sommaire — calcule une Y libre basée sur lblGridType
