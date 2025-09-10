@@ -27,6 +27,7 @@
   - [Pour les outils spécifiques au jeu de go](#pour-les-outils-spécifiques-au-jeu-de-go)
   - [Prédéfinir vos gobans](#prédéfinir-vos-gobans)
 - [Vigilance concernant les outils Texte](#vigilance-concernant-les-outils-texte)
+- [Enregistrement des paramètres](#enregistrement-des-paramètres)]
 - [Icônes StreamDeck](#icônes-streamdeck)
 - [Tous les autres endpoints API](#liste-des-autres-endpoints-rest-disponibles-résumé-fonctionnel-du-fichier-apirestcs)
 
