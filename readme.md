@@ -178,6 +178,13 @@ http://localhost:*le_port_fourni_dans le menu_option*/**le_nom_de_l_action**. Ex
   <br>Description : Outil texte avec couleur noire
   <br>"http://localhost:1234/Text_Black"
 
+- /CurrentPen
+  <br>Description : sélectionner stylo courant
+  <br>"http://localhost:1234/CurrentPen?P=3" pour stylo n° 3
+
+- /CurrentTool?T=0&F=0
+  <br>Description : sélectionner outil dessin à main levée
+  <br>"http://localhost:1234/CurrentTool?T=0&F=0"
 
 Remarques générales
 - Remplacer http://localhost:1234 par l'URL de base configurée dans votre menu Options (onglet Général)
@@ -264,10 +271,7 @@ Tous les endpoints acceptent GET ; la plupart exigent que l'application soit en 
   - params : P (pen -1..9)
   - action : changer style de ligne du stylo
 
-- /CurrentPen
-  - params : P (0..9)
-  - action : sélectionner stylo courant
-  - réponse : { "Pen": n }
+
 
 - /CurrentTool
   - params : T (tool id), optional F (filling), A (arrow), W,H (size), D (distance), I (image path)
