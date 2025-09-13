@@ -283,13 +283,6 @@ namespace gInk
                 Value = (decimal)Root.TagSizePercent
             };
 
-            //lblTagOpacityPerc = new Label
-            //{
-            //    Text = "Opacité des pierres (%) :",
-            //    AutoSize = true,
-            //    Left = 12,
-            //    Top = lblTagSizePerc.Bottom + 18
-            //};
             lblTagOpacityPerc = new Label
             {
                 //Text = Root.Local.OptionsTagOpacityPerc ?? "Opacité des pierres (%) :",
@@ -320,17 +313,6 @@ namespace gInk
                 Left = 12,
                 Top = lblTagOpacityPerc.Bottom + 18
             };
-            //{
-            //    Minimum = 0,
-            //    Maximum = 100,
-            //    DecimalPlaces = 0,
-            //    Increment = 1,
-            //    Left = 220,
-            //    Top = lblTagNumberOpacityPerc.Top - 3,
-            //    Width = 90,
-            //    Value = (decimal)Root.TagNumberOpacityPercent
-            //};
-
             nudTagNumberOpacityPerc = new NumericUpDown
             {
                 Minimum = 0,
@@ -362,16 +344,6 @@ namespace gInk
             else if (Root.GridRows == 9) cbGridType.SelectedIndex = 2;
             else cbGridType.SelectedIndex = 0;
 
-            //nudTagCirclePerc.ValueChanged += (s, e) => Root.TagCirclePercent = (double)nudTagCirclePerc.Value;
-            //nudTagSizePerc.ValueChanged += (s, e) => Root.TagSizePercent = (double)nudTagSizePerc.Value;
-            //nudTagOpacityPerc.ValueChanged += (s, e) => Root.TagStoneOpacityPercent = (double)nudTagOpacityPerc.Value;
-            //nudTagNumberOpacityPerc.ValueChanged += (s, e) => Root.TagNumberOpacityPercent = (double)nudTagNumberOpacityPerc.Value;
-            //cbGridType.SelectedIndexChanged += (s, e) =>
-            //{
-            //    int v = (cbGridType.SelectedIndex == 0) ? 19 : (cbGridType.SelectedIndex == 1 ? 13 : 9);
-            //    Root.GridRows = v;
-            //    Root.GridCols = v;
-            //};
 
             nudTagCirclePerc.ValueChanged += (s, e) =>
             {
@@ -436,17 +408,6 @@ namespace gInk
                 try { Root.SaveOptions(Program.RunningFolder + "config.ini"); } catch { }
             };
 
-            //lblGoStrokeThickness = new Label { Text = "Épaisseur contour :", AutoSize = true, Left = 12, Top = lblGoStrokeWidth.Bottom + 18 };
-            //cbGoStrokeThickness = new ComboBox { Left = 220, Top = lblGoStrokeThickness.Top - 3, Width = 120, DropDownStyle = ComboBoxStyle.DropDownList };
-            //cbGoStrokeThickness.Items.AddRange(new object[] { "Fin", "Moyen", "Épais" });
-            //cbGoStrokeThickness.SelectedIndex = Math.Min(Math.Max(0, Root.GoStrokeThickness), 2);
-            //cbGoStrokeThickness.SelectedIndexChanged += (s, e) =>
-            //{
-            //    Root.GoStrokeThickness = cbGoStrokeThickness.SelectedIndex;
-            //    ScheduleConfigSave();
-            //};
-            //tabPageGridTags.Controls.Add(lblGoStrokeThickness);
-            //tabPageGridTags.Controls.Add(cbGoStrokeThickness);
 
             lblGoStrokeThickness = new Label { Text = Root.Local.OptionsGoStrokeThickness ?? "Épaisseur contour :", AutoSize = true, Left = 12, Top = lblGoStrokeWidth.Bottom + 18 };
             cbGoStrokeThickness = new ComboBox { Left = 220, Top = lblGoStrokeThickness.Top - 3, Width = 120, DropDownStyle = ComboBoxStyle.DropDownList };
@@ -683,60 +644,6 @@ namespace gInk
 
 
 
-            //// --- Flèches (Jeu de go)
-            //lblGoArrowColor = new Label { AutoSize = true, Text = Root.Local.GoOptionsArrowColor };
-            //btnGoArrowColor = new Button { Width = 80 };
-            //btnGoArrowColor.Click += (s, e2) =>
-            //{
-            //    using (var cd = new ColorDialog())
-            //    {
-            //        cd.Color = Root.GetArrowColor();
-            //        if (cd.ShowDialog() == DialogResult.OK)
-            //        {
-            //            Root.GoArrowColorArgb = cd.Color.ToArgb();
-            //            btnGoArrowColor.BackColor = cd.Color;
-            //        }
-            //    }
-            //};
-
-            //lblGoArrowThickness = new Label { AutoSize = true, Text = Root.Local.GoOptionsArrowThickness };
-            //cbGoArrowThickness = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 120 };
-            //cbGoArrowThickness.Items.AddRange(Root.Local.GoOptionsArrowThicknessItems.Split(';'));
-            //cbGoArrowThickness.SelectedIndex = Math.Max(0, Math.Min(2, Root.GoArrowThickness));
-            //cbGoArrowThickness.SelectedIndexChanged += (s, e2) =>
-            //{
-            //    Root.GoArrowThickness = cbGoArrowThickness.SelectedIndex;
-            //};
-
-            //lblGoArrowLength = new Label { AutoSize = true, Text = Root.Local.GoOptionsArrowLength };
-            //cbGoArrowLength = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 120 };
-            //cbGoArrowLength.Items.AddRange(Root.Local.GoOptionsArrowLengthItems.Split(';'));
-            //cbGoArrowLength.SelectedIndex = Math.Max(0, Math.Min(2, Root.GoArrowLength));
-            //cbGoArrowLength.SelectedIndexChanged += (s, e2) =>
-            //{
-            //    Root.GoArrowLength = cbGoArrowLength.SelectedIndex;
-            //};
-
-            //// Placement sommaire (adapter au layout existant)
-            ////var top = /* calculez une Y libre après les autres options go */;
-            //int top = lblGridType.Bottom + 18;
-            //lblGoArrowColor.Left = 20; lblGoArrowColor.Top = top;
-            //btnGoArrowColor.Left = 250; btnGoArrowColor.Top = top - 4;
-            //btnGoArrowColor.BackColor = Root.GetArrowColor();
-
-            //lblGoArrowThickness.Left = 20; lblGoArrowThickness.Top = top + 30;
-            //cbGoArrowThickness.Left = 250; cbGoArrowThickness.Top = top + 26;
-
-            //lblGoArrowLength.Left = 20; lblGoArrowLength.Top = top + 60;
-            //cbGoArrowLength.Left = 250; cbGoArrowLength.Top = top + 56;
-
-            //// Ajout sur le TabPage “Jeu de go”
-            //tabPageGridTags.Controls.Add(lblGoArrowColor);
-            //tabPageGridTags.Controls.Add(btnGoArrowColor);
-            //tabPageGridTags.Controls.Add(lblGoArrowThickness);
-            //tabPageGridTags.Controls.Add(cbGoArrowThickness);
-            //tabPageGridTags.Controls.Add(lblGoArrowLength);
-            //tabPageGridTags.Controls.Add(cbGoArrowLength);
 
 
             switch (Root.VideoRecordMode)
@@ -752,51 +659,13 @@ namespace gInk
 
 
 
-            // <-- AJOUTER CETTE LIGNE ICI (initialise les boutons couleurs des tags)
             InitGoTagButtons();
 
 
             // --- Flèches (Jeu de go) : ajouté en fin d'onglet pour éviter recouvrement
             lblGoArrowColor = new Label { AutoSize = true, Text = Root.Local.GoOptionsArrowColor ?? "Arrow color :" };
             btnGoArrowColor = new Button { Width = 80 };
-            //btnGoArrowColor.Click += (s, e2) =>
-            //{
-            //    using (var cd = new ColorDialog())
-            //    {
-            //        cd.Color = Root.GetArrowColor();
-            //        if (cd.ShowDialog() == DialogResult.OK)
-            //        {
-            //            Root.GoArrowColorArgb = cd.Color.ToArgb();
-            //            btnGoArrowColor.BackColor = cd.Color;
-            //            ScheduleConfigSave();
-            //        }
-            //    }
-            //};
-            //btnGoArrowColor.Click += (s, e2) =>
-            //{
-            //    PenModifyDlg dlg = new PenModifyDlg(Root);
-            //    // Préparer DrawingAttributes initial à partir de la couleur actuelle
-            //    Color cur = Root.GetArrowColor();
-            //    Microsoft.Ink.DrawingAttributes at = new Microsoft.Ink.DrawingAttributes
-            //    {
-            //        Transparency = (byte)(255 - cur.A),
-            //        Color = Color.FromArgb(cur.A, cur.R, cur.G, cur.B),
-            //        Width = 0
-            //    };
 
-            //    if (dlg.ModifyPen(ref at))
-            //    {
-            //        // at.Color.A contient l'alpha choisi ; on stocke l'ARGB
-            //        int alpha = at.Color.A;
-            //        Root.GoArrowColorArgb = Color.FromArgb(alpha, at.Color.R, at.Color.G, at.Color.B).ToArgb();
-
-            //        // aperçu bouton (BackColor ignore l'alpha mais montre la couleur)
-            //        try { btnGoArrowColor.BackColor = Color.FromArgb(alpha, at.Color.R, at.Color.G, at.Color.B); } catch { btnGoArrowColor.BackColor = at.Color; }
-
-            //        ScheduleConfigSave();
-            //    }
-            //    dlg.Dispose();
-            //};
             btnGoArrowColor.Click += (s, e2) =>
             {
                 PenModifyDlg dlg = new PenModifyDlg(Root);
@@ -850,14 +719,8 @@ namespace gInk
 
 
 
-            //// Couleur du texte (à ajouter après les boutons de couleur tags existants)
-            //lblGoTextColor = new Label { Text = Root.Local.GoOptionsTextColor ?? "Couleur du texte :", AutoSize = true, Left = 12, Top = lblGoStrokeThickness.Bottom + 18 };
-            //btnGoTextColor = new Button { Left = 220, Top = lblGoTextColor.Top - 3, Width = 80, Height = 24, FlatStyle = FlatStyle.Flat };
-            //btnGoTextColor.Click += (s, e2) => EditGoTagColor("Text", btnGoTextColor, Root.GoTool_Text_Color);
-            //tabPageGridTags.Controls.Add(lblGoTextColor);
-            //tabPageGridTags.Controls.Add(btnGoTextColor);
 
-            // Couleur du texte (à ajouter après les boutons de couleur tags existants)
+            // Couleur du texte
             lblGoTextColor = new Label { Text = Root.Local.GoOptionsTextColor ?? "Couleur du texte :", AutoSize = true, Left = 12, Top = lblGoStrokeThickness.Bottom + 18 };
             btnGoTextColor = new Button { Left = 220, Top = lblGoTextColor.Top - 3, Width = 80, Height = 24, FlatStyle = FlatStyle.Flat };
 
@@ -874,12 +737,6 @@ namespace gInk
             tabPageGridTags.Controls.Add(btnGoTextColor);
 
 
-            // Placement sommaire — calcule une Y libre basée sur lblGridType
-            // Remplacer cette ligne :
-            //int topArrow = lblGridType.Bottom + 18;
-            // Par cette ligne (garantit que les contrôles flèche viennent APRÈS les contrôles Go existants) :
-            //int topArrow = Math.Max(lblGoStrokeThickness.Bottom, colorTop + 24) + 18; lblGoArrowColor.Left = 20; lblGoArrowColor.Top = topArrow;
-            //int topArrow = Math.Max(lblGoStrokeThickness.Bottom, lblGoStrokeThickness.Top + 21) + 18;
             int topArrow = Math.Max(lblGoStrokeThickness.Bottom, lblGoTextColor.Bottom) + 18;
             lblGoArrowColor.Left = 20;
             lblGoArrowColor.Top = topArrow;
@@ -1352,7 +1209,6 @@ namespace gInk
 
 
 
-            // <-- AJOUTER CETTE LIGNE ICI (réinitialise l'affichage des boutons de couleur après rechargement local)
             InitGoTagButtons();
            
         
@@ -1668,55 +1524,6 @@ namespace gInk
             dlg.Dispose();
         }
 
-        //private void EditGoTagColor(string name, Button btn, int[] colorArr)
-        //{
-        //    try
-        //    {
-        //        // Prépare les attributs initiaux en réutilisant la convention existante :
-        //        // colorArr = { A, R, G, B } ; DrawingAttributes.Transparency = 255 - A
-        //        PenModifyDlg dlg = new PenModifyDlg(Root);
-        //        Microsoft.Ink.DrawingAttributes at = new Microsoft.Ink.DrawingAttributes
-        //        {
-        //            Transparency = (byte)(255 - (colorArr.Length > 0 ? colorArr[0] : 255)),
-        //            Color = Color.FromArgb(
-        //                (colorArr.Length > 0 ? colorArr[0] : 255),
-        //                (colorArr.Length > 1 ? colorArr[1] : 0),
-        //                (colorArr.Length > 2 ? colorArr[2] : 0),
-        //                (colorArr.Length > 3 ? colorArr[3] : 0)
-        //            ),
-        //            Width = 0
-        //        };
-
-        //        if (dlg.ModifyPen(ref at))
-        //        {
-        //            // Stocke la couleur choisie dans le tableau (A,R,G,B)
-        //            if (colorArr.Length >= 4)
-        //            {
-        //                colorArr[0] = 255 - at.Transparency;
-        //                colorArr[1] = at.Color.R;
-        //                colorArr[2] = at.Color.G;
-        //                colorArr[3] = at.Color.B;
-        //            }
-
-        //            // Mise à jour visuelle (aperçu — BackColor ignore l'alpha)
-        //            try
-        //            {
-        //                btn.BackColor = Color.FromArgb(
-        //                    (colorArr.Length > 0 ? colorArr[0] : 255),
-        //                    (colorArr.Length > 1 ? colorArr[1] : 0),
-        //                    (colorArr.Length > 2 ? colorArr[2] : 0),
-        //                    (colorArr.Length > 3 ? colorArr[3] : 0)
-        //                );
-        //            }
-        //            catch { }
-
-        //            // Sauvegarde différée
-        //            ScheduleConfigSave();
-        //        }
-        //        dlg.Dispose();
-        //    }
-        //    catch { }
-        //}
 
         private void EditGoTagColor(string name, Button btn, int[] colorArr)
         {
@@ -1771,35 +1578,6 @@ namespace gInk
 
 
 
-        //private void InitGoTagButtons()
-        //{
-
-
-
-        //    try
-        //    {
-        //        Action<Button, int[]> initBtn = (btn, arr) =>
-        //        {
-        //            try
-        //            {
-        //                if (btn == null || arr == null || arr.Length < 4) return;
-        //                // BackColor n'affiche pas l'alpha, mais donne un aperçu de la couleur
-        //                btn.BackColor = Color.FromArgb(arr[0], arr[1], arr[2], arr[3]);
-        //            }
-        //            catch { }
-        //        };
-
-        //        initBtn(btnGoColor_Letter, Root?.GoTool_Letter_Color);
-        //        initBtn(btnGoColor_Square, Root?.GoTool_Square_Color);
-        //        initBtn(btnGoColor_Triangle, Root?.GoTool_Triangle_Color);
-        //        initBtn(btnGoColor_Circle, Root?.GoTool_Circle_Color);
-        //        initBtn(btnGoColor_Cross, Root?.GoTool_Cross_Color);
-        //    }
-        //    catch { }
-
-        //    initBtn(btnGoTextColor, Root?.GoTool_Text_Color);
-
-        //}
 
         private void InitGoTagButtons()
         {

@@ -214,57 +214,6 @@ namespace gInk
             catch { }
         }
 
-        //private void NumberTagBtn_Click(object sender, EventArgs e)
-        //{
-        //    var b = sender as Button;
-        //    if (b == null) return;
-        //    var tup = b.Tag as Tuple<bool, bool>;
-        //    if (tup == null) return;
-
-        //    // Nettoyage encre (comportement précédent conservé)
-        //    try { btClear_Click(null, null); } catch { }
-
-        //    NumberTag_ShowNumber = tup.Item1;
-        //    NumberTag_FirstIsWhite = tup.Item2;
-        //    NumberTag_Reset();
-        //    Root.FilledSelected = NumberTag_FirstIsWhite ? Filling.WhiteFilled : Filling.BlackFilled;
-
-        //    SelectTool(Tools.NumberTag, Root.FilledSelected);
-        //    UpdateNumberTagButtonBorders();
-        //    InvalidateNumberTagButtons();
-        //    Root.UponButtonsUpdate |= 0x2;
-        //}
-
-        //private void NumberTagBtn_Click(object sender, EventArgs e)
-        //{
-        //    var b = sender as Button;
-        //    if (b == null) return;
-        //    var tup = b.Tag as Tuple<bool, bool>;
-        //    if (tup == null) return;
-
-        //    // Délègue l'action à un helper centralisé (utilisable par UI et hotkeys)
-        //    ApplyNumberTagVariant(tup.Item1, tup.Item2);
-        //}
-
-        // helper utilisé à la fois par les boutons et par les hotkeys
-        //public void ApplyNumberTagVariant(bool showNumbers, bool firstIsWhite)
-        //{
-        //    // Nettoyage encre (comportement précédent conservé)
-        //    try { btClear_Click(null, null); } catch { }
-
-        //    NumberTag_ShowNumber = showNumbers;
-        //    NumberTag_FirstIsWhite = firstIsWhite;
-        //    NumberTag_Reset();
-        //    Root.FilledSelected = NumberTag_FirstIsWhite ? Filling.WhiteFilled : Filling.BlackFilled;
-
-        //    SelectTool(Tools.NumberTag, Root.FilledSelected);
-        //    UpdateNumberTagButtonBorders();
-        //    InvalidateNumberTagButtons();
-        //    Root.UponButtonsUpdate |= 0x2;
-        //}
-
-        // helper utilisé à la fois par les boutons et par les hotkeys
-        // clearExisting = true => on force l'effacement (ex: hotkey spécifique ou Ctrl enfoncé)
         public void ApplyNumberTagVariant(bool showNumbers, bool firstIsWhite, bool clearExisting = false)
         {
             // Ancien comportement (effacement systématique) SUPPRIMÉ.
@@ -433,63 +382,6 @@ namespace gInk
         }
 
 
-        //private void PositionNumberTagButtonsFallback(int dim1s, int dim2s, int spacing, Button anchor)
-        //{
-        //    if (Root == null || Root.ToolbarOrientation != Orientation.toDown)
-        //        return;
-        //    if (anchor == null) return;
-
-        //    // Vérifier si au moins un bouton est hors zone visible
-        //    bool need =
-        //        btNTag_Show_White == null || btNTag_Show_Black == null ||
-        //        btNTag_Hide_White == null || btNTag_Hide_Black == null ||
-        //        btNTag_Show_White.Top < -2 ||
-        //        btNTag_Show_Black.Top < -2 ||
-        //        btNTag_Hide_White.Top < -2 ||
-        //        btNTag_Hide_Black.Top < -2 ||
-        //        btNTag_Show_White.Top > gpButtons.Height ||
-        //        btNTag_Show_Black.Top > gpButtons.Height;
-
-        //    if (!need) return;
-
-        //    // Placement explicite : colonne descendante (2 lignes) puis seconde colonne à droite
-        //    // ancre supposée déjà positionnée
-        //    int x0 = anchor.Right + spacing;
-        //    int y0 = anchor.Top; // aligné sur l’ancre
-
-        //    // Première colonne : ShowWhite (ligne 0), HideWhite (ligne 1)
-        //    if (btNTag_Show_White != null)
-        //    {
-        //        btNTag_Show_White.Left = x0;
-        //        btNTag_Show_White.Top = y0;
-        //    }
-        //    if (btNTag_Hide_White != null)
-        //    {
-        //        btNTag_Hide_White.Left = x0;
-        //        btNTag_Hide_White.Top = y0 + dim1s + dim2s; // même vertical step que SetSmallButtonNext
-        //    }
-
-        //    // Deuxième colonne : ShowBlack et HideBlack à droite
-        //    int x1 = x0 + dim1s + spacing;
-        //    if (btNTag_Show_Black != null)
-        //    {
-        //        btNTag_Show_Black.Left = x1;
-        //        btNTag_Show_Black.Top = y0;
-        //    }
-        //    if (btNTag_Hide_Black != null)
-        //    {
-        //        btNTag_Hide_Black.Left = x1;
-        //        btNTag_Hide_Black.Top = y0 + dim1s + dim2s;
-        //    }
-
-        //    // S’assurer qu’ils sont visibles
-        //    btNTag_Show_White?.BringToFront();
-        //    btNTag_Show_Black?.BringToFront();
-        //    btNTag_Hide_White?.BringToFront();
-        //    btNTag_Hide_Black?.BringToFront();
-
-        //    InvalidateNumberTagButtons();
-        //}
 
 
         private void PositionNumberTagButtonsFallback(int dim1s, int dim2s, int spacing, Button anchor)

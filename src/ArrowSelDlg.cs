@@ -112,42 +112,6 @@ namespace gInk
             }
         }
 
-        //private void SaveBtn_Click(object sender, EventArgs e)
-        //{
-        //    if(EditStroke!=null)
-        //    {
-        //        double theta = Math.Atan2((int)EditStroke.ExtendedProperties[Root.ARROWEND_Y_GUID].Data - (int)EditStroke.ExtendedProperties[Root.ARROWSTART_Y_GUID].Data,
-        //                                  (int)EditStroke.ExtendedProperties[Root.ARROWEND_X_GUID].Data - (int)EditStroke.ExtendedProperties[Root.ARROWSTART_X_GUID].Data);
-        //        int l1;
-
-        //        Color fixedCol = Root.GetArrowColor();
-        //        int transp = 0;
-        //        double penWidthP = Root.HiMetricToPixel(Root.GetArrowWidthHiMetric());
-
-
-        //        Root.FormCollection.StoredArrowImages[(int)EditStroke.ExtendedProperties[Root.ARROWSTART_GUID].Data].Dispose();
-        //        Bitmap bmp = Root.FormCollection.PrepareArrowBitmap(ArrowHead, EditStroke.DrawingAttributes.Color, EditStroke.DrawingAttributes.Transparency,
-        //                   Root.HiMetricToPixel(EditStroke.DrawingAttributes.Width), (float)theta, out l1);
-        //        Root.FormCollection.StoredArrowImages[(int)EditStroke.ExtendedProperties[Root.ARROWSTART_GUID].Data]=bmp;
-        //        EditStroke.ExtendedProperties.Add(Root.ARROWSTART_FN_GUID, ArrowHead);
-
-        //        Root.FormCollection.StoredArrowImages[(int)EditStroke.ExtendedProperties[Root.ARROWEND_GUID].Data].Dispose();
-        //        bmp = Root.FormCollection.PrepareArrowBitmap(ArrowTail, EditStroke.DrawingAttributes.Color, EditStroke.DrawingAttributes.Transparency,
-        //                   Root.HiMetricToPixel(EditStroke.DrawingAttributes.Width), (float)(Math.PI + theta), out l1);
-        //        Root.FormCollection.StoredArrowImages[(int)EditStroke.ExtendedProperties[Root.ARROWEND_GUID].Data] = bmp;
-        //        EditStroke.ExtendedProperties.Add(Root.ARROWEND_FN_GUID, ArrowTail);
-
-        //        Root.UponAllDrawingUpdate = true;
-        //        DialogResult = DialogResult.Cancel;
-        //        Close(); 
-        //    }
-        //    else
-        //    {
-        //        Root.ArrowHead[Root.CurrentArrow] = ArrowHead;
-        //        Root.ArrowTail[Root.CurrentArrow] = ArrowTail;
-        //    }
-        //    SaveBtn.Enabled = false;
-        //}
         private void SaveBtn_Click(object sender, EventArgs e)
         {
             if (EditStroke != null)

@@ -24,18 +24,6 @@ namespace gInk
         public static string ProgramFolder = "";
     }
 
-    //public class Tools
-    //{
-    //    public const int Invalid = -1;
-    //    public const int Hand = 0; public const int Line = 1; public const int Rect = 2; public const int Oval = 3;
-    //    public const int StartArrow = 4; public const int EndArrow = 5; public const int NumberTag = 6;
-    //    public const int Edit = 7; public const int txtLeftAligned = 8; public const int txtRightAligned = 9;
-    //    public const int Move = 10; public const int Copy = 11; public const int Scale = 12; public const int Rotate = 13;
-    //    public const int Poly = 21; public const int ClipArt = 22; public const int PatternLine = 23;
-    //    public static readonly int[] All = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 21, 22, 23 };
-    //    public static readonly string[] Names = { "Hand", "Line", "Rect", "Oval", "StartArrow", "EndArrow", "Numbering", "Edit", "Text Left Aligned", "Text Right Aligned",
-    //                                              "Move", "Copy", "Resize", "Rotate", "PolyLine", "ClipArt", "PatternOnStroke"};
-    //}
 
     public class Tools
     {
@@ -580,9 +568,6 @@ namespace gInk
         public int GridCols = 19;
 
         // Pourcentages (100.0 = valeur actuelle du code). Persistés en fichier config.
-        // TagSizePercent : multiplicateur sur la taille du texte du numéro (en %)
-        // TagCirclePercent : multiplicateur sur le diamètre de la pastille (en %)
-        // TagOpacityPercent : opacité des pierres et du texte (100 = opaque, 0 = transparent)
         public double TagSizePercent = 100.0;
         public double TagCirclePercent = 100.0;
         public double TagStoneOpacityPercent = 100.0;
@@ -1549,20 +1534,6 @@ namespace gInk
                             break;
 
 
-                        // Ajouter dans le switch(sName) de ReadOptions :
-                        //case "GOFILLOPACITY":
-                        //    if (int.TryParse(sPara, out tempi))
-                        //        GoFillOpacityPercent = Math.Max(0, Math.Min(100, tempi));
-                        //    break;
-                        //case "GOSTROKEOPACITY":
-                        //    if (int.TryParse(sPara, out tempi))
-                        //        GoStrokeOpacityPercent = Math.Max(0, Math.Min(100, tempi));
-                        //    break;
-                        //case "GOSTROKEWIDTH":
-                        //    if (float.TryParse(sPara, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out tempf))
-                        //        GoStrokeWidth = Math.Max(0.1f, tempf);
-                        //    break;
-
 
                         case "GOFILLOPACITY":
                             if (int.TryParse(sPara, out int gof)) GoFillOpacityPercent = Math.Max(0, Math.Min(100, gof));
@@ -1591,25 +1562,6 @@ namespace gInk
                             break;
 
 
-                        // Ajoutez ces cases juste après le case "GOSTROKE_THICKNESS":
-                        //case "GOARROWCOLOR":
-                        //    // accepte "#RRGGBB" ou "R,G,B"
-                        //    if (!string.IsNullOrEmpty(sPara))
-                        //    {
-                        //        try
-                        //        {
-                        //            if (sPara.Trim().StartsWith("#"))
-                        //                GoArrowColorArgb = ColorTranslator.FromHtml(sPara.Trim()).ToArgb();
-                        //            else
-                        //            {
-                        //                var p = sPara.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray();
-                        //                if (p.Length >= 3 && int.TryParse(p[0], out int rr) && int.TryParse(p[1], out int gg) && int.TryParse(p[2], out int bb))
-                        //                    GoArrowColorArgb = Color.FromArgb(rr, gg, bb).ToArgb();
-                        //            }
-                        //        }
-                        //        catch { /* ignore invalid values */ }
-                        //    }
-                        //    break;
 
                         case "GOARROWCOLOR":
                             if (!string.IsNullOrEmpty(sPara))
@@ -1852,8 +1804,6 @@ namespace gInk
 
 
                         /// ################ goInk - START ####################
-                        /// 
-                        // Ajout: numéro de départ (ne pas redéclarer tempi)
                         case "NUMBER_START":
                             if (Int32.TryParse(sPara, out tempi))
                                 TagNumbering = tempi;
@@ -3306,15 +3256,6 @@ namespace gInk
             if (!hasTagCircle)
                 writelines.Add("TAGCIRCLE_PERCENT=" + TagCirclePercent.ToString(CultureInfo.InvariantCulture));
 
-            // vérifier aussi hasTagOpacity
-            //bool hasTagOpacity = false;
-            //for (int i = 0; i < writelines.Count; i++)
-            //{
-            //    string s = writelines[i].TrimStart();
-            //    if (s.StartsWith("TAGOPACITY_PERCENT=", StringComparison.InvariantCultureIgnoreCase)) hasTagOpacity = true;
-            //}
-            //if (!hasTagOpacity)
-            //    writelines.Add("TAGOPACITY_PERCENT=" + TagOpacityPercent.ToString(CultureInfo.InvariantCulture));
             bool hasTagStoneOpacity = false, hasTagNumberOpacity = false;
             for (int i = 0; i < writelines.Count; i++)
             {
@@ -3332,30 +3273,6 @@ namespace gInk
 
 
 
-            // --- Inserter ceci dans SaveOptions, juste avant le bloc "Ensure NumberTag hotkey keys are present" ---
-            //{
-            //    bool hasGoFill = false, hasGoStrokeOp = false, hasGoStrokeW = false;
-            //    bool hasHotHandW = false, hasHotHandB = false;
-            //    for (int i = 0; i < writelines.Count; i++)
-            //    {
-            //        string s = writelines[i].TrimStart();
-            //        if (s.StartsWith("GOFILLOPACITY=", StringComparison.InvariantCultureIgnoreCase)) hasGoFill = true;
-            //        if (s.StartsWith("GOSTROKEOPACITY=", StringComparison.InvariantCultureIgnoreCase)) hasGoStrokeOp = true;
-            //        if (s.StartsWith("GOSTROKEWIDTH=", StringComparison.InvariantCultureIgnoreCase)) hasGoStrokeW = true;
-            //        if (s.StartsWith("HOTKEY_HANDFILLEDWHITE=", StringComparison.InvariantCultureIgnoreCase)) hasHotHandW = true;
-            //        if (s.StartsWith("HOTKEY_HANDFILLEDBLACK=", StringComparison.InvariantCultureIgnoreCase)) hasHotHandB = true;
-            //    }
-            //    if (!hasGoFill)
-            //        writelines.Add("GOFILLOPACITY= " + GoFillOpacityPercent.ToString());
-            //    if (!hasGoStrokeOp)
-            //        writelines.Add("GOSTROKEOPACITY= " + GoStrokeOpacityPercent.ToString());
-            //    if (!hasGoStrokeW)
-            //        writelines.Add("GOSTROKEWIDTH= " + GoStrokeWidth.ToString(CultureInfo.InvariantCulture));
-            //    if (!hasHotHandW)
-            //        writelines.Add("HOTKEY_HANDFILLEDWHITE= " + Hotkey_HandFilledWhite.ToStringInvariant());
-            //    if (!hasHotHandB)
-            //        writelines.Add("HOTKEY_HANDFILLEDBLACK= " + Hotkey_HandFilledBlack.ToStringInvariant());
-            //}
 
 
             // Ensure / replace explicitement les clés GO et TAG (remplace si ligne existante, sinon ajoute)
@@ -3386,7 +3303,6 @@ namespace gInk
                 SetOrReplace(writelines, "GOSTROKEWIDTH", GoStrokeWidth.ToString(System.Globalization.CultureInfo.InvariantCulture));
                 SetOrReplace(writelines, "GOSTROKE_THICKNESS", (GoStrokeThickness == 0) ? "Thin" : (GoStrokeThickness == 2) ? "Thick" : "Normal");
 
-                // Ajoutez ces lignes juste après le SetOrReplace existant pour GOSTROKE_THICKNESS
                 //SetOrReplace(writelines, "GOARROWCOLOR", Color.FromArgb(GoArrowColorArgb).R + "," + Color.FromArgb(GoArrowColorArgb).G + "," + Color.FromArgb(GoArrowColorArgb).B);
 
                 var ca = Color.FromArgb(GoArrowColorArgb);

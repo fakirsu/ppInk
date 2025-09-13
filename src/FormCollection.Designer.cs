@@ -67,25 +67,6 @@
             this.btCircle = new System.Windows.Forms.Button();
             this.btCross = new System.Windows.Forms.Button();
 
-            //// Propriétés communes rapides (tu peux affiner après)
-            //System.Windows.Forms.Button[] _newTagBtns = { btLetter, btSquare, btTriangle, btCircle, btCross };
-            //foreach (var b in _newTagBtns)
-            //{
-            //    b.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            //    b.FlatAppearance.BorderSize = 0;
-            //    b.BackColor = System.Drawing.Color.Transparent;
-            //    b.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //    b.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            //    // RENDRE LE TEXTE VISIBLE
-            //    b.ForeColor = System.Drawing.SystemColors.ControlText;
-            //    // laissons-les visibles ; le code d'initialisation se chargera de les positionner
-            //    b.Visible = true;
-            //    // taille cohérente avec les autres
-            //    b.Size = new System.Drawing.Size(46, 46);
-            //    //b.Visible = false; // elles seront positionnées plus tard dans Initialize()
-            //    this.gpButtons.Controls.Add(b);
-            //}
-            // Bloc pour les nouveaux boutons de tag (lettre/carré/triangle/cercle/croix)
             // Bloc pour les nouveaux boutons de tag (lettre/carré/triangle/cercle/croix)
             System.Windows.Forms.Button[] _newTagBtns = { btLetter, btSquare, btTriangle, btCircle, btCross };
             foreach (var b in _newTagBtns)
@@ -102,7 +83,6 @@
                 b.Enabled = false;
                 // taille cohérente avec les autres
                 b.Size = new System.Drawing.Size(46, 46);
-                // IMPORTANT : NE PAS les ajouter à gpButtons -> ils ne seront ni visibles ni cliquables
                 // this.gpButtons.Controls.Add(b);
             }
 
@@ -483,25 +463,6 @@
             this.btStop.MouseUp += new System.Windows.Forms.MouseEventHandler(this.gpButtons_MouseUp);
             // 
 
-
-            // Click handlers (ajoutés après avoir défini btAllButtons_MouseDown/Up si déjà existants)
-            //btLetter.Click += new System.EventHandler(this.NewTagTool_Click);
-            //btSquare.Click += new System.EventHandler(this.NewTagTool_Click);
-            //btTriangle.Click += new System.EventHandler(this.NewTagTool_Click);
-            //btCircle.Click += new System.EventHandler(this.NewTagTool_Click);
-            //btCross.Click += new System.EventHandler(this.NewTagTool_Click);
-
-            //btLetter.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
-            //btSquare.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
-            //btTriangle.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
-            //btCircle.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
-            //btCross.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseDown);
-
-            //btLetter.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
-            //btSquare.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
-            //btTriangle.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
-            //btCircle.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
-            //btCross.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btAllButtons_MouseUp);
 
             // btVideo
             // 
