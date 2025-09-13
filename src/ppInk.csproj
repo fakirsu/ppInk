@@ -247,8 +247,6 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="defaults.ini" />
-    <None Include="doc\readme_StreamDeck.md" />
-    <None Include="doc\readme_StreamDeck_EN.md" />
     <None Include="gInk.exe.manifest" />
     <None Include="packages.config" />
     <None Include="pensdef.ini" />
@@ -477,6 +475,9 @@
     <None Include="tool_oval.png" />
     <Content Include="icon_red.ico" />
     <None Include="icon_white.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="doc\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

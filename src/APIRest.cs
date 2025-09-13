@@ -1,15 +1,16 @@
+using Microsoft.Ink;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
-using System.Drawing;
 using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.IO;
-using Microsoft.Ink;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace gInk
 {
@@ -1349,6 +1350,146 @@ namespace gInk
                         }
                         if (resp.StatusCode == 200)
                             ret = string.Format(" {{ \"PageNumer\" : {0}, \"TotalPages\" : {1} }}", Root.FormCollection.PageIndex + 1, Root.FormCollection.PageMax + 1);
+                    }
+
+                    else if (req.Url.AbsolutePath == "/SetGrid")
+                    {
+                        // Nouveau format préféré : X1,Y1,X2,Y2 (0..65535 absolu)
+                        // Ancien format (X,Y,W,H) toujours accepté en fallback.
+                        if (!(Root.FormDisplay.Visible || Root.FormCollection.Visible))
+                        {
+                            resp.StatusCode = 409;
+                            ret = "!!!!! Not in Inking mode";
+                        }
+                        else
+                        {
+                            // Détermine si on est en mode absolu
+                            bool hasAbs =
+                                query.ContainsKey("X1") && query.ContainsKey("Y1") &&
+                                query.ContainsKey("X2") && query.ContainsKey("Y2");
+
+                            Rectangle pixelRect = Rectangle.Empty;
+                            if (hasAbs)
+                            {
+                                string sx1, sy1, sx2, sy2;
+                                int ax1, ay1, ax2, ay2;
+                                if (!(query.TryGetValue("X1", out sx1) && int.TryParse(sx1, out ax1) &&
+                                      query.TryGetValue("Y1", out sy1) && int.TryParse(sy1, out ay1) &&
+                                      query.TryGetValue("X2", out sx2) && int.TryParse(sx2, out ax2) &&
+                                      query.TryGetValue("Y2", out sy2) && int.TryParse(sy2, out ay2)))
+                                {
+                                    resp.StatusCode = 400;
+                                    ret = "!!!! Error in Query (/SetGrid needs X1,Y1,X2,Y2 in absolute 0..65535)";
+                                }
+                                else
+                                {
+                                    if (ax1 < 0 || ax1 > 65535 || ay1 < 0 || ay1 > 65535 ||
+                                        ax2 < 0 || ax2 > 65535 || ay2 < 0 || ay2 > 65535)
+                                    {
+                                        resp.StatusCode = 400;
+                                        ret = "!!!! X1,Y1,X2,Y2 must be in [0..65535]";
+                                    }
+                                    else
+                                    {
+                                        // Conversion absolu -> pixels écran virtuel
+                                        Rectangle vs = SystemInformation.VirtualScreen;
+                                        int AbsToPixelX(int v) => vs.Left + (int)Math.Round(v / 65535.0 * (vs.Width - 1));
+                                        int AbsToPixelY(int v) => vs.Top + (int)Math.Round(v / 65535.0 * (vs.Height - 1));
+
+                                        int px1 = AbsToPixelX(ax1);
+                                        int py1 = AbsToPixelY(ay1);
+                                        int px2 = AbsToPixelX(ax2);
+                                        int py2 = AbsToPixelY(ay2);
+
+                                        int left = Math.Min(px1, px2);
+                                        int top = Math.Min(py1, py2);
+                                        int right = Math.Max(px1, px2);
+                                        int bottom = Math.Max(py1, py2);
+
+                                        int w = right - left;
+                                        int h = bottom - top;
+
+                                        if (w <= 0 || h <= 0)
+                                        {
+                                            resp.StatusCode = 400;
+                                            ret = "!!!! Computed width/height <= 0";
+                                        }
+                                        else
+                                            pixelRect = new Rectangle(left, top, w, h);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Fallback ancien format X,Y,W,H
+                                string sx, sy, sw, sh;
+                                int x, y, w, h;
+                                if (!(query.TryGetValue("X", out sx) && int.TryParse(sx, out x) &&
+                                      query.TryGetValue("Y", out sy) && int.TryParse(sy, out y) &&
+                                      query.TryGetValue("W", out sw) && int.TryParse(sw, out w) &&
+                                      query.TryGetValue("H", out sh) && int.TryParse(sh, out h)))
+                                {
+                                    resp.StatusCode = 400;
+                                    ret = "!!!! Error in Query (/SetGrid needs either X1,Y1,X2,Y2 or X,Y,W,H)";
+                                }
+                                else if (w <= 0 || h <= 0)
+                                {
+                                    resp.StatusCode = 400;
+                                    ret = "!!!! Width and Height must be > 0";
+                                }
+                                else
+                                {
+                                    pixelRect = new Rectangle(x, y, w, h);
+                                }
+                            }
+
+                            if (resp.StatusCode == 200)
+                            {
+                                // Param R (rows) optionnel : 19/13/9
+                                string sr;
+                                int rows;
+                                if (query.TryGetValue("R", out sr) && int.TryParse(sr, out rows))
+                                {
+                                    if (rows == 19 || rows == 13 || rows == 9)
+                                    {
+                                        Root.GridRows = rows;
+                                        Root.GridCols = rows;
+                                    }
+                                    else
+                                    {
+                                        resp.StatusCode = 400;
+                                        ret = "!!!! R must be 19,13 or 9";
+                                    }
+                                }
+                            }
+
+                            if (resp.StatusCode == 200)
+                            {
+                                try
+                                {
+                                    Root.FormCollection.SetGridFromRectangle(pixelRect);
+
+                                    if (!Root.FormCollection.GridRectDefined)
+                                    {
+                                        resp.StatusCode = 400;
+                                        ret = "!!!! Grid not set (rectangle rejected)";
+                                    }
+                                    else
+                                    {
+                                        var gr = Root.FormCollection.GridRect;
+                                        ret = string.Format(
+                                            "{{\"OK\":true,\"Left\":{0},\"Top\":{1},\"W\":{2},\"H\":{3},\"Rows\":{4},\"Cols\":{5},\"FromAbs\":{6}}}",
+                                            gr.X, gr.Y, gr.Width, gr.Height, Root.GridRows, Root.GridCols,
+                                            hasAbs ? "true" : "false");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    resp.StatusCode = 500;
+                                    ret = "!!!! Exception: " + ex.Message;
+                                }
+                            }
+                        }
                     }
 
 
