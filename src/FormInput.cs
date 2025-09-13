@@ -218,20 +218,6 @@ namespace gInk
             // Méthode conservée mais vide car le combobox est caché
         }
 
-        //private void InputML_TextChanged(object sender, EventArgs e)
-        //{
-        //    if (stroke == null) return;
-
-        //    string t = ((TextBox)sender).Text;
-        //    if (t.Length == 0) t = " ";
-        //    stroke.ExtendedProperties.Remove(Root.TEXT_GUID);
-        //    stroke.ExtendedProperties.Add(Root.TEXT_GUID, t);
-        //    if (!stroke.ExtendedProperties.Contains(Root.ISTAG_GUID))
-        //        Root.FormCollection.ComputeTextBoxSize(ref stroke);
-        //    Root.FormDisplay.ClearCanvus();
-        //    Root.FormDisplay.DrawStrokes();
-        //    Root.FormDisplay.UpdateFormDisplay(true);
-        //}
 
         private void InputML_TextChanged(object sender, EventArgs e)
         {
@@ -317,42 +303,6 @@ namespace gInk
             }
         }
 
-        //// Modifier pour permettre la validation avec ENTRÉE simple (sans CTRL)
-        //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        //{
-        //    if (keyData == Keys.Enter || keyData == Keys.Return)
-        //    {
-        //        // Pour TextBox multiline, on autorise les sauts de ligne sauf avec Shift
-        //        if (InputML.Visible && InputML.Multiline && !ModifierKeys.HasFlag(Keys.Shift))
-        //            return false;
-        //
-        //        this.DialogResult = DialogResult.OK;
-        //        this.Close();
-        //        return true;
-        //    }
-        //    return base.ProcessCmdKey(ref msg, keyData);
-        //}
-
-        //// Garder l'ancienne méthode pour assurer la compatibilité
-        //private void FormInput_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        //{
-        //    if (e.Control && (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return))
-        //    {
-        //        this.DialogResult = DialogResult.OK;
-        //        this.Close();
-        //    }
-        //    else if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
-        //    {
-        //        // Si c'est un TextBox multiline, ne pas intercepter ENTRÉE simple
-        //        // pour permettre les sauts de ligne, sauf si la touche Shift est enfoncée
-        //        if (sender is TextBox textBox && textBox.Multiline && !e.Shift)
-        //        {
-        //            return;
-        //        }
-        //        this.DialogResult = DialogResult.OK;
-        //        this.Close();
-        //    }
-        //}
 
         // Modifier pour permettre la validation avec ENTRÉE simple (sans CTRL)
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)

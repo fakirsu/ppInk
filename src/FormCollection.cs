@@ -5478,27 +5478,6 @@ btArrow.BackgroundImage = BuildArrowBtn(Root.ArrowHead[Root.CurrentArrow], Root.
                 }
             }
 
-            //if (filled >= Filling.Empty)
-            //    Root.FilledSelected = filled;
-            //else if ((Array.IndexOf(applicableTool, tool) >= 0) && (tool == Root.ToolSelected))
-            //////
-            /////Root.FilledSelected = (Root.FilledSelected + 1) % Filling.Modulo;
-            /////
-
-            //if (tool == Tools.NumberTag)
-            //{
-            //    // Cycle limité à 2 états: Blanc <-> Noir
-            //    if (Root.FilledSelected != Filling.WhiteFilled && Root.FilledSelected != Filling.BlackFilled)
-            //        Root.FilledSelected = Filling.WhiteFilled;
-            //    else
-            //        Root.FilledSelected = (Root.FilledSelected == Filling.WhiteFilled)
-            //                                ? Filling.BlackFilled
-            //                                : Filling.WhiteFilled;
-            //}
-            //else
-            //{
-            //    Root.FilledSelected = (Root.FilledSelected + 1) % Filling.Modulo;
-            //}
 
 
 
