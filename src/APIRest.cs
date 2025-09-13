@@ -1493,6 +1493,82 @@ namespace gInk
                     }
 
 
+                    else if (req.Url.AbsolutePath == "/GetGrid")
+                    {
+                        if (!(Root.FormDisplay.Visible || Root.FormCollection.Visible))
+                        {
+                            resp.StatusCode = 409;
+                            ret = "!!!!! Not in Inking mode";
+                        }
+                        else if (!Root.FormCollection.GridRectDefined)
+                        {
+                            // Pas de grille : on affiche quand même un message informatif
+                            try
+                            {
+                                Root.FormCollection.BeginInvoke(new Action(() =>
+                                    MessageBox.Show(Root.FormCollection,
+                                        "Aucune grille définie.",
+                                        "GetGrid",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information)));
+                            }
+                            catch { }
+                            ret = "{\"Defined\":false}";
+                        }
+                        else
+                        {
+                            try
+                            {
+                                Rectangle gr = Root.FormCollection.GridRect;
+                                Rectangle vs = SystemInformation.VirtualScreen;
+
+                                // Sécurités (éviter division par zéro)
+                                int vw = Math.Max(1, vs.Width - 1);
+                                int vh = Math.Max(1, vs.Height - 1);
+
+                                int left = gr.Left;
+                                int top = gr.Top;
+                                int right = gr.Right;
+                                int bottom = gr.Bottom;
+
+                                // Conversion absolue 0..65535
+                                int absX1 = (int)Math.Round((left - vs.Left) * 65535.0 / vw);
+                                int absY1 = (int)Math.Round((top - vs.Top) * 65535.0 / vh);
+                                int absX2 = (int)Math.Round((right - vs.Left) * 65535.0 / vw);
+                                int absY2 = (int)Math.Round((bottom - vs.Top) * 65535.0 / vh);
+
+                                // Clamp sécurité
+                                int Clamp(int v) => v < 0 ? 0 : (v > 65535 ? 65535 : v);
+                                absX1 = Clamp(absX1); absY1 = Clamp(absY1);
+                                absX2 = Clamp(absX2); absY2 = Clamp(absY2);
+
+                                // Affichage popup (sur thread UI)
+                                string msg = $"X1={absX1}\nY1={absY1}\nX2={absX2}\nY2={absY2}\nR={Root.GridRows}";
+                                try
+                                {
+                                    Root.FormCollection.BeginInvoke(new Action(() =>
+                                        MessageBox.Show(Root.FormCollection,
+                                            msg,
+                                            "Grille (GetGrid)",
+                                            MessageBoxButtons.OK,
+                                            MessageBoxIcon.Information)));
+                                }
+                                catch { }
+
+                                ret = string.Format(
+                                    "{{\"Defined\":true,\"Left\":{0},\"Top\":{1},\"W\":{2},\"H\":{3},\"Right\":{4},\"Bottom\":{5},\"Rows\":{6},\"Cols\":{7},\"X1\":{8},\"Y1\":{9},\"X2\":{10},\"Y2\":{11}}}",
+                                    gr.X, gr.Y, gr.Width, gr.Height, right, bottom,
+                                    Root.GridRows, Root.GridCols,
+                                    absX1, absY1, absX2, absY2);
+                            }
+                            catch (Exception ex)
+                            {
+                                resp.StatusCode = 500;
+                                ret = "!!!! Exception: " + ex.Message;
+                            }
+                        }
+                    }
+
                     else // unknow command...
                     {
                         resp.StatusCode = 404;

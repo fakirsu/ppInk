@@ -10,7 +10,7 @@
   </tr>
 </table>
 
-[English version](src/ressources/readme_EN.md)
+[Version française](../readme.md)
 
 
 
