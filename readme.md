@@ -16,7 +16,7 @@
 
 #### *goInk* est un outil pour faciliter les commentaires de parties de jeu de go. goInk est un fork de [ppInk](https://github.com/pubpub-zz/ppInk), lui-même fork de [gInk](https://github.com/geovens/gInk). Grand merci à eux. 
 
-## Sommaire
+## Sommaire 
 - [Avertissements](#avertissements)
 - [Fonctionnalités](#fonctionnalités-pour-le-jeu-de-go)
 - [Dimensions du goban](#important--définissez-les-dimensions-de-votre-goban-avant-dutiliser-les-outils)
