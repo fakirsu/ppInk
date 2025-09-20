@@ -261,3 +261,16 @@ Stack Trace:
    à System.Windows.Forms.ComboBox.WndProc(Message& m)
    à System.Windows.Forms.NativeWindow.Callback(IntPtr hWnd, Int32 msg, IntPtr wparam, IntPtr lparam)
 
+09 / 20 / 2025 13:26UnhandledException
+
+version 1.9.0.0 built on 20/09/2025 13:09
+Oops, ppInk crashed! Please include the following information if you plan to contact the developers:
+
+Échec de la tentative de la méthode transparente de sécurité 'Microsoft.Ink.DrawingAttributes.set_Color(System.Drawing.Color)' d'appeler du code natif par le biais de la méthode 'Microsoft.Ink.IInkDrawingAttributes.set_Color(Int32)'. Les méthodes doivent être critiques de sécurité ou critiques sécurisées (security-safe-critical) pour appeler du code natif.
+
+Stack Trace:
+   à Microsoft.Ink.DrawingAttributes.set_Color(Color value)
+   à gInk.Root.SetDefaultPens() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Root.cs:ligne 1058
+   à gInk.Root..ctor() dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Root.cs:ligne 662
+   à gInk.Program.Main(String[] args) dans C:\Users\fabie\source\repos\fakirsu\ppInk\src\Program.cs:ligne 92
+

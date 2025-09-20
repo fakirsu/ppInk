@@ -124,7 +124,16 @@
     <Compile Include="FormCollection.GridSnap.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FormCollection.Measure.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCollection.Missing.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FormCollection.NumberTagConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCollection.Stubs.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Root.GridSnap.cs" />
