@@ -16,7 +16,7 @@
 
 #### *goInk* est un outil pour faciliter les commentaires de parties de jeu de go. goInk est un fork de [ppInk](https://github.com/pubpub-zz/ppInk), lui-même fork de [gInk](https://github.com/geovens/gInk). Grand merci à eux. 
 
-## Sommaire
+## Sommaire 
 - [Avertissements](#avertissements)
 - [Fonctionnalités](#fonctionnalités-pour-le-jeu-de-go)
 - [Dimensions du goban](#important--définissez-les-dimensions-de-votre-goban-avant-dutiliser-les-outils)
@@ -27,9 +27,9 @@
   - [Pour les outils spécifiques au jeu de go](#pour-les-outils-spécifiques-au-jeu-de-go)
   - [Prédéfinir vos gobans](#prédéfinir-vos-gobans)
 - [Vigilance concernant les outils Texte](#vigilance-concernant-les-outils-texte)
-- [Enregistrement des paramètres](#enregistrement-des-paramètres)]
+- [Enregistrement des paramètres](#enregistrement-des-paramètres)
 - [Icônes StreamDeck](#icônes-streamdeck)
-- [Autres endpoints de base](#autres-endpoints-de-base)]
+- [Autres endpoints de base](#autres-endpoints-de-base)
 - [Tous les autres endpoints API](#liste-des-autres-endpoints-rest-disponibles-résumé-fonctionnel-du-fichier-apirestcs)
 
 ## Avertissements
@@ -37,11 +37,7 @@ Ce fork a été exclusivement réalisé avec l'aide d'une IA, car je ne suis pas
 A priori, il est globalement exempt de bug et fonctionne bien sur mon ordinateur, 
 mais je ne peux pas garantir qu'il n'y aura aucun problème sur un autre ordinateur. 
 
-Si vous avez une demande particulière, n'hésitez pas à me contacter (mon adresse email est dans mon profil GitHub).
-
-Si vous constatez un problème, n'hésitez pas à le signaler dans la section "Issues" de la page GitHub.
-
-Si vous souhaitez contribuer au développement de ce logiciel, vous êtes le bienvenu.
+Si vous constatez un problème, merci pas à le signaler dans la section "Issues" de la page GitHub. Si vous avez une demande particulière, n'hésitez pas à me contacter (mon adresse email est dans mon profil GitHub). Si vous souhaitez contribuer au développement de ce logiciel, vous êtes le bienvenu.
 
 
 ## Fonctionnalités pour le jeu de go
@@ -70,9 +66,9 @@ Si le goban n'est pas un 19x19, penser à changer dans le menu options : <img sr
 
 
 ## Utilisation
-Les outils sont accessibles par raccourcis clavier, qui peuvent être appelés depuis un StreamDeck, ou bien par une API comme expliqué sur la page [Conseils pour StreamDeck](/src/doc/readme_StreamDeck.md)
+Les outils sont accessibles par raccourcis clavier, qui peuvent être appelés depuis un StreamDeck, ou bien par une API comme expliqué plus bas.
 
-Les raccourcis sont également paramétrables dans le menu options.
+Les raccourcis sont paramétrables dans le menu options.
 
 ## Problèmes connus
 Parfois, certains changements dans le menu Options nécessitent de cliquer sur "Sauver configuration" dans le premier onglet du menu Options, faute de quoi ils ne sont pas enregistrés. 
@@ -81,9 +77,9 @@ Parfois, les changements du menu Options ne sont pris en compte qu'après avoir 
 
 Les outils Lettres, Carré, Cercle, Triangle et Croix n'ont pas de bouton dans la barre d'outils : ils ne peuvent être appelés que par raccourci clavier (je n'ai pas réussi à ajouter les boutons dans la barre d'outils)
 
-Selon l'orientation de la barre d'outils, elle peut être tronquée. 
+Selon l'orientation de la barre d'outils, elle peut parfois être tronquée. 
 
-D'une manière générale, goInk est davantage conçu pour fonctionner avec des raccourcis clavier que via la barre d'outils. 
+D'une manière générale, goInk est davantage conçu pour fonctionner avec des raccourcis clavier ou, mieux, via l'API, que via la barre d'outils. 
 
 
 ## Lien avec OBS
@@ -93,17 +89,19 @@ mais cela ne fonctionne plus avec les versions récentes d'OBS.
 
 ## goInk et StreamDeck
 - [Pour les outils spécifiques au jeu de go](#pour-les-outils-spécifiques-au-jeu-de-go)
-- [Tous les autres endpoints](#liste-des-autres-endpoints-rest-disponibles-résumé-fonctionnel-du-fichier-apirestcs)]
+- [Tous les autres endpoints](#liste-des-autres-endpoints-rest-disponibles-résumé-fonctionnel-du-fichier-apirestcs)
 - [Prédéfinir vos gobans](#prédéfinir-vos-gobans)
 
 Il est possible d'utiliser goInk avec des raccourcis clavier, mais également avec [Rest API](https://github.com/fakirsu/ppInk?tab=readme-ov-file#rest-api). Les deux solutions sont possibles avec un StreamDeck. A ma connaissance, il y a très peu de différences en termes de performances, consommation de ressource, fiabilité, ... 
 
-Pour ma part j'utilise Rest API, car cela évite des conflits potentiels de raccourcis clavier avec d'autres applications.
+Pour ma part j'utilise l'API, car cela évite des conflits potentiels de raccourcis clavier avec d'autres applications.
 
-Dans StreamlDeck, il suffit d'appeler une adresse du type 
-http://localhost:*le_port_fourni_dans le menu_option*/**le_nom_de_l_action**. Exemple : 
+Dans StreamlDeck, il suffit d'appeler une adresse du type : 
 
 <img src="src/images/rest_api.png" alt="Appel dans StreamDeck" width="500"/>
+
+Le port (ci-dessus 1234) est fourni dans le menu_option.
+
 
 ## Pour les outils spécifiques au jeu de go
 
@@ -199,7 +197,7 @@ Remarques générales
 Si vous utilisez plusieurs goban de tailles différentes (OGS, KGS, FOX, ...), 
 vous pouvez utiliser le StreamDeck pour "préenregistrer" les dimensions de chacun d'eux.
 
-Vous pouvez utiliser pour cela l'API suivante (après avori ouvert la barre d'outils) : 
+Vous pouvez utiliser pour cela l'API suivante (après avoir ouvert la barre d'outils) : 
 - http://localhost:7999/SetGrid?X1=35576&Y1=7710&X2=62752&Y2=56004&R=19
   - X1,Y1 : coordonnées de l'intersection en haut à gauche du goban
   - X2,Y2 : coordonnées de l'intersection en bas à droite du goban
@@ -213,7 +211,7 @@ Ensuite, il vous suffira de faire une règle de trois pour rapporter les valeurs
 
 N'hésitez pas à appeler "http://localhost:7999/SaveConfig" pour forcer l'enregistrement de la configuration.
 
-Au final, vous pouvez créer une multi-action dans StreamDeck comme ceci : 
+Au final, vous pouvez créer une multi-action dans StreamDeck comme celle-ci : 
 
 
 <img src="src/images/SetGrid.png" alt="SetGrid dans StreamDeck - multi-action" height="150"/>
