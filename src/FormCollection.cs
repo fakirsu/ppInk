@@ -226,7 +226,6 @@ namespace gInk
             return AddShapeTagStroke(xCenter, yCenter, txt, diameter, null);
         }
 
-
         private Stroke AddShapeTagStroke(int xCenter, int yCenter, string txt, int diameterPx, Stroke st = null)
         {
             // clamp minimal
@@ -298,15 +297,28 @@ namespace gInk
                         // appliquer couleur/opacité configurée pour le tag Lettre
                         ApplyGoTagColorToDrawingAttributes(stTxt.DrawingAttributes, Root.GoTool_Letter_Color);
 
-                        try { stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
-                            try
-                            {
-                                if (!st.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
-                                    st.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
-                            }
-                            catch { }
+                        // FIX: forcer la propriété TEXTCOLOR_GUID sur la stroke texte elle‑même
+                        //      (remplace toute valeur apportée par ActiveTextColorARGB ou autres outils)
+                        try
+                        {
+                            int goArgb = Color.FromArgb(
+                                Root.GoTool_Letter_Color.Length > 0 ? Root.GoTool_Letter_Color[0] : 255,
+                                Root.GoTool_Letter_Color.Length > 1 ? Root.GoTool_Letter_Color[1] : 0,
+                                Root.GoTool_Letter_Color.Length > 2 ? Root.GoTool_Letter_Color[2] : 0,
+                                Root.GoTool_Letter_Color.Length > 3 ? Root.GoTool_Letter_Color[3] : 0
+                            ).ToArgb();
 
-                        } catch { }
+                            if (stTxt.ExtendedProperties.Contains(Root.TEXTCOLOR_GUID))
+                                try { stTxt.ExtendedProperties.Remove(Root.TEXTCOLOR_GUID); } catch { }
+
+                            stTxt.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, goArgb);
+
+                            // marquer la stroke comme tag
+                            if (!stTxt.ExtendedProperties.Contains(Root.ISTAG_GUID))
+                                stTxt.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                        }
+                        catch { }
+
                         ComputeTextBoxSize(ref stTxt);
                     }
                     catch { }
@@ -405,7 +417,9 @@ namespace gInk
 
                             st2.DrawingAttributes.Width = shapePenWidthHiMetric;
                             setStrokeProperties(ref st2, Filling.Empty);
-                            try { st2.ExtendedProperties.Add(Root.ISTAG_GUID, true);
+                            try
+                            {
+                                st2.ExtendedProperties.Add(Root.ISTAG_GUID, true);
 
 
                                 try
@@ -414,8 +428,9 @@ namespace gInk
                                         st2.ExtendedProperties.Add(Root.TEXTCOLOR_GUID, Color.FromArgb(255, 128, 128, 128).ToArgb());
                                 }
                                 catch { }
-                            
-                            } catch { }
+
+                            }
+                            catch { }
                             IC.Ink.Strokes.Add(st2);
                             if (st2.ExtendedProperties.Contains(Root.FADING_PEN)) FadingList.Add(st2);
                             return st2;
@@ -521,7 +536,6 @@ namespace gInk
                 catch { return null; }
             }
         }
-
 
 
         // Gestion du clic sur les nouveaux boutons
