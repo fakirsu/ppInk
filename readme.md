@@ -148,6 +148,8 @@ Le port (ci-dessus 1234) est fourni dans le menu_option.
 - /LetterTag
   <br>Description : Ajout de lettres (A, B, C, ...)
   <br>"http://localhost:7999/LetterTag"
+  <br>Remettre à zéro (lettre A)
+  <br>"http://localhost:7999/ResetLetterTag"
 
 - /SquareTag
   <br>Description : Ajout de carrés
