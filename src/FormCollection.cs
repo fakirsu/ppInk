@@ -116,7 +116,11 @@ namespace gInk
         public bool SnapWithoutClosing = false;
 
 
-
+        public int LetterTag_Counter_Public
+        {
+            get => LetterTag_Counter;
+            set => LetterTag_Counter = value;
+        }
 
 
 

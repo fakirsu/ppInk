@@ -1317,6 +1317,55 @@ namespace gInk
                             ret = string.Format("{{ \"OK\": true, \"Tool\": \"{0}\" }}", Tools.Names[Array.IndexOf(Tools.All, tool)]);
                         }
                     }
+
+                    else if (req.Url.AbsolutePath == "/ResetLetterTag" || req.Url.AbsolutePath == "/LetterTag_Reset")
+                    {
+                        if (!(Root.FormDisplay.Visible || Root.FormCollection.Visible))
+                        {
+                            resp.StatusCode = 409;
+                            ret = "!!!!! Not in Inking mode";
+                        }
+                        else
+                        {
+                            try
+                            {
+                                // Mettre le compteur à 0 => la prochaine incrémentation produira la lettre 'A'
+                                Root.TagNumbering = 0;
+                                Root.FormCollection.LetterTag_Counter_Public = 0;
+
+                                // Sélectionner l’outil LetterTag (conserve le remplissage courant)
+                                Root.FormCollection.SelectTool(Tools.LetterTag, Root.FilledSelected);
+
+                                // Rafraîchir l’UI
+                                Root.UponButtonsUpdate |= 0x2;
+                                Root.UponAllDrawingUpdate = true;
+
+                                // Prévisualisation de la prochaine valeur ("A")
+                                int nextN = 1;
+                                string tagStr = string.Format(
+                                    Root.TagFormatting,
+                                    nextN,
+                                    (char)(64 + nextN),   // 'A'
+                                    (char)(96 + nextN)    // 'a'
+                                );
+
+                                ret = string.Format(
+                                    "{{ \"OK\": true, \"Tool\": \"{0}\", \"NextTag\": \"{1}\" }}",
+                                    Tools.Names[Array.IndexOf(Tools.All, Tools.LetterTag)],
+                                    tagStr
+                                );
+                            }
+                            catch (Exception e)
+                            {
+                                resp.StatusCode = 500;
+                                ret = string.Format("!!!! Exception: {0}", e.Message);
+                            }
+                        }
+                    }
+
+
+
+
                     // --- FIN nouveaux endpoints ---
 
                     else if (req.Url.AbsolutePath == "/ChangePage")
